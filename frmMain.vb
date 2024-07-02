@@ -452,7 +452,7 @@ Public Class frmMain
             Dim ch = v.Split(" ")
 
             Dim ddt = ch(1).Trim.ToLower
-            Dim field = ch(2).Trim
+            Dim field = ch(2).Trim.ToLower
 
             ' TABLE
 
@@ -1329,7 +1329,7 @@ public class TownModelDataAccess
             Dim ch = v.Split(" ")
 
             Dim ddt = ch(1).Trim.ToLower
-            Dim field = ch(2).Trim
+            Dim field = ch(2).Trim.ToLower
 
             ' TABLE
 
@@ -2553,6 +2553,766 @@ public class TownModelDataAccess
 ]]>.Value.Trim)
 
         txtDest.Text = String.Join(vbCrLf, l1)
+
+    End Sub
+
+    Private Sub FormPOSTJSToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles FormPOSTJSToolStripMenuItem.Click
+
+        If txtSource.Text.Contains("public class") = False Then
+            txtDest.Text = "You forgot your Model ..."
+            Return
+        End If
+
+        If frmTuple.ShowDialog <> DialogResult.OK Then Return
+
+        Dim modelName = txtSource.Lines.Where(Function(x) x.Contains("public class ")).FirstOrDefault.Trim.Split(" ").LastOrDefault
+        Dim props = txtSource.Lines.Where(Function(x) x.Contains("public ") And x.Contains(" class ") = False).ToList
+        Dim tupName As String = frmTuple.cboItem.Text
+
+
+        Dim l1 As New List(Of String)
+        Dim l2 As New List(Of String)
+
+        Dim lh As New List(Of String)
+        Dim lr As New List(Of String)
+        Dim dp As New List(Of String)
+
+        Dim sl As New List(Of String)
+        Dim sl2 As New List(Of String)
+
+        Dim fl1 As New List(Of String)
+
+        Dim formData As New List(Of String)
+
+
+        Dim l3 As New List(Of String) ' Form Content
+        Dim l4 As New List(Of String) ' DROPDOWN
+        Dim gotFile As Boolean = False
+
+        For i = 0 To props.Count - 1
+            Dim v = props(i).Trim
+            If String.IsNullOrWhiteSpace(v) Then Continue For
+            Dim ch = v.Split(" ")
+
+            Dim ddt = ch(1).Trim.ToLower
+            Dim field = ch(2).Trim
+
+            If field.ToLower = "id" Then
+                formData.Add(<![CDATA[ brand: $("#Item1_brand").val() ]]>.Value.Replace("brand", field).TrimEnd)
+                Continue For
+            End If
+
+            If ddt.Contains("string") Or ddt.Contains("int") Or ddt.Contains("decimal") Or ddt.Contains("double") Then
+                formData.Add(<![CDATA[ brand: $("#Item1_brand").val() ]]>.Value.Replace("brand", field).TrimEnd)
+
+            ElseIf ddt.Contains("bool") Then
+                formData.Add(<![CDATA[ brand: $('#Item1_brand').prop('checked') ]]>.Value.Replace("brand", field).TrimEnd)
+
+            ElseIf ddt.StartsWith("date") Then
+                formData.Add(<![CDATA[ brand: $("#Item1_brand").val() ]]>.Value.Replace("brand", field).TrimEnd)
+
+            ElseIf ddt.StartsWith("byte[]") Then
+                formData.Add(<![CDATA[ brand: $("#Item1_brand").prop('files')[0] ]]>.Value.Replace("brand", field).TrimEnd)
+                gotFile = True
+            End If
+
+        Next
+
+        gotFile = False ' tuple, so build ajax form
+
+        Dim normalPost = <![CDATA[
+                var model = {
+                    <FORM_DATA>
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "../api/products/upsert",
+                    data: JSON.stringify(model),
+                    contentType: "application/json;charset=UTF-8",
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.result === "Success") {
+                            $('#mymodal').modal('hide');
+                            swal({
+                                title: "Saved!",
+                                text: "Data has been saved." + "\n",
+                                type: "success",
+                                showCancelButton: false,
+                                confirmButtonClass: "btn-success",
+                                confirmButtonText: "OK",
+                                closeOnConfirm: false
+                            },
+                                function () {
+                                    window.location = "/Meter/MeterTypes";
+                                }
+                            );
+
+                        } else {
+                            swal("Error", "An error occured: " + response.result + "\n", "warning");
+                        }                        
+
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error:", error);
+                    }
+                });
+]]>.Value.Replace("ProductModelForm", modelName & "Form").Replace("mymodal", $"{modelName}Modal").Replace("<FORM_DATA>", String.Join("," & vbCrLf, formData))
+
+        If gotFile Then
+            normalPost = <![CDATA[
+                // Make the AJAX POST request
+                var formData = new FormData(); // Get the form data
+                <FORM_DATA>
+                $.ajax({
+                    type: "POST",
+                    url: "../api/products/upsert",
+                    data: formData,
+                    contentType: false, // Important for multipart form data
+                    processData: false, // Don't process data automatically
+                    success: function (response) {
+                        console.log("Response:", response['result']);
+                        if (response['result'] != "OK") {
+                            if (response['result'] == "duplicate") {
+                                $('#ajaxResponseError').text('').append('<i class="bi bi-exclamation-triangle-fill"></i> Duplicate records found!').show();
+                                return;
+                            }
+                            if (response['message']) {
+                                $('#ajaxResponseError').text('').append('<i class="bi bi-exclamation-triangle-fill"></i> ' + response['message']).show();
+                                return;
+                            }
+                        }
+                        // success
+                        $(".field-validation-error, .validation-summary-errors > ul").empty();
+                        $('#ProductModelForm')[0].reset();
+                        $('#clse_mymodal').click();
+
+                        // reload
+                        if (response['result'] != 'no changes') {
+                            ShowSwal('Success').then(()=>{
+                                location.reload();
+                            });
+                        }
+
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error:", error);
+                    }
+                });
+]]>.Value.Replace("<FORM_DATA>", String.Join(vbCrLf, formData)).Replace("ProductModelForm", modelName & "Form").Replace("mymodal", $"{modelName}Modal")
+        End If
+
+        l1.Add(<![CDATA[
+@section css {
+	<!-- section rendered css -->
+	<link href="https://cdn.datatables.net/v/bs5/dt-2.0.8/datatables.min.css" rel="stylesheet">
+	<!-- select2 -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+}
+
+@section Scripts{
+	<!-- section rendered script -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+	<script src="https://cdn.datatables.net/v/bs5/dt-2.0.8/datatables.min.js"></script>
+	<!-- select2 -->
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // check also hidden fields
+            $("#ProductModelForm").data("validator").settings.ignore = "";
+
+            // on form submit
+            $("#ProductModelForm").on("submit", function (event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                if (!$(this).valid()) { return; } // check if current form is valid
+
+                // look for changes
+                var gotchange = false;
+                var origdata = $('#ProductModelFormBody').attr('data-js');
+                if (origdata) {
+                    origdata = JSON.parse($('#ProductModelFormBody').attr('data-js'));
+                    for (var key in origdata) {
+                        if (origdata.hasOwnProperty(key)) {
+                            if ($('#Item1_id').val() == "-1") { gotchange = true; break; } // new so no need to check
+                            if ($('#Item1_' + key).val() == null) { continue; } // skip undefined properties
+                            console.log(key + ': ' + $('#Item1_' + key).val() + ' = ' + origdata[key]); // TODO:  dont forget to remove
+                            if ($('#Item1_' + key).val() != origdata[key]) {
+                                console.log("gotchange: " + key + " " + origdata[key]);
+                                gotchange = true; break;
+                            }
+                        }
+                    }
+                    // dont post if nothing changed
+                    if (!gotchange) {
+                        $('#clse_mymodal').click();
+                        return; 
+                    }
+                }
+
+                // clear out any errors first
+                $(".field-validation-error, .validation-summary-errors > ul").empty();
+                $('#ajaxResponseError').hide();
+
+                // Make the AJAX POST request
+
+            });
+
+        });
+    </script>
+}
+]]>.Value.Replace("ProductModelForm", modelName & "Form").
+        Replace("mymodal", $"{modelName}Modal").
+        Replace("// DROPDOWN_REPLACEMENT", String.Join(vbCrLf, l4)).
+        Replace("mytable", $"{modelName}Table").
+        Replace("ProductModelFormBody", $"{modelName}FormBody").
+        Replace("<EDIT_VAL>", String.Join(vbCrLf, dp)).Replace("<SELECT2>", String.Join(vbCrLf, sl)).
+        Replace("<FILE_PREVIEW>", String.Join(vbCrLf, fl1)).
+        Replace("// Make the AJAX POST request", normalPost)
+        )
+
+        l1.Add("")
+
+        txtDest.Text = String.Join(vbCrLf, l1).Replace("<SELECT2_MODIFIER>", String.Join(vbCrLf, sl2)).Replace("Item1_", $"{tupName}")
+
+    End Sub
+
+    Private Sub ModalPopupcjTemplateToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ModalPopupcjTemplateToolStripMenuItem.Click
+
+        If txtSource.Text.Contains("public class") = False Then
+            txtDest.Text = "You forgot your Model ..."
+            Return
+        End If
+
+        Dim modelName = txtSource.Lines.Where(Function(x) x.Contains("public class ")).FirstOrDefault.Trim.Split(" ").LastOrDefault
+        Dim props = txtSource.Lines.Where(Function(x) x.Contains("public ") And x.Contains(" class ") = False).ToList
+
+        modelName = Regex.Replace(modelName, "model", "", RegexOptions.IgnoreCase).Trim
+
+        Dim l1 As New List(Of String)
+        Dim l2 As New List(Of String)
+
+        Dim lh As New List(Of String)
+        Dim lr As New List(Of String)
+        Dim dp As New List(Of String)
+
+        Dim sl As New List(Of String)
+        Dim sl2 As New List(Of String)
+
+        Dim fl1 As New List(Of String)
+
+        Dim formData As New List(Of String)
+
+        l1.Add(<![CDATA[
+@model PABILCOLWHAC.Models.MeterBrandModel
+
+@{
+    ViewBag.Title = "MeterBrandModel";
+    Layout = "~/Views/Shared/_tarunolayout.cshtml";
+}
+
+<script src="~/Content/js/pageJS/meterbrandmodel_v1.0.0.js"></script>
+
+<h5 class="fw-bold text-uppercase">@ViewBag.Title</h5>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Home")">Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@ViewBag.Title</li>
+    </ol>
+</nav>
+<hr />
+
+]]>.Value.Replace("MeterBrandModel", modelName).Replace("METER BRAND", modelName).Replace("meterbrandmodel_v1.0.0.js", $"{modelName.ToLower}_v1.0.0.js"))
+
+        l1.Add(<![CDATA[  ]]>.Value)
+
+        Dim l3 As New List(Of String) ' Form Content
+        Dim l4 As New List(Of String) ' DROPDOWN
+        Dim gotFile As Boolean = False
+        Dim formdata2 As New List(Of String)
+        Dim dtColDef As New List(Of String)
+        Dim colCount As Integer = 0
+
+        For i = 0 To props.Count - 1
+            Dim v = props(i).Trim
+            If String.IsNullOrWhiteSpace(v) Then Continue For
+            Dim ch = v.Split(" ")
+
+            Dim ddt = ch(1).Trim.ToLower
+            Dim field = ch(2).Trim
+
+            dtColDef.Add(<![CDATA[ { "data": "brand", "autoWidth": true } ]]>.Value.Replace("brand", field).TrimEnd)
+
+            ' TABLE
+
+            lh.Add(<![CDATA[ <th>METER BRAND</th> ]]>.Value.Replace("METER BRAND", field.ToUpper))
+            'lr.Add(<![CDATA[ <td>@item.brand (<i class="bi bi-pencil-square"></i> edit) </td> ]]>.Value.Replace("brand", field.ToLower))
+            lr.Add(<![CDATA[ <td>@item.brand</td> ]]>.Value.Replace("brand", field.ToLower))
+
+            If field.ToLower <> "id" AndAlso (field.ToLower.EndsWith("id") Or field.ToLower.EndsWith("code")) AndAlso ddt.Contains("int") Then
+                dp.Add(<![CDATA[ $('#brand').val(js['brand']).trigger('change'); ]]>.Value.Replace("brand", field))
+
+                sl.Add(<![CDATA[
+                function populatebrandCbo() {
+                    $.ajax({
+                        url: "/{Controller}/{Action}/",
+                        type: "GET",
+                        contentType: "application/json;charset=UTF-8",
+                        dataType: "json",
+                        success: function (result) {
+                            $('#brand').empty();
+                            $('#brand').append("<option value></option>");
+                            for (var i = 0; i < result.data.length; i++) {
+                                var Desc = result.data[i]['brand'];
+                                var opt = new Option(Desc, result.data[i]['Id']);
+                                $('#brand').append(opt);
+                            }
+                            var cbo = $('#brand').select2({
+                                theme: "bootstrap-5",
+                                dropdownParent: $('#mymodal'),
+                                placeholder: "Select brand",
+                                allowClear: true
+                            });
+                            cbo.on('select2:open', function () {
+                                document.querySelector('.select2-search__field').focus();
+                            });
+                        },
+                        error: function (errormessage) {
+                            swal({
+                                title: "Error!",
+                                text: "Oops! something went wrong ... \n",
+                                type: "error",
+                                showCancelButton: false,
+                                confirmButtonClass: "btn-danger",
+                                confirmButtonText: "OK",
+                                closeOnConfirm: false
+                            });
+                        }
+                    });
+                }
+                ]]>.Value.Replace("brand", field).Replace("mymodal", $"{modelName}Modal"))
+
+                sl2.Add(<![CDATA[ $('#brand').val(null).trigger('change'); ]]>.Value.Replace("brand", field))
+
+            ElseIf ddt.Contains("bool") Then
+                dp.Add(<![CDATA[ if(js['brand']==1) { $('#brand').prop('checked','checked'); } ]]>.Value.Replace("brand", field))
+
+            ElseIf ddt.StartsWith("byte[]") Then
+                dp.Add(<![CDATA[ $('#brandPreview').attr('src', 'data:image/png;base64,' + js['brand']); ]]>.Value.Replace("brand", field))
+
+                sl2.Add(<![CDATA[ $('#brandPreview').attr('src', 'https://place-hold.it/200x200?text=YOUR PHOTO'); ]]>.Value.Replace("brand", field))
+
+            Else
+                dp.Add(<![CDATA[ $('#brand').val(js['brand']); ]]>.Value.Replace("brand", field))
+            End If
+
+            ' FORMS
+
+            If i = 0 Then
+                'l3.Add(<![CDATA[ <div class="mb-2"> ]]>.Value)
+                l3.Add(<![CDATA[ @Html.ValidationSummary(false, "", new { @class = "text-danger" }) ]]>.Value)
+                'l3.Add(<![CDATA[ <div class="alert alert-danger" id="ajaxResponseError" style="display:none;"></div> ]]>.Value)
+                'l3.Add(<![CDATA[ </div> ]]>.Value)
+
+            End If
+
+            If field.ToLower = "id" Then
+                l3.Add(<![CDATA[ <input type="hidden" id="id" name="id" value="-1"> ]]>.Value)
+                formData.Add(<![CDATA[ formData.append("brand", $("#brand").val()); ]]>.Value.Replace("brand", field))
+                formdata2.Add(<![CDATA[ brand: $('#brand').val() ]]>.Value.Replace("brand", field).TrimEnd)
+                Continue For
+            End If
+
+            If ddt.Contains("string") Then
+                l3.Add(<![CDATA[ <div class="mb-2"> ]]>.Value)
+                l3.Add(<![CDATA[  @Html.LabelFor(m => m.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
+
+                Select Case field.ToLower
+                    Case "email"
+                        l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.brand, new { @type = "email", @class = "form-control" }) ]]>.Value.Replace("brand", field))
+
+                    Case "pass", "password", "pwd", "syspassword"
+                        l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.brand, new { @type = "password", @class = "form-control" }) ]]>.Value.Replace("brand", field))
+
+                    Case Else
+                        l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.brand, new { @class = "form-control" }) ]]>.Value.Replace("brand", field))
+
+                End Select
+                l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
+                l3.Add(<![CDATA[ </div> ]]>.Value)
+
+                formData.Add(<![CDATA[ formData.append("brand", $("#brand").val()); ]]>.Value.Replace("brand", field))
+                formdata2.Add(<![CDATA[ brand: $('#brand').val() ]]>.Value.Replace("brand", field).TrimEnd)
+
+            ElseIf ddt.Contains("bool") Then
+                l3.Add(<![CDATA[ <div class="mb-2 form-check"> ]]>.Value)
+                l3.Add(<![CDATA[  @Html.CheckBoxFor(m => m.brand, new { @class = "form-check-input" }) ]]>.Value.Replace("brand", field))
+                l3.Add(<![CDATA[  @Html.LabelFor(m => m.brand, new { @class = "form-check-label" }) ]]>.Value.Replace("brand", field))
+                l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
+                l3.Add(<![CDATA[ </div> ]]>.Value)
+                '
+                formData.Add(<![CDATA[ formData.append("brand", $('#brand').prop('checked')); ]]>.Value.Replace("brand", field))
+                formdata2.Add(<![CDATA[ brand: $('#brand').prop('checked') ]]>.Value.Replace("brand", field).TrimEnd)
+
+            ElseIf ddt.Contains("int") Or ddt.Contains("decimal") Or ddt.Contains("double") Then
+
+                If field.ToLower.EndsWith("id") Or field.ToLower.EndsWith("code") Then
+                    l3.Add(<![CDATA[ <div class="mb-2 col-6"> ]]>.Value)
+                    l3.Add(<![CDATA[  @Html.LabelFor(m => m.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
+                    l3.Add(<![CDATA[  @Html.DropDownListFor(m => m.brand, new SelectList(new List<string>(), "id", "name"), new { @class = "form-select" }) ]]>.Value.Replace("brand", field))
+                    l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
+                    l3.Add(<![CDATA[ </div> ]]>.Value)
+
+                    'l4.Add(<![CDATA[ 
+                    '    if ($('#brand').val() == '-1') {
+                    '        $('#ajaxResponseError').text('please select a brand').show();
+                    '        return;
+                    '    }
+                    '    ]]>.Value.Replace("brand", field))
+
+                Else
+                    l3.Add(<![CDATA[ <div class="mb-2 col-4"> ]]>.Value)
+                    l3.Add(<![CDATA[  @Html.LabelFor(m => m.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
+                    l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.brand, new { @type = "number", @class = "form-control", @Value = "0" }) ]]>.Value.Replace("brand", field))
+                    l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
+                    l3.Add(<![CDATA[ </div> ]]>.Value)
+                End If
+
+                formData.Add(<![CDATA[ formData.append("brand", $("#brand").val()); ]]>.Value.Replace("brand", field))
+                formdata2.Add(<![CDATA[ brand: $('#brand').val() ]]>.Value.Replace("brand", field).TrimEnd)
+
+            ElseIf ddt.StartsWith("date") Then
+                l3.Add(<![CDATA[ <div class="mb-2"> ]]>.Value)
+                l3.Add(<![CDATA[  @Html.LabelFor(m => m.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
+
+                If ddt.Contains("time") Then
+                    l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.brand, new { @type = "datetime-local", @class = "form-control" }) ]]>.Value.Replace("brand", field))
+                Else
+                    l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.brand, new { @type = "date", @class = "form-control" }) ]]>.Value.Replace("brand", field))
+                End If
+                l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
+                l3.Add(<![CDATA[ </div> ]]>.Value)
+
+                formData.Add(<![CDATA[ formData.append("brand", $("#brand").val()); ]]>.Value.Replace("brand", field))
+                formdata2.Add(<![CDATA[ brand: $('#brand').val() ]]>.Value.Replace("brand", field).TrimEnd)
+
+            ElseIf ddt.StartsWith("byte[]") Then
+                l3.Add(<![CDATA[ <div class="mb-2"> ]]>.Value)
+                l3.Add(<![CDATA[  @Html.LabelFor(m => m.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
+                l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.brand, new { @type = "file", @accept = "image/*", @class = "form-control" }) ]]>.Value.Replace("brand", field))
+                l3.Add(<![CDATA[  <img id="brandPreview" src="https://place-hold.it/200x200?text=YOUR PHOTO" alt="Preview" class="img-thumbnail mt-2" style="width: 200px; height: 200px;" /> ]]>.Value.Replace("brand", field))
+                l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
+                l3.Add(<![CDATA[ </div> ]]>.Value)
+
+                fl1.Add(<![CDATA[
+                    $("#brand").change(function () {
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+                            $('#brandPreview').attr('src', e.target.result);
+                        };
+                        reader.readAsDataURL(this.files[0]);
+                    });]]>.Value.Replace("brand", field))
+
+                formData.Add(<![CDATA[ formData.append("brand", $("#brand").prop('files')[0]); ]]>.Value.Replace("brand", field))
+                formdata2.Add(<![CDATA[ brand: $("#brand").prop('files')[0] ]]>.Value.Replace("brand", field).TrimEnd)
+
+                gotFile = True
+
+            End If
+
+
+        Next
+
+        ' TABLE
+        l1.Add(<![CDATA[
+@*---------- Datatable -----------*@
+<div class="row justify-content-lg-center" style="overflow-y:scroll;">
+    <div class="col-6">
+        <button class="btn btn-success" style="margin-bottom:10px;" onclick="showmymodal()"><span class="lni lni-circle-plus"></span> ADD </button>
+        <table class="table table-bordered" id="mytable" style="width:100%">
+            <thead class="bg-dark text-center text-uppercase text-light">
+                <tr class="border-dark">
+                    <TH_HEADER>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+]]>.Value.Replace("mytable", $"{modelName}Table").Replace("ViewBag.Brands", $"ViewBag.{modelName}").Replace("MeterBrandModel", modelName).Replace("mymodal", $"{modelName}Modal").
+    Replace("<TH_HEADER>", String.Join(vbCrLf, lh)).
+    Replace("<TD_DATA>", String.Join(vbCrLf, lr)).Trim)
+
+        ' MODAL FORM
+        l1.Add(<![CDATA[ 
+@*---------- Modal-----------*@
+<div class="modal fade" id="mymodal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="mymodalTitle" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-uppercase text-light">
+                <h5 class="modal-title">ADD METER TYPE FORM</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="ProductModelForm">
+                <div class="modal-body">
+                    <FORM CONTENT>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">SAVE</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">CLOSE</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+]]>.Value.Replace("<FORM CONTENT>", String.Join(vbCrLf, l3)).Replace("ProductModelForm", modelName & "Form"))
+
+        l1.Add("")
+        l1.Add("")
+
+        Dim normalPost = <![CDATA[
+    var model = {
+        <FORM_DATA>
+    }
+
+    $.ajax({
+        url: "/{Controller}/{Action}",
+        data: JSON.stringify(model),
+        type: "POST",
+        contentType: "application/json;charset=UTF-8",
+        dataType: "json",
+        success: function (response) {
+            if (response.result === "Success") {
+                $('#mymodal').modal('hide');
+                swal({
+                    title: "Saved!",
+                    text: "Record has been saved." + "\n",
+                    type: "success",
+                    showCancelButton: false,
+                    confirmButtonClass: "btn-success",
+                    confirmButtonText: "OK",
+                    closeOnConfirm: false
+                },
+                    function () {
+                        window.location = "/{Controller}/{Action}";
+                    }
+                );
+
+            } else {
+                swal("Error", "An error occured: " + response.result + "\n", "warning");
+            }
+        },
+        error: function (errormessage) {
+            swal({
+                title: "Error!",
+                text: "Oops! something went wrong ... \n",
+                type: "error",
+                showCancelButton: false,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "OK",
+                closeOnConfirm: false
+            });
+        }
+    });
+
+]]>.Value.Replace("ProductModelForm", modelName & "Form").Replace("mymodal", $"{modelName}Modal").Replace("<FORM_DATA>", String.Join("," & vbCrLf, formdata2).Trim)
+
+        If gotFile Then
+            normalPost = <![CDATA[
+                // Make the AJAX POST request
+                var formData = new FormData(); // Get the form data
+                <FORM_DATA>
+                $.ajax({
+                    type: "POST",
+                    url: "../api/products/upsert",
+                    data: formData,
+                    contentType: false, // Important for multipart form data
+                    processData: false, // Don't process data automatically
+                    success: function (response) {
+                        console.log("Response:", response['result']);
+                        if (response['result'] != "OK") {
+                            if (response['result'] == "duplicate") {
+                                $('#ajaxResponseError').text('').append('<i class="bi bi-exclamation-triangle-fill"></i> Duplicate records found!').show();
+                                return;
+                            }
+                            if (response['message']) {
+                                $('#ajaxResponseError').text('').append('<i class="bi bi-exclamation-triangle-fill"></i> ' + response['message']).show();
+                                return;
+                            }
+                        }
+                        // success
+                        $(".field-validation-error, .validation-summary-errors > ul").empty();
+                        $('#ProductModelForm')[0].reset();
+                        $('#clse_mymodal').click();
+
+                        // reload
+                        if (response['result'] != 'no changes') {
+                            ShowSwal('Success').then(()=>{
+                                location.reload();
+                            });
+                        }
+
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error:", error);
+                    }
+                });
+]]>.Value.Replace("<FORM_DATA>", String.Join(vbCrLf, formData)).Replace("ProductModelForm", modelName & "Form").Replace("mymodal", $"{modelName}Modal")
+        End If
+
+        l1.Add(<![CDATA[
+    @section Scripts{
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+	    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+        <script>
+            $(document).ready(initializeData());
+        </script>
+    } 
+
+    @*---------- script -----------*@
+    <script>
+        function fillProductModelForm(js) {
+            <EDIT_VAL>
+        }
+
+        <SELECT2>
+
+        function loadmytable() {
+            $('#mytable').DataTable({
+                ajax: {
+                    "url": "/{Controller}/{Action}",
+                    "type": "GET",
+                    datatype: "json"
+                },
+                pageLength: 10,
+                initComplete: function (settings, json) {
+                    document.body.style.cursor = 'default';
+                },
+                columns: [
+                    <DT_COL_DEF>
+                ],
+                aoColumnDefs: [
+                    {
+                        "width": "100px",
+                        "aTargets": [COL_DEF_COUNT],
+                        "mData": "Id",
+                        "mRender": function (data, type, full) {
+
+                            return '<button class="btn btn-success btn-sm" style="font-size:smaller;" href="#" id="vw_' + data + '" ' +
+                                'onclick="showEditModal(\'' + data + '\')">' +
+                                '<span class="lni lni-pencil"></span> EDIT</button> ';
+
+                        },
+                        "className": "text-center"
+                    }
+                ]
+
+            });
+        }
+
+        function showmymodal() {
+            $(".field-validation-error, .validation-summary-errors > ul").empty();
+            $('#ProductModelForm')[0].reset();
+            $('#id').val('-1');
+            <SELECT2_MODIFIER>
+            $('.modal-title').text('ADD NEW');
+            $('#mymodal').modal('show');
+        }
+
+        function showEditModal(id) {
+        
+            $.ajax({
+                url: "/{Controller}/{Action}/?id=" + id,
+                type: "GET",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                success: function (result) {
+                    if (result.data != null) {
+                        fillProductModelForm(result.data);
+                        $('.modal-title').text('EDIT ');
+                        $('#mymodal').modal('show');
+
+                    } else {
+                        swal({
+                            title: "Error!",
+                            text: "There are no details to display." + "\n",
+                            type: "warning",
+                            showCancelButton: false,
+                            confirmButtonClass: "btn-danger",
+                            confirmButtonText: "OK",
+                            closeOnConfirm: false
+                        });
+
+                    }
+                },
+                error: function (errormessage) {
+                    swal({
+                        title: "Error!",
+                        text: errormessage.responseText + "\n",
+                        type: "error",
+                        showCancelButton: false,
+                        confirmButtonClass: "btn-danger",
+                        confirmButtonText: "OK",
+                        closeOnConfirm: false
+                    });
+
+                }
+            });
+        }
+
+        function saveProductModelForm() {
+            // Make the AJAX POST request
+        }
+
+        function initializeData() {
+            // check also hidden fields
+            $("#ProductModelForm").data("validator").settings.ignore = "";
+
+            loadmytable();
+
+            // on modal shown 
+            $('#mymodal').on('shown.bs.modal', function () {
+                $('#myInput').trigger('focus');
+            });
+
+            // on modal closed , clean all need fields
+            $('#mymodal').on('hidden.bs.modal', function () {
+                $(".field-validation-error, .validation-summary-errors > ul").empty(); // clear out any errors first
+                $('#ProductModelFormBody').attr('data-js', '');
+                $('#ProductModelForm')[0].reset();
+                $('#id').val('-1');
+                <SELECT2_MODIFIER>
+            });
+
+            // on form submit
+            $("#ProductModelForm").on("submit", function (event) {
+                event.preventDefault(); // Prevent the default form submission
+                if (!$(this).valid()) { return; } // check if current form is valid
+                $(".field-validation-error, .validation-summary-errors > ul").empty(); // clear out any errors first
+                saveProductModelForm();
+            });
+
+        }
+    </script>
+]]>.Value.Replace("ProductModelForm", modelName & "Form").
+        Replace("mymodal", $"{modelName}Modal").
+        Replace("// DROPDOWN_REPLACEMENT", String.Join(vbCrLf, l4)).
+        Replace("mytable", $"{modelName}Table").
+        Replace("ProductModelFormBody", $"{modelName}FormBody").
+        Replace("<EDIT_VAL>", String.Join(vbCrLf, dp)).Replace("<SELECT2>", String.Join(vbCrLf, sl)).
+        Replace("<FILE_PREVIEW>", String.Join(vbCrLf, fl1)).
+        Replace("// Make the AJAX POST request", normalPost)
+        )
+
+        l1.Add("")
+
+        txtDest.Text = String.Join(vbCrLf, l1).Replace("mymodal", $"{modelName}Modal").
+            Replace("<SELECT2_MODIFIER>", String.Join(vbCrLf, sl2)).
+            Replace("<DT_COL_DEF>", String.Join("," & vbCrLf, dtColDef)).
+            Replace("COL_DEF_COUNT", dtColDef.Count)
 
     End Sub
 End Class
