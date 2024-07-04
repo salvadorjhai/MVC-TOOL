@@ -8,9 +8,7 @@ Public Class frmMain
     End Sub
 
     Private Sub ToolStripButton1_Click(sender As Object, e As EventArgs) Handles ToolStripButton1.Click
-        If frmCreateApiController.ShowDialog() = DialogResult.OK Then
-            txtDest.Text = frmCreateApiController.GeneratedCode
-        End If
+
     End Sub
 
 
@@ -1089,16 +1087,26 @@ Public Class frmMain
 
 
         l1.Add(<![CDATA[  
-using System.Collections.Generic;
+using TARONEAPI.JS.Utils;
 using System.Data;
+using TARONEAPI.Models;
 
 public class TownModelDataAccess
     {
+        private string _connectionString;
+        public TownModelDataAccess(string conn)
+        {
+            _connectionString = conn;
+        }
 
-        public static List<TownModel> List()
+		/// <summary>
+		/// return list of objects
+		/// </summary>
+		/// <returns></returns>
+        public List<TownModel> List()
         {
             List<TownModel> list = new List<TownModel>();
-
+            OleDB DB = new OleDB(_connectionString);
             DataTable dt = DB.ExecuteToDatatable("SELECT * FROM b_towns order by name asc");
             if (dt != null && dt.Rows.Count > 0)
             {
@@ -1114,20 +1122,47 @@ public class TownModelDataAccess
             return list;
         }
 
-
-        public static int Upsert(TownModel model)
+        /// <summary>
+        /// returns single element from given id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public TownModel GetById(int id)
         {
+            OleDB DB = new OleDB(_connectionString);
+            DataRow dr = DB.QuerySingleResult("SELECT * FROM b_towns WHERE id = " + id, null);
+            if (dr != null)
+            {
+                TownModel model = new TownModel()
+                {
+                    <MODEL_CONTENT>
+                };
+                return model;
+            }
+
+            return null;
+        }
+
+		/// <summary>
+		/// perform insert/update
+		/// if id value is <= 0 , it will perform insert
+		/// if id value is > 0 , it will perform update
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns>positive number is success, negative means failed</returns>
+        public int Upsert(TownModel model)
+        {
+            OleDB DB = new OleDB(_connectionString);
             if (string.IsNullOrWhiteSpace(model.name))
             {
                 return -1;
             }
-
             // for insert
             if (model.id<=0)
             {
                 // check for dups
                 DataRow exists = DB.QuerySingleResult("b_towns", "name", model.name);
-                if (exists != null) { return DB.DUPLICATE; }
+                if (exists != null) { return OleDB.DUPLICATE; }
 
                 // no dup , insert
                 Dictionary<string, object> param = new Dictionary<string, object>();
@@ -1146,12 +1181,12 @@ public class TownModelDataAccess
                     // return if nothing to update
                     if (exists.IsModelClean(model))
 					{
-						return DB.NO_CHANGES;
+						return OleDB.NO_CHANGES;
 					}
 
                     //if (exists["name"].ToString().ToLowerInvariant() == model.name.ToLowerInvariant())
                     //{
-                    //    return DB.NO_CHANGES;
+                    //    return OleDB.NO_CHANGES;
                     //}
 
                     Dictionary<string, object> param = new Dictionary<string, object>();
@@ -1161,7 +1196,7 @@ public class TownModelDataAccess
                     exists = DB.QuerySingleResult($"SELECT * FROM b_towns WHERE name=@name AND id <> {model.id}", param);
                     if (exists != null)
                     {
-                        return DB.DUPLICATE;
+                        return OleDB.DUPLICATE;
                     }
 
                     // update
@@ -3314,5 +3349,21 @@ public class TownModelDataAccess
             Replace("<DT_COL_DEF>", String.Join("," & vbCrLf, dtColDef)).
             Replace("COL_DEF_COUNT", dtColDef.Count)
 
+    End Sub
+
+    Private Sub ToolStripButton1_ButtonClick(sender As Object, e As EventArgs)
+
+    End Sub
+
+    Private Sub ToolStripButton1_ButtonClick_1(sender As Object, e As EventArgs) Handles ToolStripButton1.ButtonClick
+        If frmCreateApiController.ShowDialog() = DialogResult.OK Then
+            txtDest.Text = frmCreateApiController.GeneratedCode
+        End If
+    End Sub
+
+    Private Sub APIGeneratorcjTemplateToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles APIGeneratorcjTemplateToolStripMenuItem.Click
+        If frmCreateApiControllerCJ.ShowDialog() = DialogResult.OK Then
+            txtDest.Text = frmCreateApiControllerCJ.GeneratedCode
+        End If
     End Sub
 End Class

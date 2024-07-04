@@ -82,6 +82,12 @@
     <Compile Include="frmAjaxGenerator.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="frmCreateApiControllerCJ.Designer.vb">
+      <DependentUpon>frmCreateApiControllerCJ.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmCreateApiControllerCJ.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="frmCreateApiController.Designer.vb">
       <DependentUpon>frmCreateApiController.vb</DependentUpon>
     </Compile>
@@ -132,6 +138,9 @@
   <ItemGroup>
     <EmbeddedResource Include="frmAjaxGenerator.resx">
       <DependentUpon>frmAjaxGenerator.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmCreateApiControllerCJ.resx">
+      <DependentUpon>frmCreateApiControllerCJ.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmCreateApiController.resx">
       <DependentUpon>frmCreateApiController.vb</DependentUpon>
