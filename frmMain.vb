@@ -1093,10 +1093,10 @@ using TARONEAPI.Models;
 
 public class TownModelDataAccess
     {
-        private string _connectionString;
+        private OleDB DB;
         public TownModelDataAccess(string conn)
         {
-            _connectionString = conn;
+            DB = new OleDB(conn);
         }
 
 		/// <summary>
@@ -1106,7 +1106,6 @@ public class TownModelDataAccess
         public List<TownModel> List()
         {
             List<TownModel> list = new List<TownModel>();
-            OleDB DB = new OleDB(_connectionString);
             DataTable dt = DB.ExecuteToDatatable("SELECT * FROM b_towns order by name asc");
             if (dt != null && dt.Rows.Count > 0)
             {
@@ -1129,7 +1128,6 @@ public class TownModelDataAccess
         /// <returns></returns>
         public TownModel GetById(int id)
         {
-            OleDB DB = new OleDB(_connectionString);
             DataRow dr = DB.QuerySingleResult("SELECT * FROM b_towns WHERE id = " + id, null);
             if (dr != null)
             {
@@ -1152,7 +1150,6 @@ public class TownModelDataAccess
 		/// <returns>positive number is success, negative means failed</returns>
         public int Upsert(TownModel model)
         {
-            OleDB DB = new OleDB(_connectionString);
             if (string.IsNullOrWhiteSpace(model.name))
             {
                 return -1;
