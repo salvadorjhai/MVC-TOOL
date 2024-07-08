@@ -764,6 +764,7 @@ Public Class frmMain
             $('#mytable').DataTable({
                 // ... other DataTable options
                 // order: [[1, "desc"], [2, "asc"]], // index based
+                stateSave: true,
                 scrollX: true,
                 // Event handler for row hover
                 rowCallback: function (row, data, index) {
@@ -986,7 +987,7 @@ Public Class frmMain
             // initialize datatable
             $('#mytable').DataTable({
                 // ... other DataTable options
-
+                stateSave: true,
                 // Event handler for row hover
                 rowCallback: function (row, data, index) {
                     $(row).hover(function () {
@@ -1678,6 +1679,7 @@ public class TownModelDataAccess
             $('#mytable').DataTable({
                 // ... other DataTable options
                 // order: [[1, "desc"], [2, "asc"]], // index based
+                stateSave: true,
                 scrollX: true,
                 // Event handler for row hover
                 rowCallback: function (row, data, index) {
@@ -2338,6 +2340,7 @@ public class TownModelDataAccess
                             // ... other DataTable options
                             // order: [[1, "desc"], [2, "asc"]], // index based
                             // scrollX: true,
+                            stateSave: true,
                             // Event handler for row hover
                             rowCallback: function (row, data, index) {
                                 $(row).hover(function () {
@@ -3129,7 +3132,7 @@ public class TownModelDataAccess
                     closeOnConfirm: false
                 },
                     function () {
-                        window.location = "/{Controller}/{Action}";
+                        window.location = "../{Controller}/{Action}";
                     }
                 );
 
@@ -3159,37 +3162,41 @@ public class TownModelDataAccess
                 <FORM_DATA>
                 $.ajax({
                     type: "POST",
-                    url: "../api/products/upsert",
+                    url: "/{Controller}/{Action}",
                     data: formData,
                     contentType: false, // Important for multipart form data
                     processData: false, // Don't process data automatically
                     success: function (response) {
-                        console.log("Response:", response['result']);
-                        if (response['result'] != "OK") {
-                            if (response['result'] == "duplicate") {
-                                $('#ajaxResponseError').text('').append('<i class="bi bi-exclamation-triangle-fill"></i> Duplicate records found!').show();
-                                return;
-                            }
-                            if (response['message']) {
-                                $('#ajaxResponseError').text('').append('<i class="bi bi-exclamation-triangle-fill"></i> ' + response['message']).show();
-                                return;
-                            }
-                        }
-                        // success
-                        $(".field-validation-error, .validation-summary-errors > ul").empty();
-                        $('#ProductModelForm')[0].reset();
-                        $('#clse_mymodal').click();
+                        if (response.result === "Success") {
+                            $('#mymodal').modal('hide');
+                            swal({
+                                title: "Saved!",
+                                text: "Record has been saved." + "\n",
+                                type: "success",
+                                showCancelButton: false,
+                                confirmButtonClass: "btn-success",
+                                confirmButtonText: "OK",
+                                closeOnConfirm: false
+                            },
+                                function () {
+                                    window.location = "../{Controller}/{Action}";
+                                }
+                            );
 
-                        // reload
-                        if (response['result'] != 'no changes') {
-                            ShowSwal('Success').then(()=>{
-                                location.reload();
-                            });
+                        } else {
+                            swal("Error", "An error occured: " + response.result + "\n", "warning");
                         }
-
                     },
-                    error: function (xhr, status, error) {
-                        console.error("Error:", error);
+                    error: function (errormessage) {
+                        swal({
+                            title: "Error!",
+                            text: "Oops! something went wrong ... \n",
+                            type: "error",
+                            showCancelButton: false,
+                            confirmButtonClass: "btn-danger",
+                            confirmButtonText: "OK",
+                            closeOnConfirm: false
+                        });
                     }
                 });
 ]]>.Value.Replace("<FORM_DATA>", String.Join(vbCrLf, formData)).Replace("ProductModelForm", modelName & "Form").Replace("mymodal", $"{modelName}Modal")
@@ -3197,14 +3204,12 @@ public class TownModelDataAccess
 
         l1.Add(<![CDATA[
     @section Scripts{
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
-	    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
         <script>
             $(document).ready(initializeData());
         </script>
     } 
 
-    @*---------- script -----------*@
+    @*---------- todo: save as separate script -----------*@
     <script>
         function fillProductModelForm(js) {
             <EDIT_VAL>
@@ -3214,6 +3219,7 @@ public class TownModelDataAccess
 
         function loadmytable() {
             $('#mytable').DataTable({
+                stateSave: true,
                 ajax: {
                     "url": "/{Controller}/{Action}",
                     "type": "GET",
