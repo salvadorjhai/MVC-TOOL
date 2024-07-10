@@ -25,6 +25,8 @@ Partial Class frmMain
         Me.components = New System.ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmMain))
         Me.ToolStrip1 = New System.Windows.Forms.ToolStrip()
+        Me.ToolStripButton1 = New System.Windows.Forms.ToolStripSplitButton()
+        Me.APIGeneratorcjTemplateToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripButton5 = New System.Windows.Forms.ToolStripDropDownButton()
         Me.ModelBuilderToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -53,8 +55,7 @@ Partial Class frmMain
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.ToolStripStatusLabel1 = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
-        Me.ToolStripButton1 = New System.Windows.Forms.ToolStripSplitButton()
-        Me.APIGeneratorcjTemplateToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -71,6 +72,21 @@ Partial Class frmMain
         Me.ToolStrip1.Size = New System.Drawing.Size(764, 25)
         Me.ToolStrip1.TabIndex = 0
         Me.ToolStrip1.Text = "ToolStrip1"
+        '
+        'ToolStripButton1
+        '
+        Me.ToolStripButton1.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.APIGeneratorcjTemplateToolStripMenuItem})
+        Me.ToolStripButton1.Image = CType(resources.GetObject("ToolStripButton1.Image"), System.Drawing.Image)
+        Me.ToolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripButton1.Name = "ToolStripButton1"
+        Me.ToolStripButton1.Size = New System.Drawing.Size(176, 22)
+        Me.ToolStripButton1.Text = "API Generator (Controller)"
+        '
+        'APIGeneratorcjTemplateToolStripMenuItem
+        '
+        Me.APIGeneratorcjTemplateToolStripMenuItem.Name = "APIGeneratorcjTemplateToolStripMenuItem"
+        Me.APIGeneratorcjTemplateToolStripMenuItem.Size = New System.Drawing.Size(217, 22)
+        Me.APIGeneratorcjTemplateToolStripMenuItem.Text = "API Generator (cj template)"
         '
         'ToolStripSeparator1
         '
@@ -105,7 +121,7 @@ Partial Class frmMain
         '
         'ToolStripButton3
         '
-        Me.ToolStripButton3.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DefaultToolStripMenuItem, Me.ModalPopupToolStripMenuItem, Me.ModalPopup2TupleToolStripMenuItem, Me.ToolStripSeparator4, Me.BlankModalToolStripMenuItem, Me.HtmlTagHelpersOnlyToolStripMenuItem, Me.Select2ViewBagToolStripMenuItem, Me.ToolStripSeparator5, Me.ModalPopupcjTemplateToolStripMenuItem})
+        Me.ToolStripButton3.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DefaultToolStripMenuItem, Me.ModalPopupToolStripMenuItem, Me.ModalPopup2TupleToolStripMenuItem, Me.ToolStripSeparator4, Me.BlankModalToolStripMenuItem, Me.HtmlTagHelpersOnlyToolStripMenuItem, Me.Select2ViewBagToolStripMenuItem, Me.ToolStripSeparator5, Me.ModalPopupcjTemplateToolStripMenuItem, Me.ToolStripMenuItem1})
         Me.ToolStripButton3.Image = CType(resources.GetObject("ToolStripButton3.Image"), System.Drawing.Image)
         Me.ToolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripButton3.Name = "ToolStripButton3"
@@ -163,7 +179,7 @@ Partial Class frmMain
         'ModalPopupcjTemplateToolStripMenuItem
         '
         Me.ModalPopupcjTemplateToolStripMenuItem.Name = "ModalPopupcjTemplateToolStripMenuItem"
-        Me.ModalPopupcjTemplateToolStripMenuItem.Size = New System.Drawing.Size(216, 22)
+        Me.ModalPopupcjTemplateToolStripMenuItem.Size = New System.Drawing.Size(222, 22)
         Me.ModalPopupcjTemplateToolStripMenuItem.Text = "Modal Popup (cj template)"
         '
         'ToolStripButton2
@@ -270,20 +286,11 @@ Partial Class frmMain
         Me.ToolStripStatusLabel1.Spring = True
         Me.ToolStripStatusLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
-        'ToolStripButton1
+        'ToolStripMenuItem1
         '
-        Me.ToolStripButton1.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.APIGeneratorcjTemplateToolStripMenuItem})
-        Me.ToolStripButton1.Image = CType(resources.GetObject("ToolStripButton1.Image"), System.Drawing.Image)
-        Me.ToolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.ToolStripButton1.Name = "ToolStripButton1"
-        Me.ToolStripButton1.Size = New System.Drawing.Size(176, 22)
-        Me.ToolStripButton1.Text = "API Generator (Controller)"
-        '
-        'APIGeneratorcjTemplateToolStripMenuItem
-        '
-        Me.APIGeneratorcjTemplateToolStripMenuItem.Name = "APIGeneratorcjTemplateToolStripMenuItem"
-        Me.APIGeneratorcjTemplateToolStripMenuItem.Size = New System.Drawing.Size(217, 22)
-        Me.APIGeneratorcjTemplateToolStripMenuItem.Text = "API Generator (cj template)"
+        Me.ToolStripMenuItem1.Name = "ToolStripMenuItem1"
+        Me.ToolStripMenuItem1.Size = New System.Drawing.Size(222, 22)
+        Me.ToolStripMenuItem1.Text = "Modal Popup (jee template)"
         '
         'frmMain
         '
@@ -340,4 +347,5 @@ Partial Class frmMain
     Friend WithEvents ModalPopupcjTemplateToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ToolStripButton1 As ToolStripSplitButton
     Friend WithEvents APIGeneratorcjTemplateToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents ToolStripMenuItem1 As ToolStripMenuItem
 End Class
