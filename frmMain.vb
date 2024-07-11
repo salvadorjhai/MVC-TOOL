@@ -3404,15 +3404,6 @@ public class TownModelDataAccess
 
 @{
     ViewBag.Title = "MeterBrandModel";
-    if (System.Configuration.ConfigurationManager.AppSettings.Get("LAYOUT").ToLower() == "otika")
-    {
-        Layout = "~/Views/Shared/_otikalayout.cshtml";
-        @Html.Raw("<div class=\"loader\"></div>");
-    }
-    else
-    {
-        Layout = "~/Views/Shared/_tarunolayout.cshtml";
-    }
 }
 ]]>.Value.Replace("MeterBrandModel", modelName).Replace("METER BRAND", modelName).Replace("meterbrandmodel_v1.0.0.js", $"{modelName.ToLower}_v1.0.0.js"))
 
@@ -3424,6 +3415,7 @@ public class TownModelDataAccess
         Dim formdata2 As New List(Of String)
         Dim dtColDef As New List(Of String)
         Dim colCount As Integer = 0
+        Dim sl3 As New List(Of String)
 
         For i = 0 To props.Count - 1
             Dim v = props(i).Trim
@@ -3455,7 +3447,7 @@ public class TownModelDataAccess
                             $('#brand').empty();
                             $('#brand').append("<option value></option>");
                             for (var i = 0; i < result.data.length; i++) {
-                                var Desc = result.data[i]['brand'];
+                                var Desc = result.data[i]['name'];
                                 var opt = new Option(Desc, result.data[i]['id']);
                                 $('#brand').append(opt);
                             }
@@ -3477,6 +3469,10 @@ public class TownModelDataAccess
                 ]]>.Value.Replace("brand", field).Replace("mymodal", $"{modelName}Modal"))
 
                 sl2.Add(<![CDATA[ $('#brand').val(null).trigger('change'); ]]>.Value.Replace("brand", field))
+                sl3.Add(<![CDATA[ $('#brand').on('change', function () {
+                            // do what you want ;
+                        }); 
+                    ]]>.Value.Replace("brand", field))
 
             ElseIf ddt.Contains("bool") Then
                 dp.Add(<![CDATA[ if(js['brand']==1) { $('#brand').prop('checked','checked'); } ]]>.Value.Replace("brand", field))
@@ -3824,6 +3820,8 @@ public class TownModelDataAccess
                 $('#myInput').trigger('focus');
             });
 
+            <SELECT_EVENTS>
+
             // on modal closed , clean all need fields
             $('#mymodal').on('hidden.bs.modal', function () {
                 $(".field-validation-error, .validation-summary-errors > ul").empty(); // clear out any errors first
@@ -3858,7 +3856,8 @@ public class TownModelDataAccess
         txtDest.Text = String.Join(vbCrLf, l1).Replace("mymodal", $"{modelName}Modal").
             Replace("<SELECT2_MODIFIER>", String.Join(vbCrLf, sl2)).
             Replace("<DT_COL_DEF>", String.Join("," & vbCrLf, dtColDef)).
-            Replace("COL_DEF_COUNT", dtColDef.Count)
+            Replace("COL_DEF_COUNT", dtColDef.Count).
+            Replace("<SELECT_EVENTS>", String.Join(vbCrLf, sl3).Trim)
 
     End Sub
 End Class
