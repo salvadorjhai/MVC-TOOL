@@ -3380,8 +3380,11 @@ public class TownModelDataAccess
             Return
         End If
 
+        If frmTuple.ShowDialog <> DialogResult.OK Then Return
+
         Dim modelName = txtSource.Lines.Where(Function(x) x.Contains("public class ")).FirstOrDefault.Trim.Split(" ").LastOrDefault
         Dim props = txtSource.Lines.Where(Function(x) x.Contains("public ") And x.Contains(" class ") = False).ToList
+        Dim tupName As String = frmTuple.cboItem.Text
 
         modelName = Regex.Replace(modelName, "model", "", RegexOptions.IgnoreCase).Trim
 
@@ -3434,7 +3437,7 @@ public class TownModelDataAccess
             lr.Add(<![CDATA[ <td>@item.brand</td> ]]>.Value.Replace("brand", field.ToLower))
 
             If field.ToLower <> "id" AndAlso (field.ToLower.EndsWith("id") Or field.ToLower.EndsWith("code")) AndAlso ddt.Contains("int") Then
-                dp.Add(<![CDATA[ $('#brand').val(js['brand']).trigger('change'); ]]>.Value.Replace("brand", field))
+                dp.Add(<![CDATA[ $('#Item1_brand').val(js['brand']).trigger('change'); ]]>.Value.Replace("brand", field))
 
                 sl.Add(<![CDATA[
                 function populatebrandCbo() {
@@ -3444,14 +3447,14 @@ public class TownModelDataAccess
                         contentType: "application/json;charset=UTF-8",
                         dataType: "json",
                         success: function (result) {
-                            $('#brand').empty();
-                            $('#brand').append("<option value></option>");
+                            $('#Item1_brand').empty();
+                            $('#Item1_brand').append("<option value></option>");
                             for (var i = 0; i < result.data.length; i++) {
                                 var Desc = result.data[i]['name'];
                                 var opt = new Option(Desc, result.data[i]['id']);
-                                $('#brand').append(opt);
+                                $('#Item1_brand').append(opt);
                             }
-                            var cbo = $('#brand').select2({
+                            var cbo = $('#Item1_brand').select2({
                                 theme: "bootstrap-5",
                                 dropdownParent: $('#mymodal'),
                                 placeholder: "Select brand",
@@ -3468,22 +3471,22 @@ public class TownModelDataAccess
                 }
                 ]]>.Value.Replace("brand", field).Replace("mymodal", $"{modelName}Modal"))
 
-                sl2.Add(<![CDATA[ $('#brand').val(null).trigger('change'); ]]>.Value.Replace("brand", field))
-                sl3.Add(<![CDATA[ $('#brand').on('change', function () {
+                sl2.Add(<![CDATA[ $('#Item1_brand').val(null).trigger('change'); ]]>.Value.Replace("brand", field))
+                sl3.Add(<![CDATA[ $('#Item1_brand').on('change', function () {
                             // do what you want ;
                         }); 
                     ]]>.Value.Replace("brand", field))
 
             ElseIf ddt.Contains("bool") Then
-                dp.Add(<![CDATA[ if(js['brand']==1) { $('#brand').prop('checked','checked'); } ]]>.Value.Replace("brand", field))
+                dp.Add(<![CDATA[ if(js['brand']==1) { $('#Item1_brand').prop('checked','checked'); } ]]>.Value.Replace("brand", field))
 
             ElseIf ddt.StartsWith("byte[]") Then
-                dp.Add(<![CDATA[ $('#brandPreview').attr('src', 'data:image/png;base64,' + js['brand']); ]]>.Value.Replace("brand", field))
+                dp.Add(<![CDATA[ $('#Item1_brandPreview').attr('src', 'data:image/png;base64,' + js['brand']); ]]>.Value.Replace("brand", field))
 
-                sl2.Add(<![CDATA[ $('#brandPreview').attr('src', 'https://place-hold.it/200x200?text=YOUR PHOTO'); ]]>.Value.Replace("brand", field))
+                sl2.Add(<![CDATA[ $('#Item1_brandPreview').attr('src', 'https://place-hold.it/200x200?text=YOUR PHOTO'); ]]>.Value.Replace("brand", field))
 
             Else
-                dp.Add(<![CDATA[ $('#brand').val(js['brand']); ]]>.Value.Replace("brand", field))
+                dp.Add(<![CDATA[ $('#Item1_brand').val(js['brand']); ]]>.Value.Replace("brand", field))
             End If
 
             ' FORMS
@@ -3497,50 +3500,50 @@ public class TownModelDataAccess
             End If
 
             If field.ToLower = "id" Then
-                l3.Add(<![CDATA[ <input type="hidden" id="id" name="id" value="-1"> ]]>.Value)
-                formData.Add(<![CDATA[ formData.append("brand", $("#brand").val()); ]]>.Value.Replace("brand", field))
-                formdata2.Add(<![CDATA[ brand: $('#brand').val() ]]>.Value.Replace("brand", field).TrimEnd)
+                l3.Add(<![CDATA[ <input type="hidden" id="Item1_id" name="Item1.id" value="-1"> ]]>.Value)
+                formData.Add(<![CDATA[ formData.append("brand", $("#Item1_brand").val()); ]]>.Value.Replace("brand", field))
+                formdata2.Add(<![CDATA[ brand: $('#Item1_brand').val() ]]>.Value.Replace("brand", field).TrimEnd)
                 Continue For
             End If
 
             If ddt.Contains("string") Then
                 l3.Add(<![CDATA[ <div class="mb-2"> ]]>.Value)
-                l3.Add(<![CDATA[  @Html.LabelFor(m => m.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
+                l3.Add(<![CDATA[  @Html.LabelFor(m => m.Item1.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
 
                 Select Case field.ToLower
                     Case "email"
-                        l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.brand, new { @type = "email", @class = "form-control" }) ]]>.Value.Replace("brand", field))
+                        l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.Item1.brand, new { @type = "email", @class = "form-control" }) ]]>.Value.Replace("brand", field))
 
                     Case "pass", "password", "pwd", "syspassword"
-                        l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.brand, new { @type = "password", @class = "form-control" }) ]]>.Value.Replace("brand", field))
+                        l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.Item1.brand, new { @type = "password", @class = "form-control" }) ]]>.Value.Replace("brand", field))
 
                     Case Else
-                        l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.brand, new { @class = "form-control" }) ]]>.Value.Replace("brand", field))
+                        l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.Item1.brand, new { @class = "form-control" }) ]]>.Value.Replace("brand", field))
 
                 End Select
-                l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
+                l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.Item1.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
                 l3.Add(<![CDATA[ </div> ]]>.Value)
 
-                formData.Add(<![CDATA[ formData.append("brand", $("#brand").val()); ]]>.Value.Replace("brand", field))
-                formdata2.Add(<![CDATA[ brand: $('#brand').val() ]]>.Value.Replace("brand", field).TrimEnd)
+                formData.Add(<![CDATA[ formData.append("brand", $("#Item1_brand").val()); ]]>.Value.Replace("brand", field))
+                formdata2.Add(<![CDATA[ brand: $('#Item1_brand').val() ]]>.Value.Replace("brand", field).TrimEnd)
 
             ElseIf ddt.Contains("bool") Then
                 l3.Add(<![CDATA[ <div class="mb-2 form-check"> ]]>.Value)
-                l3.Add(<![CDATA[  @Html.CheckBoxFor(m => m.brand, new { @class = "form-check-input" }) ]]>.Value.Replace("brand", field))
-                l3.Add(<![CDATA[  @Html.LabelFor(m => m.brand, new { @class = "form-check-label" }) ]]>.Value.Replace("brand", field))
-                l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
+                l3.Add(<![CDATA[  @Html.CheckBoxFor(m => m.Item1.brand, new { @class = "form-check-input" }) ]]>.Value.Replace("brand", field))
+                l3.Add(<![CDATA[  @Html.LabelFor(m => m.Item1.brand, new { @class = "form-check-label" }) ]]>.Value.Replace("brand", field))
+                l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.Item1.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
                 l3.Add(<![CDATA[ </div> ]]>.Value)
                 '
-                formData.Add(<![CDATA[ formData.append("brand", $('#brand').prop('checked')); ]]>.Value.Replace("brand", field))
-                formdata2.Add(<![CDATA[ brand: $('#brand').prop('checked') ]]>.Value.Replace("brand", field).TrimEnd)
+                formData.Add(<![CDATA[ formData.append("brand", $('#Item1_brand').prop('checked')); ]]>.Value.Replace("brand", field))
+                formdata2.Add(<![CDATA[ brand: $('#Item1_brand').prop('checked') ]]>.Value.Replace("brand", field).TrimEnd)
 
             ElseIf ddt.Contains("int") Or ddt.Contains("decimal") Or ddt.Contains("double") Then
 
                 If field.ToLower.EndsWith("id") Or field.ToLower.EndsWith("code") Then
                     l3.Add(<![CDATA[ <div class="mb-2 col-6"> ]]>.Value)
-                    l3.Add(<![CDATA[  @Html.LabelFor(m => m.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
-                    l3.Add(<![CDATA[  @Html.DropDownListFor(m => m.brand, new SelectList(new List<string>(), "id", "name"), new { @class = "form-select" }) ]]>.Value.Replace("brand", field))
-                    l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
+                    l3.Add(<![CDATA[  @Html.LabelFor(m => m.Item1.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
+                    l3.Add(<![CDATA[  @Html.DropDownListFor(m => m.Item1.brand, new SelectList(new List<string>(), "id", "name"), new { @class = "form-select" }) ]]>.Value.Replace("brand", field))
+                    l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.Item1.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
                     l3.Add(<![CDATA[ </div> ]]>.Value)
 
                     'l4.Add(<![CDATA[ 
@@ -3552,49 +3555,49 @@ public class TownModelDataAccess
 
                 Else
                     l3.Add(<![CDATA[ <div class="mb-2 col-4"> ]]>.Value)
-                    l3.Add(<![CDATA[  @Html.LabelFor(m => m.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
-                    l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.brand, new { @type = "number", @class = "form-control", @Value = "0" }) ]]>.Value.Replace("brand", field))
-                    l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
+                    l3.Add(<![CDATA[  @Html.LabelFor(m => m.Item1.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
+                    l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.Item1.brand, new { @type = "number", @class = "form-control", @Value = "0" }) ]]>.Value.Replace("brand", field))
+                    l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.Item1.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
                     l3.Add(<![CDATA[ </div> ]]>.Value)
                 End If
 
-                formData.Add(<![CDATA[ formData.append("brand", $("#brand").val()); ]]>.Value.Replace("brand", field))
-                formdata2.Add(<![CDATA[ brand: $('#brand').val() ]]>.Value.Replace("brand", field).TrimEnd)
+                formData.Add(<![CDATA[ formData.append("brand", $("#Item1_brand").val()); ]]>.Value.Replace("brand", field))
+                formdata2.Add(<![CDATA[ brand: $('#Item1_brand').val() ]]>.Value.Replace("brand", field).TrimEnd)
 
             ElseIf ddt.StartsWith("date") Then
                 l3.Add(<![CDATA[ <div class="mb-2"> ]]>.Value)
-                l3.Add(<![CDATA[  @Html.LabelFor(m => m.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
+                l3.Add(<![CDATA[  @Html.LabelFor(m => m.Item1.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
 
                 If ddt.Contains("time") Then
-                    l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.brand, new { @type = "datetime-local", @class = "form-control" }) ]]>.Value.Replace("brand", field))
+                    l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.Item1.brand, new { @type = "datetime-local", @class = "form-control" }) ]]>.Value.Replace("brand", field))
                 Else
-                    l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.brand, new { @type = "date", @class = "form-control" }) ]]>.Value.Replace("brand", field))
+                    l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.Item1.brand, new { @type = "date", @class = "form-control" }) ]]>.Value.Replace("brand", field))
                 End If
-                l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
+                l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.Item1.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
                 l3.Add(<![CDATA[ </div> ]]>.Value)
 
-                formData.Add(<![CDATA[ formData.append("brand", $("#brand").val()); ]]>.Value.Replace("brand", field))
-                formdata2.Add(<![CDATA[ brand: $('#brand').val() ]]>.Value.Replace("brand", field).TrimEnd)
+                formData.Add(<![CDATA[ formData.append("brand", $("#Item1_brand").val()); ]]>.Value.Replace("brand", field))
+                formdata2.Add(<![CDATA[ brand: $('#Item1_brand').val() ]]>.Value.Replace("brand", field).TrimEnd)
 
             ElseIf ddt.StartsWith("byte[]") Then
                 l3.Add(<![CDATA[ <div class="mb-2"> ]]>.Value)
-                l3.Add(<![CDATA[  @Html.LabelFor(m => m.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
-                l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.brand, new { @type = "file", @accept = "image/*", @class = "form-control" }) ]]>.Value.Replace("brand", field))
+                l3.Add(<![CDATA[  @Html.LabelFor(m => m.Item1.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
+                l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.Item1.brand, new { @type = "file", @accept = "image/*", @class = "form-control" }) ]]>.Value.Replace("brand", field))
                 l3.Add(<![CDATA[  <img id="brandPreview" src="https://place-hold.it/200x200?text=YOUR PHOTO" alt="Preview" class="img-thumbnail mt-2" style="width: 200px; height: 200px;" /> ]]>.Value.Replace("brand", field))
-                l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
+                l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.Item1.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
                 l3.Add(<![CDATA[ </div> ]]>.Value)
 
                 fl1.Add(<![CDATA[
-                    $("#brand").change(function () {
+                    $("#Item1_brand").change(function () {
                         var reader = new FileReader();
                         reader.onload = function (e) {
-                            $('#brandPreview').attr('src', e.target.result);
+                            $('#Item1_brandPreview').attr('src', e.target.result);
                         };
                         reader.readAsDataURL(this.files[0]);
                     });]]>.Value.Replace("brand", field))
 
-                formData.Add(<![CDATA[ formData.append("brand", $("#brand").prop('files')[0]); ]]>.Value.Replace("brand", field))
-                formdata2.Add(<![CDATA[ brand: $("#brand").prop('files')[0] ]]>.Value.Replace("brand", field).TrimEnd)
+                formData.Add(<![CDATA[ formData.append("brand", $("#Item1_brand").prop('files')[0]); ]]>.Value.Replace("brand", field))
+                formdata2.Add(<![CDATA[ brand: $("#Item1_brand").prop('files')[0] ]]>.Value.Replace("brand", field).TrimEnd)
 
                 gotFile = True
 
@@ -3613,13 +3616,12 @@ public class TownModelDataAccess
                 <h4>@ViewBag.Title</h4>
             </div>
             <div class="card-body">
-                <button type="button" class="btn btn-icon icon-left btn-primary mb-3" onclick="showmymodal()"><span class="fas fa-plus-square"></span> Add New </button>
+                <button type="button" class="btn btn-icon icon-left btn-primary text-uppercase mb-3" onclick="showmymodal()"><span class="fas fa-plus-square"></span> Add New </button>
                 <div class="table-responsive">
                     <table class="table table-striped" id="mytable" style="width:100%">
                         <thead>
                             <tr>
                                 <TH_HEADER>
-                                <th></th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -3640,9 +3642,8 @@ public class TownModelDataAccess
     <div class="modal fade" id="mymodal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="mymodalTitle" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header bg-dark text-uppercase text-light">
+                <div class="modal-header bg-dark text-uppercase text-light p-3">
                     <h5 class="modal-title"> </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="ProductModelForm">
                     <div class="modal-body">
@@ -3677,11 +3678,12 @@ public class TownModelDataAccess
         contentType: "application/json;charset=UTF-8",
         dataType: "json",
         success: function (response) {
-            if (response.result === "Success") {
+            if (response.result.includes("success")) {
                 $('#mymodal').modal('hide');
                 loadmytable();
                 swal("Saved!", "Record has been saved", "success");
-
+            } else if (response.result.includes("nochange")) {
+                $('#mymodal').modal('hide');
             } else {
                 swal("Error", "An error occured: " + response.result + "\n", "warning");
             }
@@ -3705,11 +3707,12 @@ public class TownModelDataAccess
                     contentType: false, // Important for multipart form data
                     processData: false, // Don't process data automatically
                     success: function (response) {
-                        if (response.result === "Success") {
+                        if (response.result.includes("success")) {
                             $('#mymodal').modal('hide');
                             loadmytable();
                             swal("Saved!", "Record has been saved", "success");
-
+                        } else if (response.result.includes("nochange")) {
+                            $('#mymodal').modal('hide');
                         } else {
                             swal("Error", "An error occured: " + response.result + "\n", "warning");
                         }
@@ -3740,25 +3743,41 @@ public class TownModelDataAccess
         function loadmytable() {
             $('#mytable').DataTable().destroy();
             $('#mytable').DataTable({
+                dom:
+                    "<'row'<'p-2 col-sm-12 col-md-6 col-xl-6'l><'float-right pr-3 pt-3 p-2 col-sm-12 col-md-6 col-xl-6'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'pl-2 pt-0 pb-2 col-sm-12 col-md-5'i><'pt-1 pb-1 pr-2 col-sm-12 col-md-7'p>>",
                 stateSave: true,
                 ajax: {
                     "url": "/{Controller}/{Action}",
                     "type": "GET",
-                    datatype: "json"
+                    datatype: "json",
+                    error: function (errormessage) {
+                        swal("Cant Connect?", "Failed to load datatable ...", "error");
+                    }
                 },
                 pageLength: 10,
+                order: [[1, "asc"]], // index based
+                pageLength: 5,
+                lengthMenu: [
+                    [5, 10, 30, 50, -1],
+                    [" 5", 10, 30, 50, "All"]
+                ],
+                autoWidth: true,
                 initComplete: function (settings, json) {
                     document.body.style.cursor = 'default';
                 },
                 columns: [
+                    // data: , name: , orderable: , autoWidth: , width: , className: 'text-center'
                     <DT_COL_DEF>
                 ],
                 aoColumnDefs: [
                     {
                         "width": "100px",
-                        "aTargets": [COL_DEF_COUNT],
+                        "aTargets": [0],
                         "mData": "id",
-                        "mRender": function (data, type, full) {
+                        "bSortable":false,
+                        "mRender": function (data, type, full, meta) {
 
                             return '<button class="btn btn-primary btn-sm" style="font-size:smaller;" href="#" id="vw_' + data + '" ' +
                                 'onclick="showEditModal(\'' + data + '\')">' +
@@ -3775,7 +3794,7 @@ public class TownModelDataAccess
         function showmymodal() {
             $(".field-validation-error, .validation-summary-errors > ul").empty();
             $('#ProductModelForm')[0].reset();
-            $('#id').val('-1');
+            $('#Item1_id').val('-1');
             <SELECT2_MODIFIER>
             $('.modal-title').text('ADD NEW');
             $('#mymodal').modal('show');
@@ -3810,14 +3829,12 @@ public class TownModelDataAccess
         }
 
         function initializeData() {
-            // check also hidden fields
-            $("#ProductModelForm").data("validator").settings.ignore = "";
-
             loadmytable();
 
             // on modal shown 
             $('#mymodal').on('shown.bs.modal', function () {
-                $('#myInput').trigger('focus');
+                $("#ProductModelForm").data("validator").settings.ignore = ""; // check also hidden fields
+                $('#Item1_myInput').trigger('focus');
             });
 
             <SELECT_EVENTS>
@@ -3827,7 +3844,7 @@ public class TownModelDataAccess
                 $(".field-validation-error, .validation-summary-errors > ul").empty(); // clear out any errors first
                 $('#ProductModelFormBody').attr('data-js', '');
                 $('#ProductModelForm')[0].reset();
-                $('#id').val('-1');
+                $('#Item1_id').val('-1');
                 <SELECT2_MODIFIER>
             });
 
@@ -3856,8 +3873,8 @@ public class TownModelDataAccess
         txtDest.Text = String.Join(vbCrLf, l1).Replace("mymodal", $"{modelName}Modal").
             Replace("<SELECT2_MODIFIER>", String.Join(vbCrLf, sl2)).
             Replace("<DT_COL_DEF>", String.Join("," & vbCrLf, dtColDef)).
-            Replace("COL_DEF_COUNT", dtColDef.Count).
-            Replace("<SELECT_EVENTS>", String.Join(vbCrLf, sl3).Trim)
+            Replace("<SELECT_EVENTS>", String.Join(vbCrLf, sl3).Trim).
+            Replace("Item1_", $"{tupName}")
 
     End Sub
 End Class
