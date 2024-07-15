@@ -3796,7 +3796,7 @@ public class TownModelDataAccess
             $('#ProductModelForm')[0].reset();
             $('#Item1_id').val('-1');
             <SELECT2_MODIFIER>
-            $('.modal-title').text('ADD NEW');
+            $('#mymodal h5').text('ADD NEW DETAILS');
             $('#mymodal').modal('show');
         }
 
@@ -3810,7 +3810,7 @@ public class TownModelDataAccess
                 success: function (result) {
                     if (result.data != null) {
                         fillProductModelForm(result.data);
-                        $('.modal-title').text('EDIT ');
+                        $('#mymodal h5').text('EDIT DETAILS');
                         $('#mymodal').modal('show');
 
                     } else {
@@ -3831,13 +3831,13 @@ public class TownModelDataAccess
         function initializeData() {
             loadmytable();
 
+            <SELECT_EVENTS>
+            
             // on modal shown 
             $('#mymodal').on('shown.bs.modal', function () {
                 $("#ProductModelForm").data("validator").settings.ignore = ""; // check also hidden fields
                 $('#Item1_myInput').trigger('focus');
             });
-
-            <SELECT_EVENTS>
 
             // on modal closed , clean all need fields
             $('#mymodal').on('hidden.bs.modal', function () {
@@ -3874,7 +3874,7 @@ public class TownModelDataAccess
             Replace("<SELECT2_MODIFIER>", String.Join(vbCrLf, sl2)).
             Replace("<DT_COL_DEF>", String.Join("," & vbCrLf, dtColDef)).
             Replace("<SELECT_EVENTS>", String.Join(vbCrLf, sl3).Trim).
-            Replace("Item1_", $"{tupName}")
+            Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}_", "")}")
 
     End Sub
 End Class
