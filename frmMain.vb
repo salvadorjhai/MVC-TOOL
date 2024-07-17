@@ -3904,15 +3904,15 @@ public class TownModelDataAccess
                         </ul>
 
                         <div class="tab-content">
-                            <div class="tab-pane container p-2 active" id="tabPane1">
+                            <div class="tab-pane container-fluid p-2 active" id="tabPane1">
                                 <!-- content goes here -->
                             <div>
 
-                            <div class="tab-pane container p-2 fade" id="tabPane2">
+                            <div class="tab-pane container-fluid p-2 fade" id="tabPane2">
                                 <!-- content goes here -->
                             <div>
 
-                            <div class="tab-pane container p-2 fade" id="tabPane3">
+                            <div class="tab-pane container-fluid p-2 fade" id="tabPane3">
                                 <!-- content goes here -->
                             <div>
                         </div>
