@@ -3419,6 +3419,7 @@ public class TownModelDataAccess
         Dim dtColDef As New List(Of String)
         Dim colCount As Integer = 0
         Dim sl3 As New List(Of String)
+        Dim l5 As New List(Of String) '
 
         For i = 0 To props.Count - 1
             Dim v = props(i).Trim
@@ -3454,15 +3455,6 @@ public class TownModelDataAccess
                                 var opt = new Option(Desc, result.data[i]['id']);
                                 $('#Item1_brand').append(opt);
                             }
-                            var cbo = $('#Item1_brand').select2({
-                                theme: "bootstrap-5",
-                                dropdownParent: $('#mymodal'),
-                                placeholder: "Select brand",
-                                allowClear: true
-                            });
-                            cbo.on('select2:open', function () {
-                                document.querySelector('.select2-search__field').focus();
-                            });
                         },
                         error: function (errormessage) {
                             swal("Error", "Oops! something went wrong ... \n", "error");
@@ -3479,6 +3471,11 @@ public class TownModelDataAccess
 
             ElseIf ddt.Contains("bool") Then
                 dp.Add(<![CDATA[ if(js['brand']==1) { $('#Item1_brand').prop('checked','checked'); } ]]>.Value.Replace("brand", field))
+                dp.Add(<![CDATA[ $('#Item1_brand').trigger('change'); ]]>.Value.Replace("brand", field))
+                l5.Add(<![CDATA[ $('#Item1_brand').on('change', function () {
+                            //console.log(Item1_brand.checked);
+                        });
+                    ]]>.Value.Replace("brand", field))
 
             ElseIf ddt.StartsWith("byte[]") Then
                 dp.Add(<![CDATA[ $('#Item1_brandPreview').attr('src', 'data:image/png;base64,' + js['brand']); ]]>.Value.Replace("brand", field))
@@ -3542,7 +3539,7 @@ public class TownModelDataAccess
                 If field.ToLower.EndsWith("id") Or field.ToLower.EndsWith("code") Then
                     l3.Add(<![CDATA[ <div class="mb-2 col-6"> ]]>.Value)
                     l3.Add(<![CDATA[  @Html.LabelFor(m => m.Item1.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
-                    l3.Add(<![CDATA[  @Html.DropDownListFor(m => m.Item1.brand, new SelectList(new List<string>(), "id", "name"), new { @class = "form-select" }) ]]>.Value.Replace("brand", field))
+                    l3.Add(<![CDATA[  @Html.DropDownListFor(m => m.Item1.brand, new SelectList(new List<string>(), "id", "name"), new { @class = "form-control form-select select2 custom-select2", @placeholder = "select option" }) ]]>.Value.Replace("brand", field))
                     l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.Item1.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
                     l3.Add(<![CDATA[ </div> ]]>.Value)
 
@@ -3734,12 +3731,51 @@ public class TownModelDataAccess
 
     @*---------- todo: save as separate script -----------*@
     <script>
+        function initializeData() {
+            InitValidator();
+            loadmytable();
+
+            <SELECT_EVENTS>
+            <CHECK_EVENTS>
+            
+            // on modal shown 
+            $('#mymodal').on('shown.bs.modal', function () {
+                $("#ProductModelForm").data("validator").settings.ignore = ""; // check also hidden fields
+                $('#Item1_myInput').trigger('focus');
+            });
+
+            // on modal closed , clean all need fields
+            $('#mymodal').on('hidden.bs.modal', function () {
+                clearFormValidation();
+                $('#ProductModelFormBody').attr('data-js', '');
+                $('#ProductModelForm')[0].reset();
+                $('#Item1_id').val('-1');
+                <SELECT2_MODIFIER>
+            });
+
+            // on form submit
+            $("#ProductModelForm").on("submit", function (event) {
+                event.preventDefault(); // Prevent the default form submission
+                // check if current form is valid
+                if (!$(this).valid()) {
+                    swal({
+                        title: "Something went wrong!",
+                        text: "Please fill all required field to proceed.",
+                        icon: "error",
+                        dangerMode: true,
+                    });
+                    return;
+                } 
+                clearFormValidation();
+                saveProductModelForm();
+            });
+
+        }
+
         function fillProductModelForm(js) {
             <EDIT_VAL>
         }
-
-        <SELECT2>
-
+       
         function loadmytable() {
             $('#mytable').DataTable().destroy();
             $('#mytable').DataTable({
@@ -3758,7 +3794,6 @@ public class TownModelDataAccess
                 },
                 pageLength: 10,
                 order: [[1, "asc"]], // index based
-                pageLength: 5,
                 lengthMenu: [
                     [5, 10, 30, 50, -1],
                     [" 5", 10, 30, 50, "All"]
@@ -3774,14 +3809,14 @@ public class TownModelDataAccess
                 aoColumnDefs: [
                     {
                         "width": "100px",
-                        "aTargets": [0],
-                        "mData": "id",
+                        "aTargets": [0], // target column
+                        "mData": "id", // target data
                         "bSortable":false,
                         "mRender": function (data, type, full, meta) {
 
-                            return '<button class="btn btn-primary btn-sm" style="font-size:smaller;" href="#" id="vw_' + data + '" ' +
-                                'onclick="showEditModal(\'' + data + '\')">' +
-                                '<span class="fas fa-edit"></span> EDIT</button> ';
+                            return '<a class="btn btn-primary btn-sm" style="font-size:smaller;" href="#" id="vw_' + data + '" ' +
+                                'onclick="showEditmymodal(\'' + data + '\')">' +
+                                '<span class="fas fa-edit"></span> EDIT</a> ';
 
                         },
                         "className": "text-center"
@@ -3800,7 +3835,7 @@ public class TownModelDataAccess
             $('#mymodal').modal('show');
         }
 
-        function showEditModal(id) {
+        function showEditmymodal(id) {
         
             $.ajax({
                 url: "/{Controller}/{Action}/?id=" + id,
@@ -3827,36 +3862,9 @@ public class TownModelDataAccess
         function saveProductModelForm() {
             // Make the AJAX POST request
         }
+        
+        <SELECT2>
 
-        function initializeData() {
-            loadmytable();
-
-            <SELECT_EVENTS>
-            
-            // on modal shown 
-            $('#mymodal').on('shown.bs.modal', function () {
-                $("#ProductModelForm").data("validator").settings.ignore = ""; // check also hidden fields
-                $('#Item1_myInput').trigger('focus');
-            });
-
-            // on modal closed , clean all need fields
-            $('#mymodal').on('hidden.bs.modal', function () {
-                $(".field-validation-error, .validation-summary-errors > ul").empty(); // clear out any errors first
-                $('#ProductModelFormBody').attr('data-js', '');
-                $('#ProductModelForm')[0].reset();
-                $('#Item1_id').val('-1');
-                <SELECT2_MODIFIER>
-            });
-
-            // on form submit
-            $("#ProductModelForm").on("submit", function (event) {
-                event.preventDefault(); // Prevent the default form submission
-                if (!$(this).valid()) { return; } // check if current form is valid
-                $(".field-validation-error, .validation-summary-errors > ul").empty(); // clear out any errors first
-                saveProductModelForm();
-            });
-
-        }
     </script>
 ]]>.Value.Replace("ProductModelForm", modelName & "Form").
         Replace("mymodal", $"{modelName}Modal").
@@ -3874,7 +3882,59 @@ public class TownModelDataAccess
             Replace("<SELECT2_MODIFIER>", String.Join(vbCrLf, sl2)).
             Replace("<DT_COL_DEF>", String.Join("," & vbCrLf, dtColDef)).
             Replace("<SELECT_EVENTS>", String.Join(vbCrLf, sl3).Trim).
+            Replace("<CHECK_EVENTS>", String.Join(vbCrLf, l5).Trim).
+            Replace(".Item1.", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $".{tupName}.", ".")}").
             Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}_", "")}")
+
+    End Sub
+
+    Private Sub TabsGeneratorToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles TabsGeneratorToolStripMenuItem.Click
+        Dim l1 As New List(Of String)
+
+        l1.Add(<![CDATA[<ul class="nav nav-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#tabPane1" id="tab1">General</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#tabPane2" id="tab1">Membership</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#tabPane3" id="tab1">Account</a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content">
+                            <div class="tab-pane container p-2 active" id="tabPane1">
+                                <!-- content goes here -->
+                            <div>
+
+                            <div class="tab-pane container p-2 fade" id="tabPane2">
+                                <!-- content goes here -->
+                            <div>
+
+                            <div class="tab-pane container p-2 fade" id="tabPane3">
+                                <!-- content goes here -->
+                            <div>
+                        </div>
+
+                        <script>
+                            $(document).ready(function(){
+                                $('#tab1').on('shown.bs.tab', function (e) {
+                                    // per tab scripts goes here
+                                });     
+                            
+                                $('#tab2').on('shown.bs.tab', function (e) {
+                                    // per tab scripts goes here
+                                });          
+                            
+                                $('#tab3').on('shown.bs.tab', function (e) {
+                                    // per tab scripts goes here
+                                });                                                    
+                            });
+                        </script>
+]]>.Value)
+
+        txtDest.Text = String.Join(vbCrLf, l1).Trim
 
     End Sub
 End Class

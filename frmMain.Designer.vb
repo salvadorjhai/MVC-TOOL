@@ -42,6 +42,7 @@ Partial Class frmMain
         Me.Select2ViewBagToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator5 = New System.Windows.Forms.ToolStripSeparator()
         Me.ModalPopupcjTemplateToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripButton2 = New System.Windows.Forms.ToolStripSplitButton()
         Me.FormPOSTToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.FormPOSTJSToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -55,7 +56,7 @@ Partial Class frmMain
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.ToolStripStatusLabel1 = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
-        Me.ToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem()
+        Me.TabsGeneratorToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -121,7 +122,7 @@ Partial Class frmMain
         '
         'ToolStripButton3
         '
-        Me.ToolStripButton3.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DefaultToolStripMenuItem, Me.ModalPopupToolStripMenuItem, Me.ModalPopup2TupleToolStripMenuItem, Me.ToolStripSeparator4, Me.BlankModalToolStripMenuItem, Me.HtmlTagHelpersOnlyToolStripMenuItem, Me.Select2ViewBagToolStripMenuItem, Me.ToolStripSeparator5, Me.ModalPopupcjTemplateToolStripMenuItem, Me.ToolStripMenuItem1})
+        Me.ToolStripButton3.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DefaultToolStripMenuItem, Me.ModalPopupToolStripMenuItem, Me.ModalPopup2TupleToolStripMenuItem, Me.ToolStripSeparator4, Me.BlankModalToolStripMenuItem, Me.HtmlTagHelpersOnlyToolStripMenuItem, Me.Select2ViewBagToolStripMenuItem, Me.ToolStripSeparator5, Me.ModalPopupcjTemplateToolStripMenuItem, Me.ToolStripMenuItem1, Me.TabsGeneratorToolStripMenuItem})
         Me.ToolStripButton3.Image = CType(resources.GetObject("ToolStripButton3.Image"), System.Drawing.Image)
         Me.ToolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripButton3.Name = "ToolStripButton3"
@@ -131,56 +132,62 @@ Partial Class frmMain
         'DefaultToolStripMenuItem
         '
         Me.DefaultToolStripMenuItem.Name = "DefaultToolStripMenuItem"
-        Me.DefaultToolStripMenuItem.Size = New System.Drawing.Size(216, 22)
+        Me.DefaultToolStripMenuItem.Size = New System.Drawing.Size(222, 22)
         Me.DefaultToolStripMenuItem.Text = "Default"
         '
         'ModalPopupToolStripMenuItem
         '
         Me.ModalPopupToolStripMenuItem.Name = "ModalPopupToolStripMenuItem"
-        Me.ModalPopupToolStripMenuItem.Size = New System.Drawing.Size(216, 22)
+        Me.ModalPopupToolStripMenuItem.Size = New System.Drawing.Size(222, 22)
         Me.ModalPopupToolStripMenuItem.Text = "Modal Popup"
         Me.ModalPopupToolStripMenuItem.ToolTipText = "Generate Table+Modal from given class (single model only)"
         '
         'ModalPopup2TupleToolStripMenuItem
         '
         Me.ModalPopup2TupleToolStripMenuItem.Name = "ModalPopup2TupleToolStripMenuItem"
-        Me.ModalPopup2TupleToolStripMenuItem.Size = New System.Drawing.Size(216, 22)
+        Me.ModalPopup2TupleToolStripMenuItem.Size = New System.Drawing.Size(222, 22)
         Me.ModalPopup2TupleToolStripMenuItem.Text = "Modal Popup 2 (Tuple)"
         Me.ModalPopup2TupleToolStripMenuItem.ToolTipText = "Generate Table+Modal from given class (multiple model)"
         '
         'ToolStripSeparator4
         '
         Me.ToolStripSeparator4.Name = "ToolStripSeparator4"
-        Me.ToolStripSeparator4.Size = New System.Drawing.Size(213, 6)
+        Me.ToolStripSeparator4.Size = New System.Drawing.Size(219, 6)
         '
         'BlankModalToolStripMenuItem
         '
         Me.BlankModalToolStripMenuItem.Name = "BlankModalToolStripMenuItem"
-        Me.BlankModalToolStripMenuItem.Size = New System.Drawing.Size(216, 22)
+        Me.BlankModalToolStripMenuItem.Size = New System.Drawing.Size(222, 22)
         Me.BlankModalToolStripMenuItem.Text = "Blank Modal"
         '
         'HtmlTagHelpersOnlyToolStripMenuItem
         '
         Me.HtmlTagHelpersOnlyToolStripMenuItem.Name = "HtmlTagHelpersOnlyToolStripMenuItem"
-        Me.HtmlTagHelpersOnlyToolStripMenuItem.Size = New System.Drawing.Size(216, 22)
+        Me.HtmlTagHelpersOnlyToolStripMenuItem.Size = New System.Drawing.Size(222, 22)
         Me.HtmlTagHelpersOnlyToolStripMenuItem.Text = "@HtmlTag Helpers Only"
         '
         'Select2ViewBagToolStripMenuItem
         '
         Me.Select2ViewBagToolStripMenuItem.Name = "Select2ViewBagToolStripMenuItem"
-        Me.Select2ViewBagToolStripMenuItem.Size = New System.Drawing.Size(216, 22)
+        Me.Select2ViewBagToolStripMenuItem.Size = New System.Drawing.Size(222, 22)
         Me.Select2ViewBagToolStripMenuItem.Text = "Select2 - ViewBag"
         '
         'ToolStripSeparator5
         '
         Me.ToolStripSeparator5.Name = "ToolStripSeparator5"
-        Me.ToolStripSeparator5.Size = New System.Drawing.Size(213, 6)
+        Me.ToolStripSeparator5.Size = New System.Drawing.Size(219, 6)
         '
         'ModalPopupcjTemplateToolStripMenuItem
         '
         Me.ModalPopupcjTemplateToolStripMenuItem.Name = "ModalPopupcjTemplateToolStripMenuItem"
         Me.ModalPopupcjTemplateToolStripMenuItem.Size = New System.Drawing.Size(222, 22)
         Me.ModalPopupcjTemplateToolStripMenuItem.Text = "Modal Popup (cj template)"
+        '
+        'ToolStripMenuItem1
+        '
+        Me.ToolStripMenuItem1.Name = "ToolStripMenuItem1"
+        Me.ToolStripMenuItem1.Size = New System.Drawing.Size(222, 22)
+        Me.ToolStripMenuItem1.Text = "Modal Popup (jee template)"
         '
         'ToolStripButton2
         '
@@ -195,25 +202,25 @@ Partial Class frmMain
         'FormPOSTToolStripMenuItem
         '
         Me.FormPOSTToolStripMenuItem.Name = "FormPOSTToolStripMenuItem"
-        Me.FormPOSTToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.FormPOSTToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.FormPOSTToolStripMenuItem.Text = "Form POST"
         '
         'FormPOSTJSToolStripMenuItem
         '
         Me.FormPOSTJSToolStripMenuItem.Name = "FormPOSTJSToolStripMenuItem"
-        Me.FormPOSTJSToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.FormPOSTJSToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.FormPOSTJSToolStripMenuItem.Text = "Form POST (JS)"
         '
         'DatatableGETToolStripMenuItem
         '
         Me.DatatableGETToolStripMenuItem.Name = "DatatableGETToolStripMenuItem"
-        Me.DatatableGETToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.DatatableGETToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.DatatableGETToolStripMenuItem.Text = "Datatable GET"
         '
         'Select2AjaxToolStripMenuItem
         '
         Me.Select2AjaxToolStripMenuItem.Name = "Select2AjaxToolStripMenuItem"
-        Me.Select2AjaxToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.Select2AjaxToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.Select2AjaxToolStripMenuItem.Text = "Select2 Ajax"
         '
         'ToolStripSeparator2
@@ -286,11 +293,11 @@ Partial Class frmMain
         Me.ToolStripStatusLabel1.Spring = True
         Me.ToolStripStatusLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
-        'ToolStripMenuItem1
+        'TabsGeneratorToolStripMenuItem
         '
-        Me.ToolStripMenuItem1.Name = "ToolStripMenuItem1"
-        Me.ToolStripMenuItem1.Size = New System.Drawing.Size(222, 22)
-        Me.ToolStripMenuItem1.Text = "Modal Popup (jee template)"
+        Me.TabsGeneratorToolStripMenuItem.Name = "TabsGeneratorToolStripMenuItem"
+        Me.TabsGeneratorToolStripMenuItem.Size = New System.Drawing.Size(222, 22)
+        Me.TabsGeneratorToolStripMenuItem.Text = "Tabs Generator"
         '
         'frmMain
         '
@@ -348,4 +355,5 @@ Partial Class frmMain
     Friend WithEvents ToolStripButton1 As ToolStripSplitButton
     Friend WithEvents APIGeneratorcjTemplateToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ToolStripMenuItem1 As ToolStripMenuItem
+    Friend WithEvents TabsGeneratorToolStripMenuItem As ToolStripMenuItem
 End Class
