@@ -3484,6 +3484,11 @@ public class TownModelDataAccess
 
             Else
                 dp.Add(<![CDATA[ $('#Item1_brand').val(js['brand']); ]]>.Value.Replace("brand", field))
+
+                If i = 0 Then
+                    dp.Add(<![CDATA[ $('#brand').closest('form').data('isDirty', false); ]]>.Value.Replace("brand", field))
+                End If
+
             End If
 
             ' FORMS
@@ -3497,7 +3502,7 @@ public class TownModelDataAccess
             End If
 
             If field.ToLower = "id" Then
-                l3.Add(<![CDATA[ <input type="hidden" id="Item1_id" name="Item1.id" value="-1"> ]]>.Value)
+                l3.Add(<![CDATA[ <input type="hidden" id="Item1_id" name="Item1.id" value="-1"> ]]>.Value.Replace("Item1_id", $"Item1_{field}").Replace("Item1.id", $"Item1.{field}"))
                 formData.Add(<![CDATA[ formData.append("brand", $("#Item1_brand").val()); ]]>.Value.Replace("brand", field))
                 formdata2.Add(<![CDATA[ brand: $('#Item1_brand').val() ]]>.Value.Replace("brand", field).TrimEnd)
                 Continue For
@@ -3539,7 +3544,7 @@ public class TownModelDataAccess
                 If field.ToLower.EndsWith("id") Or field.ToLower.EndsWith("code") Then
                     l3.Add(<![CDATA[ <div class="mb-2 col-6"> ]]>.Value)
                     l3.Add(<![CDATA[  @Html.LabelFor(m => m.Item1.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
-                    l3.Add(<![CDATA[  @Html.DropDownListFor(m => m.Item1.brand, new SelectList(new List<string>(), "id", "name"), new { @class = "form-control form-select select2 custom-select2", @placeholder = "select option" }) ]]>.Value.Replace("brand", field))
+                    l3.Add(<![CDATA[  @Html.DropDownListFor(m => m.Item1.brand, new SelectList(new List<string>()), new { @class = "form-control form-select select2 custom-select2", @placeholder = "select option" }) ]]>.Value.Replace("brand", field))
                     l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.Item1.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
                     l3.Add(<![CDATA[ </div> ]]>.Value)
 
@@ -3642,13 +3647,13 @@ public class TownModelDataAccess
                 <div class="modal-header bg-dark text-uppercase text-light p-3">
                     <h5 class="modal-title"> </h5>
                 </div>
-                <form id="ProductModelForm">
+                <form id="ProductModelForm" autocomplete="off" dirty-checker>
                     <div class="modal-body">
                         <FORM CONTENT>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-success"><span class="far fa-thumbs-up"></span> SAVE</button>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal"><span class="far fa-thumbs-down"></span> CLOSE</button>
+                        <button type="button" class="btn btn-danger" onclick="closeFormIfDirty(this)"><span class="far fa-thumbs-down"></span> CLOSE</button>
                     </div>
                 </form>
             </div>
@@ -3675,14 +3680,15 @@ public class TownModelDataAccess
         contentType: "application/json;charset=UTF-8",
         dataType: "json",
         success: function (response) {
-            if (response.result.includes("success")) {
+            var msg = response.result.toLowerCase();
+            if (msg.includes("success")) {
                 $('#mymodal').modal('hide');
                 loadmytable();
                 swal("Saved!", "Record has been saved", "success");
-            } else if (response.result.includes("nochange")) {
+            } else if (msg.includes("nochange")) {
                 $('#mymodal').modal('hide');
             } else {
-                swal("Error", "An error occured: " + response.result + "\n", "warning");
+                swal("Error", "An error occured: " + msg + "\n", "warning");
             }
         },
         error: function (errormessage) {
@@ -3704,14 +3710,15 @@ public class TownModelDataAccess
                     contentType: false, // Important for multipart form data
                     processData: false, // Don't process data automatically
                     success: function (response) {
-                        if (response.result.includes("success")) {
+                        var msg = response.result.toLowerCase();
+                        if (msg.includes("success")) {
                             $('#mymodal').modal('hide');
                             loadmytable();
                             swal("Saved!", "Record has been saved", "success");
-                        } else if (response.result.includes("nochange")) {
+                        } else if (msg.includes("nochange")) {
                             $('#mymodal').modal('hide');
                         } else {
-                            swal("Error", "An error occured: " + response.result + "\n", "warning");
+                            swal("Error", "An error occured: " + msg + "\n", "warning");
                         }
                     },
                     error: function (errormessage) {
@@ -3740,7 +3747,6 @@ public class TownModelDataAccess
             
             // on modal shown 
             $('#mymodal').on('shown.bs.modal', function () {
-                $("#ProductModelForm").data("validator").settings.ignore = ""; // check also hidden fields
                 $('#Item1_myInput').trigger('focus');
             });
 
@@ -3884,6 +3890,7 @@ public class TownModelDataAccess
             Replace("<SELECT_EVENTS>", String.Join(vbCrLf, sl3).Trim).
             Replace("<CHECK_EVENTS>", String.Join(vbCrLf, l5).Trim).
             Replace(".Item1.", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $".{tupName}.", ".")}").
+            Replace("Item1.", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $".{tupName}.", "")}").
             Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}_", "")}")
 
     End Sub
