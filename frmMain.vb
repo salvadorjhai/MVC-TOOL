@@ -3680,7 +3680,12 @@ public class TownModelDataAccess
         contentType: "application/json;charset=UTF-8",
         dataType: "json",
         success: function (response) {
-            var msg = response.result.toLowerCase();
+            var msg;
+            if (response.result == null) {
+                msg = response.toLowerCase();
+            } else {
+                msg = response.result.toLowerCase();
+            }
             if (msg.includes("success")) {
                 $('#mymodal').modal('hide');
                 loadmytable();
@@ -3710,7 +3715,12 @@ public class TownModelDataAccess
                     contentType: false, // Important for multipart form data
                     processData: false, // Don't process data automatically
                     success: function (response) {
-                        var msg = response.result.toLowerCase();
+                        var msg;
+                        if (response.result == null) {
+                            msg = response.toLowerCase();
+                        } else {
+                            msg = response.result.toLowerCase();
+                        }
                         if (msg.includes("success")) {
                             $('#mymodal').modal('hide');
                             loadmytable();
