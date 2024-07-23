@@ -3722,10 +3722,12 @@ public class TownModelDataAccess
                             msg = response.result.toLowerCase();
                         }
                         if (msg.includes("success")) {
+                            $('#mymodal').find('form').data('isDirty', false);
                             $('#mymodal').modal('hide');
                             loadmytable();
                             swal("Saved!", "Record has been saved", "success");
                         } else if (msg.includes("nochange")) {
+                            $('#mymodal').find('form').data('isDirty', false);
                             $('#mymodal').modal('hide');
                         } else {
                             swal("Error", "An error occured: " + msg + "\n", "warning");
@@ -3863,7 +3865,7 @@ public class TownModelDataAccess
                         fillProductModelForm(result.data);
                         $('#mymodal h5').text('EDIT DETAILS');
                         $('#mymodal').modal('show');
-
+                        $('#mymodal').find('form').data('isDirty', false);
                     } else {
                         swal("Error!", "There are no details to display.\n", "warning");
                     }
