@@ -3744,7 +3744,9 @@ public class TownModelDataAccess
     @section scripts{
         @* --- additional scripts goes here --- *@
         <script>
-            $(document).ready(initializeData());
+            $(document).ready(function () {
+                initializeData();
+            });
         </script>
     } 
 
@@ -3753,7 +3755,7 @@ public class TownModelDataAccess
         function initializeData() {
             InitValidator();
             loadmytable();
-
+            appendRequiredLabel();
             <SELECT_EVENTS>
             <CHECK_EVENTS>
             
