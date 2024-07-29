@@ -3619,16 +3619,14 @@ public class TownModelDataAccess
             </div>
             <div class="card-body">
                 <button type="button" class="btn btn-icon icon-left btn-primary text-uppercase mb-3" onclick="showmymodal()"><span class="fas fa-plus-square"></span> Add New </button>
-                <div class="table-responsive">
-                    <table class="table table-striped" id="mytable" style="width:100%">
-                        <thead>
-                            <tr>
-                                <TH_HEADER>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
+                <table class="table table-striped table-responsive" id="mytable" style="width:100%">
+                    <thead>
+                        <tr>
+                            <TH_HEADER>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
         </div>
     </div>
