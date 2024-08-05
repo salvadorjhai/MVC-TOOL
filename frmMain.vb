@@ -1112,10 +1112,8 @@ public class TownModelDataAccess
             {
                 foreach (DataRow dr in dt.Rows)
                 {
-                    list.Add(new TownModel()
-                    {
-                        <MODEL_CONTENT>
-                    });
+                    TownModel model = HelperUtils.BindFrom<TownModel>(dr);
+                    list.Add(model);
                 }
             }
 
@@ -1132,11 +1130,7 @@ public class TownModelDataAccess
             DataRow dr = DB.QuerySingleResult("SELECT * FROM b_towns WHERE id = " + id, null);
             if (dr != null)
             {
-                TownModel model = new TownModel()
-                {
-                    <MODEL_CONTENT>
-                };
-                return model;
+                return HelperUtils.BindFrom<TownModel>(dr);
             }
 
             return null;
@@ -1149,7 +1143,7 @@ public class TownModelDataAccess
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns>positive number is success, negative means failed</returns>
-        public int Upsert(TownModel model)
+        public int Upsert(ref TownModel model)
         {
             if (string.IsNullOrWhiteSpace(model.name))
             {
@@ -1163,10 +1157,25 @@ public class TownModelDataAccess
                 if (exists != null) { return OleDB.DUPLICATE; }
 
                 // no dup , insert
-                Dictionary<string, object> param = new Dictionary<string, object>();
-                <MODEL_CONTENT2>
+                Dictionary<string, object> param = Utils.HelperUtils.ToDictionary(model);
+                
+                param["madebyid"] = model.updatedbyid;
+                param["madedate"] = model.lastupdated.Value;
+                param["updatedbyid"] = model.updatedbyid;
+                param["lastupdated"] = model.lastupdated.Value;
 
-                return DB.InsertParam("b_towns", param);
+                // insert
+                // return DB.InsertParam("b_towns", param);
+
+                var resId = DB.InsertParam("b_towns", param, true);
+                if (resId > 0)
+                {
+                    // return updated model (with id)
+                    var exists = DB.QuerySingleResult($"SELECT * FROM b_towns WHERE id={resId}", param);
+                    if (DB.LastError != null || exists == null) { return OleDB.EXEC_ERROR; }
+                    model = HelperUtils.BindFrom<TownModel>(exists);
+                }
+                return resId;
 
             } else
             {
@@ -1187,8 +1196,12 @@ public class TownModelDataAccess
                     //    return OleDB.NO_CHANGES;
                     //}
 
-                    Dictionary<string, object> param = new Dictionary<string, object>();
-                    <MODEL_CONTENT2>
+                    Dictionary<string, object> param = Utils.HelperUtils.ToDictionary(model);
+                    
+                    param.Remove("madedate"); // NOT NEEDED for update
+                    param.Remove("madebyid"); // NOT NEEDED for update
+                    param["updatedbyid"] = model.updatedbyid;
+                    param["lastupdated"] = model.lastupdated.Value;
 
                     // check for duplicate
                     exists = DB.QuerySingleResult($"SELECT * FROM b_towns WHERE name=@name AND id <> {model.id}", param);
@@ -1198,7 +1211,18 @@ public class TownModelDataAccess
                     }
 
                     // update
-                    return DB.UpdateParam("b_towns", $"WHERE id={model.id}", param);
+                    // return DB.UpdateParam("b_towns", $"WHERE id={model.id}", param);
+
+                    var resId = DB.UpdateParam("b_towns", $"WHERE id={model.id}", param);
+                    if (resId > 0)
+                    {
+                        // return updated model (with id)
+                        exists = DB.QuerySingleResult($"SELECT * FROM b_towns WHERE id={model.id}", param);
+                        if (DB.LastError != null || exists == null) { return OleDB.EXEC_ERROR; }
+                        model = HelperUtils.BindFrom<TownModel>(exists);
+                    }
+                    return resId;
+
                 }
             }
 
@@ -3619,7 +3643,7 @@ public class TownModelDataAccess
             </div>
             <div class="card-body">
                 <button type="button" class="btn btn-icon icon-left btn-primary text-uppercase mb-3" onclick="showmymodal()"><span class="fas fa-plus-square"></span> Add New </button>
-                <table class="table table-striped table-responsive" id="mytable" style="width:100%">
+                <table class="table table-striped" id="mytable" style="width:100%">
                     <thead>
                         <tr>
                             <TH_HEADER>
@@ -3954,6 +3978,117 @@ public class TownModelDataAccess
 ]]>.Value)
 
         txtDest.Text = String.Join(vbCrLf, l1).Trim
+
+    End Sub
+
+    Private Sub ControllerBuilderToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ControllerBuilderToolStripMenuItem.Click
+
+        If txtSource.Text.Contains("public class") = False Then
+            txtDest.Text = "You forgot your Model ..."
+            Return
+        End If
+
+        Dim modelName = txtSource.Lines.Where(Function(x) x.Contains("public class ")).FirstOrDefault.Trim.Split(" ").LastOrDefault
+
+        Dim template = <![CDATA[
+        // get: api/members
+        [HttpGet("members")]
+        public ActionResult list()
+        {
+            List<MemberModel> list = new MemberModelDataAccess(_connectionString).List();
+            if (list != null && list.Count >= 0) { return Ok(list); }
+            return BadRequest();
+        }
+
+        // get: api/members/{id}
+        [HttpGet("members/{id:int}")]
+        public ActionResult getbyid(int id)
+        {
+            MemberModel model = new MemberModelDataAccess(_connectionString).GetById(id);
+            if (model != null) { return Ok(model); }
+            return NotFound();
+        }
+
+        // post: api/members/upsert
+        [HttpPost("members/upsert")]
+        public IActionResult upsert(MemberModel data)
+        {
+            //MemberModel data = HelperUtils.BindFrom<MemberModel>(Request.Form);
+            var res = new MemberModelDataAccess(_connectionString).Upsert(ref data);
+            if (res > 0) { return Ok(new {result = "success" , data = data}); }
+            if (res == OleDB.NO_CHANGES) { return Ok(new { result = "nochange", data = data }); }
+            if (res == OleDB.DUPLICATE) { return Conflict(); }
+            return BadRequest("failed");
+        }
+]]>.Value
+
+        txtDest.Text = template.Replace("MemberModel", modelName).Trim.
+            Replace("members", modelName.ToLower)
+
+
+
+    End Sub
+
+    Private Sub UIControllerBuilderToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles UIControllerBuilderToolStripMenuItem.Click
+
+        If txtSource.Text.Contains("public class") = False Then
+            txtDest.Text = "You forgot your Model ..."
+            Return
+        End If
+
+        Dim modelName = txtSource.Lines.Where(Function(x) x.Contains("public class ")).FirstOrDefault.Trim.Split(" ").LastOrDefault
+
+        Dim template = <![CDATA[
+        string baseURL = ConfigurationManager.AppSettings.Get("APISERVER");
+
+        #region "MemberModel"
+        public async Task<string> listuom()
+        {
+            Response.ContentType = "application/json";
+            List<MemberModel> model = new List<MemberModel>();
+            string results = await HelperUtils.API_GET(baseURL + "api/uom");
+            if (!string.IsNullOrWhiteSpace(results))
+                model = JsonConvert.DeserializeObject<List<MemberModel>>(results);
+
+            return Newtonsoft.Json.JsonConvert.SerializeObject(new { data = model });
+        }
+
+        public async Task<string> getuomid(int id)
+        {
+            Response.ContentType = "application/json";
+            MemberModel model = new MemberModel();
+            string results = await HelperUtils.API_GET(baseURL + $"api/uom/{id}");
+            if (!string.IsNullOrWhiteSpace(results))
+                model = JsonConvert.DeserializeObject<MemberModel>(results);
+
+            return Newtonsoft.Json.JsonConvert.SerializeObject(new { data = model });
+        }
+
+        [HttpPost]
+        public async Task<string> upsertuom(MemberModel model)
+        {
+            Dictionary<string, object> activeuser = HelperUtils.GetActiveUser();
+            model.updatedby = activeuser["id"].ToString().ParseInt();
+            model.lastupdated = DateTime.Now;
+
+            string msg = string.Empty;
+            var myContent = JsonConvert.SerializeObject(model);
+            var res = await HelperUtils.API_POST2(baseURL + "api/uom/upsert", myContent);
+            msg = res.Content.ReadAsStringAsync().Result;
+            if (!res.IsSuccessStatusCode)
+            {
+                msg = res.ReasonPhrase.ToString();
+                return Newtonsoft.Json.JsonConvert.SerializeObject(new { result = msg });
+            }
+            return msg;
+
+        }
+        #endregion
+]]>.Value
+
+        txtDest.Text = template.Replace("MemberModel", modelName).Trim.
+            Replace("members", modelName.ToLower)
+
 
     End Sub
 End Class

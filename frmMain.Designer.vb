@@ -31,6 +31,7 @@ Partial Class frmMain
         Me.ToolStripButton5 = New System.Windows.Forms.ToolStripDropDownButton()
         Me.ModelBuilderToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.DataAccessBuilderToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ControllerBuilderToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripButton3 = New System.Windows.Forms.ToolStripDropDownButton()
         Me.DefaultToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -43,6 +44,7 @@ Partial Class frmMain
         Me.ToolStripSeparator5 = New System.Windows.Forms.ToolStripSeparator()
         Me.ModalPopupcjTemplateToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripSeparator6 = New System.Windows.Forms.ToolStripSeparator()
         Me.TabsGeneratorToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripButton2 = New System.Windows.Forms.ToolStripSplitButton()
         Me.FormPOSTToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -57,7 +59,7 @@ Partial Class frmMain
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.ToolStripStatusLabel1 = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
-        Me.ToolStripSeparator6 = New System.Windows.Forms.ToolStripSeparator()
+        Me.UIControllerBuilderToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -97,7 +99,7 @@ Partial Class frmMain
         '
         'ToolStripButton5
         '
-        Me.ToolStripButton5.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ModelBuilderToolStripMenuItem, Me.DataAccessBuilderToolStripMenuItem})
+        Me.ToolStripButton5.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ModelBuilderToolStripMenuItem, Me.DataAccessBuilderToolStripMenuItem, Me.ControllerBuilderToolStripMenuItem, Me.UIControllerBuilderToolStripMenuItem})
         Me.ToolStripButton5.Image = CType(resources.GetObject("ToolStripButton5.Image"), System.Drawing.Image)
         Me.ToolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripButton5.Name = "ToolStripButton5"
@@ -107,14 +109,20 @@ Partial Class frmMain
         'ModelBuilderToolStripMenuItem
         '
         Me.ModelBuilderToolStripMenuItem.Name = "ModelBuilderToolStripMenuItem"
-        Me.ModelBuilderToolStripMenuItem.Size = New System.Drawing.Size(174, 22)
+        Me.ModelBuilderToolStripMenuItem.Size = New System.Drawing.Size(188, 22)
         Me.ModelBuilderToolStripMenuItem.Text = "Model Builder"
         '
         'DataAccessBuilderToolStripMenuItem
         '
         Me.DataAccessBuilderToolStripMenuItem.Name = "DataAccessBuilderToolStripMenuItem"
-        Me.DataAccessBuilderToolStripMenuItem.Size = New System.Drawing.Size(174, 22)
+        Me.DataAccessBuilderToolStripMenuItem.Size = New System.Drawing.Size(188, 22)
         Me.DataAccessBuilderToolStripMenuItem.Text = "DataAccess Builder"
+        '
+        'ControllerBuilderToolStripMenuItem
+        '
+        Me.ControllerBuilderToolStripMenuItem.Name = "ControllerBuilderToolStripMenuItem"
+        Me.ControllerBuilderToolStripMenuItem.Size = New System.Drawing.Size(188, 22)
+        Me.ControllerBuilderToolStripMenuItem.Text = "API Controller Builder"
         '
         'ToolStripSeparator3
         '
@@ -189,6 +197,11 @@ Partial Class frmMain
         Me.ToolStripMenuItem1.Name = "ToolStripMenuItem1"
         Me.ToolStripMenuItem1.Size = New System.Drawing.Size(222, 22)
         Me.ToolStripMenuItem1.Text = "Modal Popup (jee template)"
+        '
+        'ToolStripSeparator6
+        '
+        Me.ToolStripSeparator6.Name = "ToolStripSeparator6"
+        Me.ToolStripSeparator6.Size = New System.Drawing.Size(219, 6)
         '
         'TabsGeneratorToolStripMenuItem
         '
@@ -300,10 +313,11 @@ Partial Class frmMain
         Me.ToolStripStatusLabel1.Spring = True
         Me.ToolStripStatusLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
-        'ToolStripSeparator6
+        'UIControllerBuilderToolStripMenuItem
         '
-        Me.ToolStripSeparator6.Name = "ToolStripSeparator6"
-        Me.ToolStripSeparator6.Size = New System.Drawing.Size(219, 6)
+        Me.UIControllerBuilderToolStripMenuItem.Name = "UIControllerBuilderToolStripMenuItem"
+        Me.UIControllerBuilderToolStripMenuItem.Size = New System.Drawing.Size(188, 22)
+        Me.UIControllerBuilderToolStripMenuItem.Text = "UI Controller Builder"
         '
         'frmMain
         '
@@ -363,4 +377,6 @@ Partial Class frmMain
     Friend WithEvents ToolStripMenuItem1 As ToolStripMenuItem
     Friend WithEvents TabsGeneratorToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ToolStripSeparator6 As ToolStripSeparator
+    Friend WithEvents ControllerBuilderToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents UIControllerBuilderToolStripMenuItem As ToolStripMenuItem
 End Class
