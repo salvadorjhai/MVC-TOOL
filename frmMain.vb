@@ -4042,7 +4042,7 @@ public class TownModelDataAccess
         string baseURL = ConfigurationManager.AppSettings.Get("APISERVER");
 
         #region "MemberModel"
-        public async Task<string> listuom()
+        public async Task<string> list()
         {
             Response.ContentType = "application/json";
             List<MemberModel> model = new List<MemberModel>();
@@ -4053,7 +4053,7 @@ public class TownModelDataAccess
             return Newtonsoft.Json.JsonConvert.SerializeObject(new { data = model });
         }
 
-        public async Task<string> getuomid(int id)
+        public async Task<string> getbyid(int id)
         {
             Response.ContentType = "application/json";
             MemberModel model = new MemberModel();
@@ -4065,7 +4065,7 @@ public class TownModelDataAccess
         }
 
         [HttpPost]
-        public async Task<string> upsertuom(MemberModel model)
+        public async Task<string> upsert(MemberModel model)
         {
             Dictionary<string, object> activeuser = HelperUtils.GetActiveUser();
             model.updatedby = activeuser["id"].ToString().ParseInt();
