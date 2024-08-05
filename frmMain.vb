@@ -1156,9 +1156,8 @@ public class TownModelDataAccess
                 DataRow exists = DB.QuerySingleResult("b_towns", "name", model.name);
                 if (exists != null) { return OleDB.DUPLICATE; }
 
-                // no dup , insert
+                // prepare 
                 Dictionary<string, object> param = Utils.HelperUtils.ToDictionary(model);
-                
                 param["madebyid"] = model.updatedbyid;
                 param["madedate"] = model.lastupdated.Value;
                 param["updatedbyid"] = model.updatedbyid;
@@ -1166,7 +1165,6 @@ public class TownModelDataAccess
 
                 // insert
                 // return DB.InsertParam("b_towns", param);
-
                 var resId = DB.InsertParam("b_towns", param, true);
                 if (resId > 0)
                 {
@@ -1191,28 +1189,30 @@ public class TownModelDataAccess
 						return OleDB.NO_CHANGES;
 					}
 
-                    //if (exists["name"].ToString().ToLowerInvariant() == model.name.ToLowerInvariant())
+                    //if (exists["code"].ToString().ToLowerInvariant() == model.code.ToLowerInvariant())
                     //{
                     //    return OleDB.NO_CHANGES;
                     //}
 
-                    Dictionary<string, object> param = Utils.HelperUtils.ToDictionary(model);
-                    
-                    param.Remove("madedate"); // NOT NEEDED for update
-                    param.Remove("madebyid"); // NOT NEEDED for update
-                    param["updatedbyid"] = model.updatedbyid;
-                    param["lastupdated"] = model.lastupdated.Value;
+                    Dictionary<string, object> param = new Dictionary<string, object>();
+                    param["code"] = model.code;
 
                     // check for duplicate
-                    exists = DB.QuerySingleResult($"SELECT * FROM b_towns WHERE name=@name AND id <> {model.id}", param);
+                    exists = DB.QuerySingleResult($"SELECT * FROM b_towns WHERE code=@code AND id <> {model.id}", param);
                     if (exists != null)
                     {
                         return OleDB.DUPLICATE;
                     }
 
+                    // prepare 
+                    param = Utils.HelperUtils.ToDictionary(model);
+                    param.Remove("madedate"); // NOT NEEDED for update
+                    param.Remove("madebyid"); // NOT NEEDED for update
+                    param["updatedbyid"] = model.updatedbyid;
+                    param["lastupdated"] = model.lastupdated.Value;
+
                     // update
                     // return DB.UpdateParam("b_towns", $"WHERE id={model.id}", param);
-
                     var resId = DB.UpdateParam("b_towns", $"WHERE id={model.id}", param);
                     if (resId > 0)
                     {
@@ -3845,7 +3845,7 @@ public class TownModelDataAccess
                     document.body.style.cursor = 'default';
                 },
                 columns: [
-                    // data: , name: , orderable: , autoWidth: , width: , className: 'text-center'
+                    // data: , name: , orderable: , autoWidth: , width: , className: 'text-center' , "visible":false
                     <DT_COL_DEF>
                 ],
                 aoColumnDefs: [
