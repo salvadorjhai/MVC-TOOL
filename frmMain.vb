@@ -3526,7 +3526,7 @@ public class TownModelDataAccess
             End If
 
             If field.ToLower = "id" Then
-                l3.Add(<![CDATA[ <input type="hidden" id="Item1_id" name="Item1.id" value="-1"> ]]>.Value.Replace("Item1_id", $"Item1_{field}").Replace("Item1.id", $"Item1.{field}"))
+                l3.Add(<![CDATA[ <input type="hidden" id="Item1_id" name="Item1.id" value="-1"> ]]>.Value.Replace("Item1_id", $"Item1_{field}").Replace("Item1.id", $"Item1.{field}").Replace("Item1.", IIf(tupName.Length >= 0, "", "Item1.")))
                 formData.Add(<![CDATA[ formData.append("brand", $("#Item1_brand").val()); ]]>.Value.Replace("brand", field))
                 formdata2.Add(<![CDATA[ brand: $('#Item1_brand').val() ]]>.Value.Replace("brand", field).TrimEnd)
                 Continue For
@@ -3925,8 +3925,7 @@ public class TownModelDataAccess
             Replace("<DT_COL_DEF>", String.Join("," & vbCrLf, dtColDef)).
             Replace("<SELECT_EVENTS>", String.Join(vbCrLf, sl3).Trim).
             Replace("<CHECK_EVENTS>", String.Join(vbCrLf, l5).Trim).
-            Replace(".Item1.", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $".{tupName}.", ".")}").
-            Replace("Item1.", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $".{tupName}.", "")}").
+            Replace("m.Item1.", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"m.{tupName}.", "m.")}").
             Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}_", "")}")
 
     End Sub
