@@ -3427,7 +3427,7 @@ public class TownModelDataAccess
         Dim formData As New List(Of String)
 
         l1.Add(<![CDATA[
-@model TARONEAPI.Models.MeterBrandModel
+@model Tuple<TARONEAPI.Models.MeterBrandModel>
 
 @{
     ViewBag.Title = "MeterBrandModel";
