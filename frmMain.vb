@@ -3510,7 +3510,7 @@ public class TownModelDataAccess
                 dp.Add(<![CDATA[ $('#Item1_brand').val(js['brand']); ]]>.Value.Replace("brand", field))
 
                 If i = 0 Then
-                    dp.Add(<![CDATA[ $('#brand').closest('form').data('isDirty', false); ]]>.Value.Replace("brand", field))
+                    dp.Add(<![CDATA[ $('#Item1_brand').closest('form').data('isDirty', false); ]]>.Value.Replace("brand", field))
                 End If
 
             End If
