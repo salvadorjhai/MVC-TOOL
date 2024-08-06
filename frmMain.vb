@@ -3932,52 +3932,97 @@ public class TownModelDataAccess
     End Sub
 
     Private Sub TabsGeneratorToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles TabsGeneratorToolStripMenuItem.Click
-        Dim l1 As New List(Of String)
 
-        l1.Add(<![CDATA[<ul class="nav nav-tabs">
-                            <li class="nav-item">
-                                <a class="nav-link active" data-bs-toggle="tab" href="#tabPane1" id="tab1">General</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-bs-toggle="tab" href="#tabPane2" id="tab1">Membership</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-bs-toggle="tab" href="#tabPane3" id="tab1">Account</a>
-                            </li>
+        Dim no = Val(InputBox("Number of Tabs?", "Generate Tabs", "3"))
+        If no <= 0 Then Return
+
+        Dim l1 As New List(Of String)
+        Dim l2 As New List(Of String)
+        Dim l3 As New List(Of String)
+
+        For i = 1 To no
+
+            Dim str = <![CDATA[<li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#tabPane1" id="tab1">Pane1</a>
+                            </li>]]>.Value.Trim.Replace(" active", IIf(i > 1, "", " active")).Replace("Pane1", "Pane" & i).Replace("tab1", "tab" & i)
+            l1.Add(str)
+
+            str = <![CDATA[<div class="tab-pane container-fluid p-2 active" id="tabPane1">
+                                <!-- content goes here -->
+                            </div>]]>.Value.Trim.Replace(" active", IIf(i > 1, "", " active")).Replace("Pane1", "Pane" & i)
+            l2.Add(str)
+
+            str = <![CDATA[$('#tab1').on('shown.bs.tab', function (e) {
+                                    // per tab scripts goes here
+                                });]]>.Value.Trim.Replace("tab1", "tab" & i)
+            l3.Add(str)
+
+        Next
+
+
+        txtDest.Text = <![CDATA[<ul class="nav nav-tabs">
+                            <!-- NAVS -->
                         </ul>
 
                         <div class="tab-content">
-                            <div class="tab-pane container-fluid p-2 active" id="tabPane1">
-                                <!-- content goes here -->
-                            <div>
-
-                            <div class="tab-pane container-fluid p-2 fade" id="tabPane2">
-                                <!-- content goes here -->
-                            <div>
-
-                            <div class="tab-pane container-fluid p-2 fade" id="tabPane3">
-                                <!-- content goes here -->
-                            <div>
+                            <!-- CONTENTS -->
                         </div>
 
                         <script>
                             $(document).ready(function(){
-                                $('#tab1').on('shown.bs.tab', function (e) {
-                                    // per tab scripts goes here
-                                });     
-                            
-                                $('#tab2').on('shown.bs.tab', function (e) {
-                                    // per tab scripts goes here
-                                });          
-                            
-                                $('#tab3').on('shown.bs.tab', function (e) {
-                                    // per tab scripts goes here
-                                });                                                    
+                            <!-- JS -->                                                                    
                             });
                         </script>
-]]>.Value)
+]]>.Value.Trim.Replace("<!-- NAVS -->", String.Join(vbCrLf, l1)).Trim.
+                Replace("<!-- CONTENTS -->", String.Join(vbCrLf, l2)).Trim.
+                Replace("<!-- JS -->", String.Join(vbCrLf, l3)).Trim
 
-        txtDest.Text = String.Join(vbCrLf, l1).Trim
+
+
+        '        l1.Add(<![CDATA[<ul class="nav nav-tabs">
+        '                            <li class="nav-item">
+        '                                <a class="nav-link active" data-bs-toggle="tab" href="#tabPane1" id="tab1">General</a>
+        '                            </li>
+        '                            <li class="nav-item">
+        '                                <a class="nav-link" data-bs-toggle="tab" href="#tabPane2" id="tab1">Membership</a>
+        '                            </li>
+        '                            <li class="nav-item">
+        '                                <a class="nav-link" data-bs-toggle="tab" href="#tabPane3" id="tab1">Account</a>
+        '                            </li>
+        '                        </ul>
+
+        '                        <div class="tab-content">
+        '                            <div class="tab-pane container-fluid p-2 active" id="tabPane1">
+        '                                <!-- content goes here -->
+        '                            </div>
+
+        '                            <div class="tab-pane container-fluid p-2 fade" id="tabPane2">
+        '                                <!-- content goes here -->
+        '                            </div>
+
+        '                            <div class="tab-pane container-fluid p-2 fade" id="tabPane3">
+        '                                <!-- content goes here -->
+        '                            </div>
+        '                        </div>
+
+        '                        <script>
+        '                            $(document).ready(function(){
+        '                                $('#tab1').on('shown.bs.tab', function (e) {
+        '                                    // per tab scripts goes here
+        '                                });     
+
+        '                                $('#tab2').on('shown.bs.tab', function (e) {
+        '                                    // per tab scripts goes here
+        '                                });          
+
+        '                                $('#tab3').on('shown.bs.tab', function (e) {
+        '                                    // per tab scripts goes here
+        '                                });                                                    
+        '                            });
+        '                        </script>
+        ']]>.Value)
+
+        '        txtDest.Text = String.Join(vbCrLf, l1).Trim
 
     End Sub
 
