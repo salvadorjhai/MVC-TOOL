@@ -3472,13 +3472,15 @@ public class TownModelDataAccess
                         contentType: "application/json;charset=UTF-8",
                         dataType: "json",
                         success: function (result) {
-                            $('#Item1_brand').empty();
-                            $('#Item1_brand').append("<option value></option>");
-                            for (var i = 0; i < result.data.length; i++) {
-                                var Desc = result.data[i]['name'];
-                                var opt = new Option(Desc, result.data[i]['id']);
-                                $('#Item1_brand').append(opt);
-                            }
+                            setTimeout(function () {
+                                $('#Item1_brand').empty();
+                                $('#Item1_brand').append("<option value></option>");
+                                for (var i = 0; i < result.data.length; i++) {
+                                    var Desc = result.data[i]['name'];
+                                    var opt = new Option(Desc, result.data[i]['id']);
+                                    $('#Item1_brand').append(opt);
+                                }
+                            },1)
                         },
                         error: function (errormessage) {
                             swal("Error", "Oops! something went wrong ... \n", "error");
