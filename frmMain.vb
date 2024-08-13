@@ -3790,6 +3790,7 @@ public class TownModelDataAccess
 
             // on modal closed , clean all need fields
             $('#mymodal').on('hidden.bs.modal', function () {
+                selectedProductModelFormData=null;
                 clearFormValidation();
                 $('#ProductModelFormBody').attr('data-js', '');
                 $('#ProductModelForm')[0].reset();
@@ -3816,10 +3817,6 @@ public class TownModelDataAccess
 
         }
 
-        function fillProductModelForm(js) {
-            <EDIT_VAL>
-        }
-       
         function loadmytable() {
             $('#mytable').DataTable().destroy();
             $('#mytable').DataTable({
@@ -3902,7 +3899,13 @@ public class TownModelDataAccess
                 }
             });
         }
-
+        
+        var selectedProductModelFormData;
+        function fillProductModelForm(js) {
+            selectedProductModelFormData = js;
+            <EDIT_VAL>
+        }
+       
         function saveProductModelForm() {
             // Make the AJAX POST request
         }
