@@ -1154,6 +1154,7 @@ public class TownModelDataAccess
             {
                 // check for dups
                 DataRow exists = DB.QuerySingleResult("b_towns", "name", model.name);
+                if (DB.LastError != null) { return OleDB.EXEC_ERROR; }
                 if (exists != null) { return OleDB.DUPLICATE; }
 
                 // prepare 
@@ -1189,20 +1190,13 @@ public class TownModelDataAccess
 						return OleDB.NO_CHANGES;
 					}
 
-                    //if (exists["code"].ToString().ToLowerInvariant() == model.code.ToLowerInvariant())
-                    //{
-                    //    return OleDB.NO_CHANGES;
-                    //}
-
                     Dictionary<string, object> param = new Dictionary<string, object>();
                     param["code"] = model.code;
 
                     // check for duplicate
                     exists = DB.QuerySingleResult($"SELECT * FROM b_towns WHERE code=@code AND id <> {model.id}", param);
-                    if (exists != null)
-                    {
-                        return OleDB.DUPLICATE;
-                    }
+                    if (DB.LastError != null) { return OleDB.EXEC_ERROR; }
+                    if (exists != null) { return OleDB.DUPLICATE; }
 
                     // prepare 
                     param = Utils.HelperUtils.ToDictionary(model);
