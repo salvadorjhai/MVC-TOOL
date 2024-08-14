@@ -4140,4 +4140,82 @@ public class TownModelDataAccess
 
 
     End Sub
+
+    Private Sub BsSuggestToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles BsSuggestToolStripMenuItem.Click
+
+        Dim id = InputBox("input id name", "Generate BS Suggess", "_TEST_ID_")
+
+        Dim template = <![CDATA[
+
+            <input id="_TEST_ID_" type="text" class="form-control" />
+            <ul class="dropdown-menu-c1 dropdown-menu-right" role="menu">
+            </ul>
+
+
+            $.ajax({
+                url: "/{controller}/{action}/",
+                type: "GET",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                success: function (result) {
+
+                    $("#_TEST_ID_").bsSuggest({
+                        url: null, // URL address for requesting data
+                        jsonp: null, // Set this parameter name to enable the jsonp function, otherwise use the json data structure
+                        data: {
+                            value: result.data
+                        },
+                        idField: 'id',
+                        keyField: 'id',
+                        // for data-id value
+                        idField: 'id',
+                        // for input value , can also be set manually on onSetSelectValue event
+                        keyField: 'id', 
+                        // displayed fields
+                        effectiveFields: ['jo_type_code', 'jo_nro_code', 'assign_for_name', 'ordered_by_name', 'name'], 
+                        // displayed fields alias (header)
+                        //effectiveFieldsAlias: { 
+                        //    jo_type_code: "REQUEST TYPE",
+                        //    jo_nro_code: "NATURE OF REQUEST",
+                        //    assign_for_name: "ASSIGNED FOR",
+                        //    ordered_by_name: "ORDERED BY",
+                        //    name: "CONCERNED MEMBER"
+                        //},
+                        //showHeader: true,
+                        ignorecase: true,
+                        hideOnSelect: true,
+                        autoSelect: false,
+                        clearable: false,
+                        listStyle: {
+                            "max-height": "300px",
+                            "max-width": "100%x"
+                        }
+
+                    }).on('onDataRequestSuccess', function (e, result) {
+                       // console.log('onDataRequestSuccess: ', result);
+
+                    }).on('onSetSelectValue', function (e, selectedData, selectedRawData) {
+                       //console.log('onSetSelectValue: ', e.target.value, selectedData, selectedRawData);
+
+                    }).on('onUnsetSelectValue', function () {
+                       //console.log('onUnsetSelectValue');
+
+                    }).on('onShowDropdown', function (e, data) {
+                       //console.log('onShowDropdown', e.target.value, data);
+
+                    }).on('onHideDropdown', function (e, data) {
+                       //console.log('onHideDropdown', e.target.value, data);
+
+                    });
+
+                },
+                error: function (errormessage) {
+                    swal("Error", "Oops! something went wrong ... \n", "error");
+                }
+            });
+]]>.Value
+
+        txtDest.Text = template.Replace("_TEST_ID_", id)
+
+    End Sub
 End Class
