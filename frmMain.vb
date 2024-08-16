@@ -1270,9 +1270,12 @@ public class TownModelDataAccess
 
             Dim l2 As New List(Of String)
 
-            If ddType.Contains("char") Then
-                If String.IsNullOrWhiteSpace(ddRanged) = False Then
+            If ddType.Contains("char") Or ddType.Contains("text") Then
+                If String.IsNullOrWhiteSpace(ddRanged) = False AndAlso ddRanged.Contains("max") = False Then
                     l2.Add(<![CDATA[ [MaxLength(10)] ]]>.Value.Replace("10", ddRanged))
+                End If
+                If (ddType.Contains("text")) Then
+                    l2.Add(<![CDATA[ // prefer using NVARCHA(MAX) ]]>.Value.Trim)
                 End If
                 l2.Add(<![CDATA[ public string name { get; set; } ]]>.Value.Replace("name", ddField))
 
