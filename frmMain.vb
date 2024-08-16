@@ -3662,7 +3662,7 @@ public class TownModelDataAccess
         l1.Add(<![CDATA[ 
 @section popups{
     @* --- modals and popups goes here --- *@
-    <div class="modal fade" id="mymodal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="mymodalTitle" aria-hidden="true">
+    <div class="modal fade bg-opacity-75 modal2" id="mymodal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="mymodalTitle" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-dark text-uppercase text-light p-3">
@@ -3673,8 +3673,8 @@ public class TownModelDataAccess
                         <FORM CONTENT>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-success"><span class="far fa-thumbs-up"></span> SAVE</button>
-                        <button type="button" class="btn btn-danger" onclick="closeFormIfDirty(this)"><span class="far fa-thumbs-down"></span> CLOSE</button>
+                        <button id="btnSavemymodal" type="submit" class="btn btn-success"><span class="far fa-thumbs-up"></span> SAVE</button>
+                        <button id="btnClosemymodal" type="button" class="btn btn-danger" onclick="closeFormIfDirty(this)"><span class="far fa-thumbs-down"></span> CLOSE</button>
                     </div>
                 </form>
             </div>
