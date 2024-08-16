@@ -3814,9 +3814,10 @@ public class TownModelDataAccess
 
         }
 
+        var dtmytable;
         function loadmytable() {
             $('#mytable').DataTable().destroy();
-            $('#mytable').DataTable({
+            dtmytable = $('#mytable').DataTable({
                 dom:
                     "<'row'<'p-2 col-sm-12 col-md-6 col-xl-6'l><'float-right pr-3 pt-3 p-2 col-sm-12 col-md-6 col-xl-6'f>>" +
                     "<'row'<'col-sm-12'tr>>" +
@@ -3912,6 +3913,7 @@ public class TownModelDataAccess
     </script>
 ]]>.Value.Replace("ProductModelForm", modelName & "Form").
         Replace("mymodal", $"{modelName}Modal").
+        Replace("dtmytable", $"dt{modelName}").
         Replace("// DROPDOWN_REPLACEMENT", String.Join(vbCrLf, l4)).
         Replace("mytable", $"{modelName}Table").
         Replace("ProductModelFormBody", $"{modelName}FormBody").
