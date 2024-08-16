@@ -3673,8 +3673,8 @@ public class TownModelDataAccess
                         <FORM CONTENT>
                     </div>
                     <div class="modal-footer">
-                        <button id="btnSavemymodal" type="submit" class="btn btn-success"><span class="far fa-thumbs-up"></span> SAVE</button>
-                        <button id="btnClosemymodal" type="button" class="btn btn-danger" onclick="closeFormIfDirty(this)"><span class="far fa-thumbs-down"></span> CLOSE</button>
+                        <button id="btnSave_mymodal" type="submit" class="btn btn-success"><span class="far fa-thumbs-up"></span> SAVE</button>
+                        <button id="btnClose_mymodal" type="button" class="btn btn-danger" onclick="closeFormIfDirty(this)"><span class="far fa-thumbs-down"></span> CLOSE</button>
                     </div>
                 </form>
             </div>
