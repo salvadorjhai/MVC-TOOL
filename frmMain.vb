@@ -3462,6 +3462,7 @@ public class TownModelDataAccess
                 dp.Add(<![CDATA[ $('#Item1_brand').val(js['brand']).trigger('change'); ]]>.Value.Replace("brand", field))
 
                 sl.Add(<![CDATA[
+                var brandsData;
                 function populatebrandCbo() {
                     $.ajax({
                         url: "/{Controller}/{Action}/",
@@ -3469,6 +3470,7 @@ public class TownModelDataAccess
                         contentType: "application/json;charset=UTF-8",
                         dataType: "json",
                         success: function (result) {
+                            brandsData = result.data;
                             setTimeout(function () {
                                 $('#Item1_brand').empty();
                                 $('#Item1_brand').append("<option value></option>");
@@ -3673,7 +3675,7 @@ public class TownModelDataAccess
                         <FORM CONTENT>
                     </div>
                     <div class="modal-footer">
-                        <button id="btnSave_mymodal" type="submit" class="btn btn-success"><span class="far fa-thumbs-up"></span> SAVE</button>
+                        <button id="btnSave_mymodal" type="button" class="btn btn-success"><span class="far fa-thumbs-up"></span> SAVE</button>
                         <button id="btnClose_mymodal" type="button" class="btn btn-danger" onclick="closeFormIfDirty(this)"><span class="far fa-thumbs-down"></span> CLOSE</button>
                     </div>
                 </form>
@@ -3780,13 +3782,10 @@ public class TownModelDataAccess
             <SELECT_EVENTS>
             <CHECK_EVENTS>
             
-            // on modal shown 
             $('#mymodal').on('shown.bs.modal', function () {
                 $('#Item1_myInput').trigger('focus');
-            });
 
-            // on modal closed , clean all need fields
-            $('#mymodal').on('hidden.bs.modal', function () {
+            }).on('hidden.bs.modal', function () {
                 selectedProductModelFormData=null;
                 clearFormValidation();
                 $('#ProductModelFormBody').attr('data-js', '');
@@ -3811,10 +3810,16 @@ public class TownModelDataAccess
                 clearFormValidation();
                 saveProductModelForm();
             });
+            
+            $('#btnSave_mymodal').on('click', function () {
+                $(this).closest('form').submit();
+            })
 
+            EnableDisableControls(false);
         }
 
         var dtmytable;
+        var dtmytableData;
         function loadmytable() {
             $('#mytable').DataTable().destroy();
             dtmytable = $('#mytable').DataTable({
@@ -3831,7 +3836,7 @@ public class TownModelDataAccess
                         swal("Cant Connect?", "Failed to load datatable ...", "error");
                     }
                 },
-                pageLength: 10,
+                pageLength: 5,
                 order: [[1, "asc"]], // index based
                 lengthMenu: [
                     [5, 10, 30, 50, -1],
@@ -3839,7 +3844,9 @@ public class TownModelDataAccess
                 ],
                 autoWidth: true,
                 initComplete: function (settings, json) {
+                    dtmytableData = json.data;
                     document.body.style.cursor = 'default';
+                    setTimeout(EnableDisableControls(true), 1);
                 },
                 columns: [
                     // data: , name: , orderable: , autoWidth: , width: , className: 'text-center' , "visible":false
