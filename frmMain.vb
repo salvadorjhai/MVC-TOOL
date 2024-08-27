@@ -4171,22 +4171,18 @@ public class TownModelDataAccess
                         data: {
                             value: result.data
                         },
-                        idField: 'id',
-                        keyField: 'id',
                         // for data-id value
                         idField: 'id',
                         // for input value , can also be set manually on onSetSelectValue event
                         keyField: 'id', 
                         // displayed fields
-                        effectiveFields: ['jo_type_code', 'jo_nro_code', 'assign_for_name', 'ordered_by_name', 'name'], 
+                        effectiveFields: ['id', 'code', 'description'], 
                         // displayed fields alias (header)
-                        //effectiveFieldsAlias: { 
-                        //    jo_type_code: "REQUEST TYPE",
-                        //    jo_nro_code: "NATURE OF REQUEST",
-                        //    assign_for_name: "ASSIGNED FOR",
-                        //    ordered_by_name: "ORDERED BY",
-                        //    name: "CONCERNED MEMBER"
-                        //},
+                        effectiveFieldsAlias: { 
+                            id: "ID",
+                            code: "CODE",
+                            description: "DESCRIPTION"
+                        },
                         //showHeader: true,
                         ignorecase: true,
                         hideOnSelect: true,
