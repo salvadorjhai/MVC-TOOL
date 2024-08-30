@@ -3711,7 +3711,7 @@ public class TownModelDataAccess
             }
             if (msg.includes("success")) {
                 $('#mymodal').modal('hide');
-                loadmytable();
+                loadmytable(); // dtmytable.ajax.reload(null,false)
                 swal("Saved!", "Record has been saved", "success");
             } else if (msg.includes("nochange")) {
                 $('#mymodal').modal('hide');
@@ -3747,7 +3747,7 @@ public class TownModelDataAccess
                         if (msg.includes("success")) {
                             $('#mymodal').find('form').data('isDirty', false);
                             $('#mymodal').modal('hide');
-                            loadmytable();
+                            loadmytable(); // dtmytable.ajax.reload(null,false)
                             swal("Saved!", "Record has been saved", "success");
                         } else if (msg.includes("nochange")) {
                             $('#mymodal').find('form').data('isDirty', false);
