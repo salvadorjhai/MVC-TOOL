@@ -3825,7 +3825,7 @@ public class TownModelDataAccess
             dtmytable = $('#mytable').DataTable({
                 dom:
                     "<'row'<'p-2 col-sm-12 col-md-6 col-xl-6'l><'float-right pr-3 pt-3 p-2 col-sm-12 col-md-6 col-xl-6'f>>" +
-                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'table-responsive col-sm-12'tr>>" +
                     "<'row'<'pl-2 pt-0 pb-2 col-sm-12 col-md-5'i><'pt-1 pb-1 pr-2 col-sm-12 col-md-7'p>>",
                 stateSave: true,
                 ajax: {
