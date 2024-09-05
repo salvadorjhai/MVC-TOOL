@@ -4169,7 +4169,7 @@ public class TownModelDataAccess
                 contentType: "application/json;charset=UTF-8",
                 dataType: "json",
                 success: function (result) {
-
+                    $("#_TEST_ID_").bsSuggest("destroy")
                     $("#_TEST_ID_").bsSuggest({
                         url: null, // URL address for requesting data
                         jsonp: null, // Set this parameter name to enable the jsonp function, otherwise use the json data structure
