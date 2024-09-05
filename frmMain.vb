@@ -4157,6 +4157,11 @@ public class TownModelDataAccess
             <ul class="dropdown-menu-c1 dropdown-menu-right" role="menu">
             </ul>
 
+            $("#_TEST_ID_").on('change', function () {
+                if ($(this).val().trim().length == 0) {
+                    $(this).attr('data-id', null);
+                }
+            })
 
             $.ajax({
                 url: "/{controller}/{action}/",
