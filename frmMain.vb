@@ -3953,13 +3953,13 @@ public class TownModelDataAccess
         For i = 1 To no
 
             Dim str = <![CDATA[<li class="nav-item">
-                                <a class="nav-link active" data-bs-toggle="tab" href="#tabPane1" id="tab1">Pane1</a>
-                            </li>]]>.Value.Trim.Replace(" active", IIf(i > 1, "", " active")).Replace("Pane1", "Pane" & i).Replace("tab1", "tab" & i)
+                                <a class="nav-link active" data-bs-toggle="tab" href="#tabPane1" id="tab1"><span class="fas fa-info-circle"></span> Pane1</a>
+                            </li>]]>.Value.Trim.Replace(" active", IIf(i > 1, "", " active")).Replace("Pane1", "Panel " & i).Replace("tab1", "tab" & i)
             l1.Add(str)
 
             str = <![CDATA[<div class="tab-pane container-fluid p-2 active" id="tabPane1">
                                 <!-- content goes here -->
-                            </div>]]>.Value.Trim.Replace(" active", IIf(i > 1, "", " active")).Replace("Pane1", "Pane" & i)
+                            </div>]]>.Value.Trim.Replace(" active", IIf(i > 1, "", " active")).Replace("Pane1", "Panel " & i)
             l2.Add(str)
 
             str = <![CDATA[$('#tab1').on('shown.bs.tab', function (e) {
