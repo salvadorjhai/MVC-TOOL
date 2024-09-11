@@ -1153,26 +1153,27 @@ public class TownModelDataAccess
             if (model.id<=0)
             {
                 // check for dups
-                DataRow exists = DB.QuerySingleResult("b_towns", "name", model.name);
+                Dictionary<string, object> param = new Dictionary<string, object>();
+                param["code"] = model.code;
+
+                DataRow exists = DB.QuerySingleResult($"SELECT * FROM b_towns WHERE code=?", param);
                 if (DB.LastError != null) { return OleDB.EXEC_ERROR; }
                 if (exists != null) { return OleDB.DUPLICATE; }
 
                 // prepare 
-                Dictionary<string, object> param = Utils.HelperUtils.ToDictionary(model);
+                param = Utils.HelperUtils.ToDictionary(model);
                 param["madebyid"] = model.updatedbyid;
                 param["madedate"] = model.lastupdated.Value;
                 param["updatedbyid"] = model.updatedbyid;
                 param["lastupdated"] = model.lastupdated.Value;
 
                 // insert
-                // return DB.InsertParam("b_towns", param);
                 var resId = DB.InsertParam("b_towns", param, true);
+                if (DB.LastError != null) { return OleDB.EXEC_ERROR; }
                 if (resId > 0)
                 {
                     // return updated model (with id)
-                    var exists = DB.QuerySingleResult($"SELECT * FROM b_towns WHERE id={resId}", param);
-                    if (DB.LastError != null || exists == null) { return OleDB.EXEC_ERROR; }
-                    model = HelperUtils.BindFrom<TownModel>(exists);
+                    model = GetById(resId);
                 }
                 return resId;
 
@@ -1181,11 +1182,11 @@ public class TownModelDataAccess
                 // for updating
 
                 // verify id
-                DataRow exists = DB.QuerySingleResult("b_towns", "id", model.id);
-                if (exists != null)
+                var orig = GetById(model.id);
+                if (orig != null && orig.id > 0)
                 {
                     // return if nothing to update
-                    if (exists.IsModelClean(model))
+                    if (orig == model)
 					{
 						return OleDB.NO_CHANGES;
 					}
@@ -1194,7 +1195,7 @@ public class TownModelDataAccess
                     param["code"] = model.code;
 
                     // check for duplicate
-                    exists = DB.QuerySingleResult($"SELECT * FROM b_towns WHERE code=@code AND id <> {model.id}", param);
+                    DataRow exists = DB.QuerySingleResult($"SELECT * FROM b_towns WHERE code=@code AND id <> {model.id}", param);
                     if (DB.LastError != null) { return OleDB.EXEC_ERROR; }
                     if (exists != null) { return OleDB.DUPLICATE; }
 
@@ -1208,12 +1209,11 @@ public class TownModelDataAccess
                     // update
                     // return DB.UpdateParam("b_towns", $"WHERE id={model.id}", param);
                     var resId = DB.UpdateParam("b_towns", $"WHERE id={model.id}", param);
+                    if (DB.LastError != null) { return OleDB.EXEC_ERROR; }
                     if (resId > 0)
                     {
                         // return updated model (with id)
-                        exists = DB.QuerySingleResult($"SELECT * FROM b_towns WHERE id={model.id}", param);
-                        if (DB.LastError != null || exists == null) { return OleDB.EXEC_ERROR; }
-                        model = HelperUtils.BindFrom<TownModel>(exists);
+                        model = model = GetById(model.id);
                     }
                     return resId;
 
@@ -3441,6 +3441,7 @@ public class TownModelDataAccess
         Dim colCount As Integer = 0
         Dim sl3 As New List(Of String)
         Dim l5 As New List(Of String) '
+        Dim l6 As New List(Of String)
 
         For i = 0 To props.Count - 1
             Dim v = props(i).Trim
@@ -3459,40 +3460,82 @@ public class TownModelDataAccess
             lr.Add(<![CDATA[ <td>@item.brand</td> ]]>.Value.Replace("brand", field.ToLower))
 
             If field.ToLower <> "id" AndAlso (field.ToLower.EndsWith("id") Or field.ToLower.EndsWith("code")) AndAlso ddt.Contains("int") Then
-                dp.Add(<![CDATA[ $('#Item1_brand').val(js['brand']).trigger('change'); ]]>.Value.Replace("brand", field))
+                dp.Add(<![CDATA[ $('#Item1_brand').val(js['brand']).attr('data-id', js['brandid']).trigger('change'); ]]>.Value.Replace("brand", field))
 
                 sl.Add(<![CDATA[
-                var brandsData;
-                function populatebrandCbo() {
-                    $.ajax({
-                        url: "/{Controller}/{Action}/",
-                        type: "GET",
-                        contentType: "application/json;charset=UTF-8",
-                        dataType: "json",
-                        success: function (result) {
-                            brandsData = result.data;
-                            setTimeout(function () {
-                                $('#Item1_brand').empty();
-                                $('#Item1_brand').append("<option value></option>");
-                                for (var i = 0; i < result.data.length; i++) {
-                                    var Desc = result.data[i]['name'];
-                                    var opt = new Option(Desc, result.data[i]['id']);
-                                    $('#Item1_brand').append(opt);
+                    var brandsData;
+                    function populatebsSuggest_brand() {
+                        if (brandsData) {
+                            $("#Item1_brand").on('change', function () {
+                                if ($(this).val().trim().length == 0) {
+                                    $(this).attr('data-id', null);
                                 }
-                            },1)
-                        },
-                        error: function (errormessage) {
-                            swal("Error", "Oops! something went wrong ... \n", "error");
+                            })
                         }
-                    });
-                }
+
+                        if (!brandsData) {
+                            $.ajax({
+                                url: "/{Controller}/{Action}/",
+                                type: "GET",
+                                contentType: "application/json;charset=UTF-8",
+                                dataType: "json",
+                                success: function (result) {
+                                    $("#Item1_brand").bsSuggest("destroy")
+                                    $("#Item1_brand").bsSuggest({
+                                        url: null, // URL address for requesting data
+                                        jsonp: null, // Set this parameter name to enable the jsonp function, otherwise use the json data structure
+                                        data: {
+                                            value: result.data
+                                        },
+                                        // for data-id value
+                                        idField: 'id',
+                                        // for input value , can also be set manually on onSetSelectValue event
+                                        keyField: 'accounttype',
+                                        // displayed fields
+                                        effectiveFields: ['code', 'accounttype'],
+                                        // displayed fields alias (header)
+                                        effectiveFieldsAlias: {
+                                            code: "CODE",
+                                            accounttype: "DESCRIPTION"
+                                        },
+                                        //showHeader: true,
+                                        ignorecase: true,
+                                        hideOnSelect: true,
+                                        autoSelect: false,
+                                        clearable: false,
+                                        listStyle: {
+                                            "max-height": "300px",
+                                            "max-width": "100%x"
+                                        }
+
+                                    }).on('onDataRequestSuccess', function (e, result) {
+                                        // console.log('onDataRequestSuccess: ', result);
+
+                                    }).on('onSetSelectValue', function (e, selectedData, selectedRawData) {
+                                        //console.log('onSetSelectValue: ', e.target.value, selectedData, selectedRawData);
+
+                                    }).on('onUnsetSelectValue', function () {
+                                        //console.log('onUnsetSelectValue');
+
+                                    }).on('onShowDropdown', function (e, data) {
+                                        //console.log('onShowDropdown', e.target.value, data);
+
+                                    }).on('onHideDropdown', function (e, data) {
+                                        //console.log('onHideDropdown', e.target.value, data);
+
+                                    });
+
+                                },
+                                error: function (errormessage) {
+                                    swal("Error", "Oops! something went wrong ... \n", "error");
+                                }
+                            });
+                        }
+                    }
                 ]]>.Value.Replace("brand", field).Replace("mymodal", $"{modelName}Modal"))
 
-                sl2.Add(<![CDATA[ $('#Item1_brand').val(null).trigger('change'); ]]>.Value.Replace("brand", field))
-                sl3.Add(<![CDATA[ $('#Item1_brand').on('change', function () {
-                            // do what you want ;
-                        }); 
-                    ]]>.Value.Replace("brand", field))
+                sl2.Add(<![CDATA[ $('#Item1_brand').val(null).attr('data-id', null).trigger('change'); ]]>.Value.Replace("brand", field))
+                l6.Add(<![CDATA[ setTimeout(populatebsSuggest_brand, 1); ]]>.Value.Replace("brand", field))
 
             ElseIf ddt.Contains("bool") Then
                 dp.Add(<![CDATA[ if(js['brand']==1) { $('#Item1_brand').prop('checked','checked'); } ]]>.Value.Replace("brand", field))
@@ -3528,8 +3571,8 @@ public class TownModelDataAccess
 
             If field.ToLower = "id" Then
                 l3.Add(<![CDATA[ <input type="hidden" id="Item1_id" name="Item1.id" value="-1"> ]]>.Value.Replace("Item1_id", $"Item1_{field}").Replace("Item1.id", $"Item1.{field}").Replace("Item1.", IIf(tupName.Length >= 0, "", "Item1.")))
-                formData.Add(<![CDATA[ formData.append("brand", $("#Item1_brand").val()); ]]>.Value.Replace("brand", field))
-                formdata2.Add(<![CDATA[ brand: $('#Item1_brand').val() ]]>.Value.Replace("brand", field).TrimEnd)
+                formData.Add(<![CDATA[ formData.append("brand", _.toNumber($("#Item1_brand").val())); ]]>.Value.Replace("brand", field))
+                formdata2.Add(<![CDATA[ brand: _.toNumber($('#Item1_brand').val()) ]]>.Value.Replace("brand", field).TrimEnd)
                 Continue For
             End If
 
@@ -3568,9 +3611,13 @@ public class TownModelDataAccess
 
                 If field.ToLower.EndsWith("id") Or field.ToLower.EndsWith("code") Then
                     l3.Add(<![CDATA[ <div class="mb-2 col-6"> ]]>.Value)
-                    l3.Add(<![CDATA[  @Html.LabelFor(m => m.Item1.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
-                    l3.Add(<![CDATA[  @Html.DropDownListFor(m => m.Item1.brand, new SelectList(new List<string>()), new { @class = "form-control form-select select2 custom-select2", @placeholder = "select option" }) ]]>.Value.Replace("brand", field))
-                    l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.Item1.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
+                    l3.Add(<![CDATA[
+                                @Html.LabelFor(m => m.Item1.brand, new { @class = "form-label" })
+                                @Html.TextBoxFor(m => m.Item1.brand, new { @class = "form-control bsSuggest", @onfocus = "this.select();", @onmouseup = "return false;" })
+                                <ul class="dropdown-menu-c1 dropdown-menu-right" role="menu">
+                                </ul>
+                                @Html.ValidationMessageFor(m => m.Item1.brand, "", new { @class = "text-danger" })
+                    ]]>.Value.Replace("brand", field))
                     l3.Add(<![CDATA[ </div> ]]>.Value)
 
                     'l4.Add(<![CDATA[ 
@@ -3588,8 +3635,8 @@ public class TownModelDataAccess
                     l3.Add(<![CDATA[ </div> ]]>.Value)
                 End If
 
-                formData.Add(<![CDATA[ formData.append("brand", $("#Item1_brand").val()); ]]>.Value.Replace("brand", field))
-                formdata2.Add(<![CDATA[ brand: $('#Item1_brand').val() ]]>.Value.Replace("brand", field).TrimEnd)
+                formData.Add(<![CDATA[ formData.append("brand", _.toNumber($("#Item1_brand").val())); ]]>.Value.Replace("brand", field))
+                formdata2.Add(<![CDATA[ brand: _.toNumber($('#Item1_brand').val()) ]]>.Value.Replace("brand", field).TrimEnd)
 
             ElseIf ddt.StartsWith("date") Then
                 l3.Add(<![CDATA[ <div class="mb-2"> ]]>.Value)
@@ -3711,16 +3758,19 @@ public class TownModelDataAccess
             }
             if (msg.includes("success")) {
                 $('#mymodal').modal('hide');
-                loadmytable(); // dtmytable.ajax.reload(null,false)
+                reloadmytable(); // or dtmytable.ajax.reload(null,false)
                 swal("Saved!", "Record has been saved", "success");
+               
             } else if (msg.includes("nochange")) {
                 $('#mymodal').modal('hide');
             } else {
                 swal("Error", "An error occured: " + msg + "\n", "warning");
+           
             }
         },
         error: function (errormessage) {
             swal("Error!", "Oops! something went wrong ... \n", "error");
+
         }
     });
 
@@ -3747,17 +3797,21 @@ public class TownModelDataAccess
                         if (msg.includes("success")) {
                             $('#mymodal').find('form').data('isDirty', false);
                             $('#mymodal').modal('hide');
-                            loadmytable(); // dtmytable.ajax.reload(null,false)
-                            swal("Saved!", "Record has been saved", "success");
+                            reloadmytable(); // or dtmytable.ajax.reload(null,false)
+
+                            swal("Saved!", "Record has been saved", "success");                        
+
                         } else if (msg.includes("nochange")) {
                             $('#mymodal').find('form').data('isDirty', false);
                             $('#mymodal').modal('hide');
                         } else {
                             swal("Error", "An error occured: " + msg + "\n", "warning");
+               
                         }
                     },
                     error: function (errormessage) {
                         swal("Error!", "Oops! something went wrong ... \n", "error");
+                    
                     }
                 });
 ]]>.Value.Replace("<FORM_DATA>", String.Join(vbCrLf, formData)).Replace("ProductModelForm", modelName & "Form").Replace("mymodal", $"{modelName}Modal").Replace("mytable", $"{modelName}Table")
@@ -3777,7 +3831,7 @@ public class TownModelDataAccess
     <script>
         function initializeData() {
             InitValidator();
-            loadmytable();
+            initmytable();
             appendRequiredLabel();
             <SELECT_EVENTS>
             <CHECK_EVENTS>
@@ -3799,12 +3853,7 @@ public class TownModelDataAccess
                 event.preventDefault(); // Prevent the default form submission
                 // check if current form is valid
                 if (!$(this).valid()) {
-                    swal({
-                        title: "Something went wrong!",
-                        text: "Please fill all required field to proceed.",
-                        icon: "error",
-                        dangerMode: true,
-                    });
+                    swal("Something went wrong!", "Please fill all required field to proceed.", "error");
                     return;
                 } 
                 clearFormValidation();
@@ -3820,7 +3869,13 @@ public class TownModelDataAccess
 
         var dtmytable;
         var dtmytableData;
-        function loadmytable() {
+        function reloadmytable() {
+            dtmytable.ajax.reload(function (json) {
+                dtmytableData = json.data
+                // add other function to be called after table reloads
+            }, false)
+        }
+        function initmytable() {
             $('#mytable').DataTable().destroy();
             dtmytable = $('#mytable').DataTable({
                 dom:
@@ -3833,7 +3888,7 @@ public class TownModelDataAccess
                     "type": "GET",
                     datatype: "json",
                     error: function (errormessage) {
-                        swal("Cant Connect?", "Failed to load datatable ...", "error");
+                        toastError("Error!", "Failed to load datatable ...")
                     }
                 },
                 pageLength: 5,
@@ -3934,7 +3989,7 @@ public class TownModelDataAccess
         txtDest.Text = String.Join(vbCrLf, l1).Replace("mymodal", $"{modelName}Modal").
             Replace("<SELECT2_MODIFIER>", String.Join(vbCrLf, sl2)).
             Replace("<DT_COL_DEF>", String.Join("," & vbCrLf, dtColDef)).
-            Replace("<SELECT_EVENTS>", String.Join(vbCrLf, sl3).Trim).
+            Replace("<SELECT_EVENTS>", String.Join(vbCrLf, l6).Trim).
             Replace("<CHECK_EVENTS>", String.Join(vbCrLf, l5).Trim).
             Replace("m.Item1.", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"m.{tupName}.", "m.")}").
             Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}_", "")}")
@@ -4223,6 +4278,131 @@ public class TownModelDataAccess
 ]]>.Value
 
         txtDest.Text = template.Replace("_TEST_ID_", id)
+
+    End Sub
+
+    Private Sub DynamicMultiInputToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles DynamicMultiInputToolStripMenuItem.Click
+
+        If txtSource.Text.Contains("public class") = False Then
+            txtDest.Text = "You forgot your Model ..."
+            Return
+        End If
+
+        If frmTuple.ShowDialog <> DialogResult.OK Then Return
+
+        Dim modelName = txtSource.Lines.Where(Function(x) x.Contains("public class ")).FirstOrDefault.Trim.Split(" ").LastOrDefault
+        Dim props = txtSource.Lines.Where(Function(x) x.Contains("public ") And x.Contains(" class ") = False).ToList
+        Dim tupName As String = frmTuple.cboItem.Text
+
+        modelName = Regex.Replace(modelName, "model", "", RegexOptions.IgnoreCase).Trim
+
+        Dim tbl1 = <![CDATA[
+<table id="tableRoles" class="table table-sm table-bordered" style="width:100%">
+    <thead>
+        <tr class="bg-primary-subtle text-uppercase">
+            <th style="width:32px;"></th>
+            <th class="text-center">role</th>
+            <th style="width:48px;" class="text-center">add</th>
+            <th style="width:48px;" class="text-center">edit</th>
+            <th style="width:48px;" class="text-center">view</th>
+            <th style="width:48px;" class="text-center">lvl1</th>
+            <th style="width:48px;" class="text-center">lvl2</th>
+            <th style="width:48px;" class="text-center">lvl3</th>
+            <th style="width:48px;" class="text-center">lvl2return</th>
+            <th style="width:48px;" class="text-center">lvl3return</th>
+        </tr>
+    </thead>
+    <tfoot>
+        <tr class="">
+            <th style="width:32px;"><button type="button" class="btn btn-outline-primary btn-sm" onclick="addRoleRowItem(-1,-1,'');" style="border:none" data-bs-toggle="tooltip" data-placement="top" title="add role"><span class="fas fa-plus-circle"></span></button></th>
+            <th class="text-center"></th>
+            <th style="width:48px;" class="text-center"></th>
+            <th style="width:48px;" class="text-center"></th>
+            <th style="width:48px;" class="text-center"></th>
+            <th style="width:48px;" class="text-center"></th>
+            <th style="width:48px;" class="text-center"></th>
+            <th style="width:48px;" class="text-center"></th>
+            <th style="width:48px;" class="text-center"></th>
+            <th style="width:48px;" class="text-center"></th>
+        </tr>
+    </tfoot>
+    <tbody>
+    </tbody>
+</table>
+
+]]>.Value
+
+        Dim ths As New List(Of String)
+        Dim thse As New List(Of String)
+        Dim gotFile As Boolean = False
+
+        For i = 0 To props.Count - 1
+            Dim v = props(i).Trim
+            If String.IsNullOrWhiteSpace(v) Then Continue For
+            Dim ch = v.Split(" ")
+
+            Dim ddt = ch(1).Trim.ToLower
+            Dim field = ch(2).Trim
+
+            ths.Add(<![CDATA[<th class="text-center">role</th>]]>.Value.Replace("role", field))
+            thse.Add(<![CDATA[<th class="text-center"></th>]]>.Value)
+
+            If field.ToLower <> "id" AndAlso (field.ToLower.EndsWith("id") Or field.ToLower.EndsWith("code")) AndAlso ddt.Contains("int") Then
+
+            ElseIf ddt.Contains("bool") Then
+
+            ElseIf ddt.StartsWith("byte[]") Then
+
+            Else
+
+            End If
+
+            ' FORMS
+            If i = 0 Then
+
+            End If
+
+            If field.ToLower = "id" Then
+
+                Continue For
+            End If
+
+            If ddt.Contains("string") Then
+
+                Select Case field.ToLower
+                    Case "email"
+
+                    Case "pass", "password", "pwd", "syspassword"
+
+                    Case Else
+
+                End Select
+
+            ElseIf ddt.Contains("bool") Then
+
+            ElseIf ddt.Contains("int") Or ddt.Contains("decimal") Or ddt.Contains("double") Then
+
+                If field.ToLower.EndsWith("id") Or field.ToLower.EndsWith("code") Then
+
+                Else
+
+                End If
+
+            ElseIf ddt.StartsWith("date") Then
+
+                If ddt.Contains("time") Then
+
+                Else
+
+                End If
+
+            ElseIf ddt.StartsWith("byte[]") Then
+
+                gotFile = True
+            End If
+
+
+        Next
 
     End Sub
 End Class
