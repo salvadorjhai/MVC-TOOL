@@ -3470,7 +3470,6 @@ public class TownModelDataAccess
                                 if ($(this).val().trim().length == 0) {
                                     $(this).attr('data-id', null);
                                 }
-                            }).on('keyup change', function (s) {
                                 if ($(this).is(":visible")) {
                                     $(this).closest('form').data('isDirty', true);
                                 }
@@ -3513,20 +3512,16 @@ public class TownModelDataAccess
                                         }
 
                                     }).on('onDataRequestSuccess', function (e, result) {
-                                        // console.log('onDataRequestSuccess: ', result);
-
+                                        
                                     }).on('onSetSelectValue', function (e, selectedData, selectedRawData) {
-                                        //console.log('onSetSelectValue: ', e.target.value, selectedData, selectedRawData);
+                                        $(this).closest('form').data('isDirty', true);
 
                                     }).on('onUnsetSelectValue', function () {
-                                        //console.log('onUnsetSelectValue');
-
+                                        
                                     }).on('onShowDropdown', function (e, data) {
-                                        //console.log('onShowDropdown', e.target.value, data);
-
+                                        
                                     }).on('onHideDropdown', function (e, data) {
-                                        //console.log('onHideDropdown', e.target.value, data);
-
+                                        
                                     });
 
                                 },
