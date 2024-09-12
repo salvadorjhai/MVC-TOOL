@@ -3470,7 +3470,11 @@ public class TownModelDataAccess
                                 if ($(this).val().trim().length == 0) {
                                     $(this).attr('data-id', null);
                                 }
-                            })
+                            }).on('keyup change', function (s) {
+                                if ($(this).is(":visible")) {
+                                    $(this).closest('form').data('isDirty', true);
+                                }
+                            });
                         }
 
                         if (!brandsData) {
