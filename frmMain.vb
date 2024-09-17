@@ -3451,6 +3451,8 @@ public class TownModelDataAccess
             Dim ddt = ch(1).Trim.ToLower
             Dim field = ch(2).Trim
 
+            If {"statuslvl", "madebyid", "madedate", "lastupdated", "updatedbyid"}.Contains(field) Then Continue For
+
             dtColDef.Add(<![CDATA[ { "data": "brand", "autoWidth": true } ]]>.Value.Replace("brand", field).TrimEnd)
 
             ' TABLE
@@ -3908,7 +3910,7 @@ public class TownModelDataAccess
                 ],
                 aoColumnDefs: [
                     {
-                        "width": "100px",
+                        "width": "50px",
                         "aTargets": [0], // target column
                         "mData": "id", // target data
                         "bSortable":false,
