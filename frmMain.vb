@@ -4102,6 +4102,12 @@ public class TownModelDataAccess
         Dim modelName = txtSource.Lines.Where(Function(x) x.Contains("public class ")).FirstOrDefault.Trim.Split(" ").LastOrDefault
 
         Dim template = <![CDATA[
+        string _connectionString;
+        public MemberModelController(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("connectionString").ToString();
+        }
+
         // get: api/members
         [HttpGet("members")]
         public ActionResult list()
