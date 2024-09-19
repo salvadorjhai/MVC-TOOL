@@ -3750,7 +3750,7 @@ public class TownModelDataAccess
         type: "POST",
         contentType: "application/json;charset=UTF-8",
         dataType: "json",
-        success: function (response) {
+        success: function (response, textStatus, jqXHR) {
             var msg;
             if (response.result == null) {
                 msg = response.toLowerCase();
@@ -3788,7 +3788,7 @@ public class TownModelDataAccess
                     data: formData,
                     contentType: false, // Important for multipart form data
                     processData: false, // Don't process data automatically
-                    success: function (response) {
+                    success: function (response, textStatus, jqXHR) {
                         var msg;
                         if (response.result == null) {
                             msg = response.toLowerCase();
@@ -3944,7 +3944,7 @@ public class TownModelDataAccess
                 type: "GET",
                 contentType: "application/json;charset=UTF-8",
                 dataType: "json",
-                success: function (result) {
+                success: function (result, textStatus, jqXHR) {
                     if (result.data != null) {
                         fillProductModelForm(result.data);
                         $('#mymodal h5').text('EDIT DETAILS');
