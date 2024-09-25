@@ -3599,11 +3599,21 @@ public class TownModelDataAccess
                 formdata2.Add(<![CDATA[ brand: $('#Item1_brand').val() ]]>.Value.Replace("brand", field).TrimEnd)
 
             ElseIf ddt.Contains("bool") Then
-                l3.Add(<![CDATA[ <div class="mb-2 form-check"> ]]>.Value)
-                l3.Add(<![CDATA[  @Html.CheckBoxFor(m => m.Item1.brand, new { @class = "form-check-input" }) ]]>.Value.Replace("brand", field))
-                l3.Add(<![CDATA[  @Html.LabelFor(m => m.Item1.brand, new { @class = "form-check-label" }) ]]>.Value.Replace("brand", field))
-                l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.Item1.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
-                l3.Add(<![CDATA[ </div> ]]>.Value)
+                l3.Add(<![CDATA[
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="pretty p-icon p-curve p-tada">
+                            @Html.TextBoxFor(m => m.Item1.brand, new { @type = "checkbox" })
+                            <div class="state p-primary-o">
+                                <i class="icon material-icons">done</i>
+                                @Html.LabelFor(m => m.Item1.brand)
+                            </div>
+                            @Html.ValidationMessageFor(m => m.Item1.brand, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+                ]]>.Value.Replace("brand", field))
+
                 '
                 formData.Add(<![CDATA[ formData.append("brand", $('#Item1_brand').prop('checked')); ]]>.Value.Replace("brand", field))
                 formdata2.Add(<![CDATA[ brand: $('#Item1_brand').prop('checked') ]]>.Value.Replace("brand", field).TrimEnd)
