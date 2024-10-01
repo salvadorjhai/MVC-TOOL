@@ -3779,9 +3779,12 @@ public class TownModelDataAccess
            
             }
         },
-        error: function (errormessage) {
+        error: function (jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status == 429) {
+                swal("Error!", errorThrown, "error");
+                return;
+            }
             swal("Error!", "Oops! something went wrong ... \n", "error");
-
         }
     });
 
@@ -3820,9 +3823,12 @@ public class TownModelDataAccess
                
                         }
                     },
-                    error: function (errormessage) {
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        if (jqXHR.status == 429) {
+                            swal("Error!", errorThrown, "error");
+                            return;
+                        }
                         swal("Error!", "Oops! something went wrong ... \n", "error");
-                    
                     }
                 });
 ]]>.Value.Replace("<FORM_DATA>", String.Join(vbCrLf, formData)).Replace("ProductModelForm", modelName & "Form").Replace("mymodal", $"{modelName}Modal").Replace("mytable", $"{modelName}Table")
@@ -3964,9 +3970,12 @@ public class TownModelDataAccess
                         swal("Error!", "There are no details to display.\n", "warning");
                     }
                 },
-                error: function (errormessage) {
+                error: function (jqXHR, textStatus, errorThrown) {
+                    if (jqXHR.status == 429) {
+                        swal("Error!", errorThrown, "error");
+                        return;
+                    }
                     swal("Error!", "Oops! something went wrong ... \n", "error");
-
                 }
             });
         }
