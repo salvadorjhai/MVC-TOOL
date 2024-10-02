@@ -3928,16 +3928,24 @@ public class TownModelDataAccess
                     {
                         "width": "50px",
                         "aTargets": [0], // target column
-                        "mData": "id", // target data
                         "bSortable":false,
                         "mRender": function (data, type, full, meta) {
-
-                            return '<a class="btn btn-primary btn-sm" style="font-size:smaller;" href="#" id="vw_' + data + '" ' +
-                                'onclick="showEditmymodal(\'' + data + '\')">' +
-                                '<span class="fas fa-edit"></span> EDIT</a> ';
+                            return `<button class="btn btn-primary btn-sm btnRowEdit" style="font-size:smaller;" id="vw_${full.id}" data-id="${full.id}" onclick="showEditmymodal(${full.id})"> <span class="fas fa-edit"></span> VIEW</button> `;
+                        },
+                        "className": "text-center text-uppercase"
+                    },
+                    {
+                        "width": "250px",
+                        "aTargets": [-1], // last column
+                        "mRender": function (data, type, full, meta) {
+                            var l1 = `<small class=""><strong class="themefont text-uppercase">Created By:</strong><br/> ${full.madebyname}</small><br/>`
+                            var l2 = `<small class="">${ToDateTime(full.madedate)}</small><br/>`
+                            var l3 = `<small class=""><strong class="themefont text-uppercase">Updated By:</strong><br/> ${full.updatedbyname}</small><br/>`
+                            var l4 = `<small class="">${ToDateTime(full.lastupdated)}</small><br/>`
+                            return l1 + l2 + l3 + l4;
 
                         },
-                        "className": "text-center"
+                        "className": "text-uppercase"
                     }
                 ]
 
