@@ -627,7 +627,7 @@ Public Class frmMain
         ' MODAL FORM
         l1.Add(<![CDATA[ 
 
-<div class="modal fade" id="mymodal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="modaltitle" aria-hidden="true">
+<div class="modal fade" id="mymodal" data-bs-focus="false" data-bs-backdrop="static" tabindex="-1" aria-labelledby="modaltitle" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -1561,7 +1561,7 @@ public class TownModelDataAccess
         ' MODAL FORM
         l1.Add(<![CDATA[ 
 
-<div class="modal fade" id="mymodal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="modaltitle" aria-hidden="true">
+<div class="modal fade" id="mymodal" data-bs-focus="false" data-bs-backdrop="static" tabindex="-1" aria-labelledby="modaltitle" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -2396,7 +2396,7 @@ public class TownModelDataAccess
 
         l1.Add(<![CDATA[ <button id="btnCreateNew_mymodal" type="button" class="btn btn-primary mt-2 mb-2" data-bs-toggle="modal" data-bs-target="#mymodal"> CREATE NEW </button> ]]>.Value.Trim)
         l1.Add(<![CDATA[
-<div class="modal fade" id="mymodal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="modaltitle" aria-hidden="true">
+<div class="modal fade" id="mymodal" data-bs-focus="false" data-bs-backdrop="static" tabindex="-1" aria-labelledby="modaltitle" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -3105,7 +3105,7 @@ public class TownModelDataAccess
         ' MODAL FORM
         l1.Add(<![CDATA[ 
 @*---------- Modal-----------*@
-<div class="modal fade" id="mymodal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="mymodalTitle" aria-hidden="true">
+<div class="modal fade" id="mymodal" data-bs-focus="false" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="mymodalTitle" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-dark text-uppercase text-light">
@@ -3722,7 +3722,7 @@ public class TownModelDataAccess
         l1.Add(<![CDATA[ 
 @section popups{
     @* --- modals and popups goes here --- *@
-    <div class="modal fade bg-opacity-75 modal2" id="mymodal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="mymodalTitle" aria-hidden="true">
+    <div class="modal fade bg-opacity-75 modal2" id="mymodal" role="dialog" data-bs-focus="false" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="mymodalTitle" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-dark text-uppercase text-light p-3">
