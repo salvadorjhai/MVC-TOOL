@@ -1250,6 +1250,8 @@ public class TownModelDataAccess
         'Dim modelName = txtSource.Lines.Where(Function(x) x.Contains("public class ")).FirstOrDefault.Trim.Split(" ").LastOrDefault
         'Dim props = txtSource.Lines.Where(Function(x) x.Contains("public ") And x.Contains(" class ") = False).ToList
 
+        tableName = StrConv(tableName, VbStrConv.ProperCase)
+
         Dim l1 As New List(Of String)
         l1.Add("public class TownModel {".Replace("Town", tableName))
         l1.Add("")
@@ -1313,7 +1315,20 @@ public class TownModelDataAccess
 
         l1.Add("}")
 
-        txtDest.Text = String.Join(vbCrLf, l1)
+        Dim fullModel = <![CDATA[
+public class TownModelFull : TownModel
+{
+    public string madebydisp { get; set; }
+    public string madebyname { get; set; }
+    public string updatedbydisp { get; set; }
+    public string updatedbyname { get; set; }
+}
+        ]]>.Value.Replace("Town", tableName)
+
+        txtDest.Text = String.Join(vbCrLf, l1) & vbCrLf & vbCrLf & fullModel
+
+
+
 
     End Sub
 
