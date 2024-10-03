@@ -1213,7 +1213,7 @@ public class TownModelDataAccess
                     if (resId > 0)
                     {
                         // return updated model (with id)
-                        model = model = GetById(model.id);
+                        model = GetById(model.id);
                     }
                     return resId;
 
@@ -4682,6 +4682,364 @@ public class TownModelFull : TownModel
 ]]>.Value
 
         txtDest.Text = normalPost
+
+    End Sub
+
+    Private Sub InFormDynamicTableToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles InFormDynamicTableToolStripMenuItem.Click
+        Dim des = <![CDATA[
+@{
+    ViewBag.Title = "COMPLAINT TYPES";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card card-condense">
+            <div class="card-header" style="border-bottom: none;">
+                <h4 data-collapse="#mycard-collapse"><span class="fas fa-search fs-6"></span> SEARCH</h4>
+                <div class="card-header-action">
+                    <a data-collapse="#mycard-collapse" class="btn btn-icon" href="#"><i class="fas fa-plus"></i></a>
+                </div>
+            </div>
+            <div class="collapse" id="mycard-collapse">
+                <div class="card-body">
+
+                </div>
+                <div class="card-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4><span class="fas fa-tags fs-6"></span> COMPLAINT TYPES</h4> (view, add, edit)
+                <div class="card-header-action">
+                    <button type="button" class="btn btn-success btnSave">
+                        <span class="far fa-thumbs-up"></span> SAVE CONFIGURATION
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <form id="dynform" autocomplete="off" novalidate="novalidate">
+
+                            <table id="multidata" class="table table-sm table-bordered table-responsive" style="width: 100%; font-size: smaller;">
+                                <thead>
+                                    <tr>
+                                        <th style="min-width: 32px;"></th>
+                                        <th>ARCHIVED</th>
+                                        <th class="col-lg-12">DESCRIPTION</th>
+                                        <th style="min-width: 24px;"></th>
+                                    </tr>
+                                </thead>
+                                <tfoot>
+                                    <tr class="">
+                                        <th colspan="4"><button type="button" class="btn btn-outline-primary btn-sm btnAdd" onclick="addNewTdItem()" style="border:none" data-bs-toggle="tooltip" data-placement="top" title="add"><span class="fas fa-plus-circle"></span></button></th>
+                                    </tr>
+                                </tfoot>
+                                <tbody>
+
+                                    @{
+                                        for (int i = 0; i < 15; i++)
+                                        {
+                                            <tr data-id="">
+                                                <td></td>
+                                                <td>
+                                                    <input name="description" value="" type="text" placeholder="" class="form-control form-control-sm" style="border-style:dashed;width:100%" onfocus="this.select();" onmouseup="return false;" />
+                                                    <div class="d-flex flex-row">
+                                                        <div class="m-2">
+                                                            <small class="">
+                                                                <strong class="themefont text-uppercase">Created By:</strong><br>
+                                                                <span name="madebyid">SALVADOR, JAIRISH DELA CRUZ</span>
+                                                            </small><br>
+                                                            <small class="" name="madedate">2024-10-02 09:33 AM</small>
+                                                        </div>
+                                                        <div class="m-2">
+                                                            <small class="">
+                                                                <strong class="themefont text-uppercase">Updated By:</strong><br>
+                                                                <span name="updatedbyid">SALVADOR, JAIRISH DELA CRUZ</span>
+                                                            </small><br>
+                                                            <small class="" name="lastupdated">2024-10-02 10:02 AM</small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+
+                                                <td class="text-center">
+                                                    <div class="pretty p-icon p-jelly p-round p-bigger">
+                                                        <input type="checkbox" name="isarchived" data-id="" checked="checked">
+                                                        <div class="state p-danger-o">
+                                                            <i class="icon fas fa-times"></i>
+                                                            <label></label>
+                                                        </div>
+                                                    </div>
+                                                </td>
+
+                                                <td class="text-center" data-bs-toggle="tooltip" data-placement="top" title="hold and drag to reorder">☰</td>
+
+                                            </tr>
+                                        }
+                                    }
+
+                                </tbody>
+                            </table>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            setTimeout(LoadList, 1)
+            $('.btnSave').on('click', function (e) {
+                event.preventDefault(); // Prevent the default form submission
+                // check if current form is valid
+                if (!$('#dynform').valid()) {
+                    swal("Something went wrong!", "Please fill all required field to proceed.", "error");
+                    return;
+                }
+
+                SaveList();
+
+            });
+        });
+
+        function LoadList() {
+            return $.ajax({
+                url: "/complaintstype/list",
+                type: "GET",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                success: function (response, textStatus, jqXHR) {
+                    displayTdList(response.data);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    swal("Error!", errorThrown, "error");
+                    return;
+                }
+            });
+        }
+
+        function SaveList() {
+
+            var model = {
+                id: _.toNumber($('#id').val()),
+                description: $('#description').val(),
+                isarchived: $('#isarchived').prop('checked'),
+                displayindex: _.toNumber($('#displayindex').val())
+            }
+
+            // Make the AJAX POST request
+            var formData = new FormData(); // Get the form data
+
+            var err = false;
+            var l1 = [];
+            $('#multidata tr:has(input.description)').each((i, e) => {
+                
+                var description = $(e).find("input.description").val();
+                var isarchived = $(e).find("input[name=isarchived]").prop('checked');
+
+                formData.append(`model[${i}].id`, e.dataset.id);
+                formData.append(`model[${i}].description`, description );
+                formData.append(`model[${i}].isarchived`, isarchived );
+                formData.append(`model[${i}].displayindex`, i);
+
+                if (l1.includes(description)) {
+                    err = true;
+                    swal("Duplicate Found!", "Please enter unique description only.", "error");
+                    return false; // break
+                }
+
+                l1.push(description);
+            })
+
+            if (err) { return; }
+
+            $.ajax({
+                type: "POST",
+                url: "/complaintstype/upsert",
+                data: formData,
+                contentType: false, // Important for multipart form data
+                processData: false, // Don't process data automatically
+                success: function (response, textStatus, jqXHR) {
+                    var msg;
+                    if (response.result == null) {
+                        msg = response.toLowerCase();
+                    } else {
+                        msg = response.result.toLowerCase();
+                    }
+                    if (msg.includes("success")) {
+                        displayTdList(response.data);
+                        swal("Saved!", "Record has been saved", "success");
+
+                    } else if (msg.includes("nochange")) {
+                       
+                    } else {
+                        swal("Error", "An error occured: " + msg + "\n", "warning");
+
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    if (jqXHR.status == 429) {
+                        swal("Error!", errorThrown, "error");
+                        return;
+                    }
+                    swal("Error!", "Oops! something went wrong ... \n", "error");
+                }
+            });
+
+        }
+
+        var dragableTable;
+
+        function displayTdList(data) {
+            $('#multidata>tbody').empty()
+
+            if (!data) {
+                return;
+            }
+
+            if (data == null || data.length == 0) {
+                return
+            }
+
+            var lg = ""
+            for (var i = 0; i < data.length; i++) {
+                var f = data[i];
+
+                addTdItem(f.id);
+
+                $(`tr[data-id=${f.id}] input.description`).val(f.description).trigger('change');
+                ($(`tr[data-id=${f.id}] input[name=isarchived]`)[0]).checked = f.isarchived;
+
+                if (f.madebyname.trim().length > 0) {
+                    $(`tr[data-id=${f.id}] div[name=made]`).attr('style', null)
+                    $(`tr[data-id=${f.id}] span[name=madebyid]`).text(f.madebyname);
+                    $(`tr[data-id=${f.id}] small[name=madedate]`).text(ToDateTime(f.madedate));
+                }
+
+                if (f.updatedbyname.trim().length > 0) {
+                    $(`tr[data-id=${f.id}] div[name=updated]`).attr('style', null)
+                    $(`tr[data-id=${f.id}] span[name=updatedbyid]`).text(f.updatedbyname);
+                    $(`tr[data-id=${f.id}] small[name=lastupdated]`).text(ToDateTime(f.lastupdated));
+                }
+
+            }
+
+            $("#dynform").removeData("validator");
+            $("#dynform").removeData("unobtrusiveValidation");
+            InitValidator()
+            $.validator.unobtrusive.parse("#dynform");
+            
+        }
+
+        function addNewTdItem() {
+            addTdItem(-1);
+
+            $("#dynform").removeData("validator");
+            $("#dynform").removeData("unobtrusiveValidation");
+            InitValidator()
+           $.validator.unobtrusive.parse("#dynform");
+            
+        }
+
+        var eleId = 0;
+        function addTdItem(id) {
+            eleId += 1;
+
+            $('#multidata>tbody').append(`
+                    <tr data-id="${id}">
+                        <td><button type="button" class="btn btn-outline-danger btn-sm" onclick="removeTdItem(this)" style="border:none" data-bs-toggle="tooltip" data-placement="top" title="remove"><span class="fas fa-times-circle"></span></button> </td>
+
+                        <td class="text-center">
+                            <div class="pretty p-icon p-jelly p-round p-bigger">
+                                <input type="checkbox" name="isarchived" data-id="" class="isarchived">
+                                <div class="state p-danger-o">
+                                    <i class="icon fas fa-times"></i>
+                                    <label></label>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td>
+                            <input id="description_${eleId}" name="description_${eleId}" value="" type="text" placeholder="enter complaint description" class="form-control form-control-sm description" 
+                            style="border-style:dashed;width:100%;font-weight: 700;text-transform: uppercase;" onfocus="this.select();" onmouseup="return false;" 
+                            data-val="true" data-val-required="Description is required." >
+
+                            <span class="field-validation-valid text-danger" data-valmsg-for="description_${eleId}" data-valmsg-replace="true"></span>
+
+                            <div class="d-flex flex-row">
+                                <div class="m-2" name="made" style="display: none;">
+                                    <small class="">
+                                        <strong class="themefont text-uppercase">Created By:</strong><br>
+                                        <span name="madebyid"></span>
+                                    </small><br>
+                                    <small class="" name="madedate"></small>
+                                </div>
+                                <div class="m-2" name="updated" style="display: none;">
+                                    <small class="">
+                                        <strong class="themefont text-uppercase">Updated By:</strong><br>
+                                        <span name="updatedbyid">NEW</span>
+                                    </small><br>
+                                    <small class="" name="lastupdated"></small>
+                                </div>
+                            </div>
+
+                        </td>
+
+                        <td class="text-center" data-bs-toggle="tooltip" data-placement="top" data-bs-original-title="hold and drag to reorder">☰</td>
+                    </tr>
+                `);
+
+            if (!dragableTable) {
+                // Initialize the draggable functionality and get the addNewRow function
+                var dr = $('#multidata>tbody>tr:last()>td').length - 1
+                dragableTable = makeTableRowsDraggable('multidata', dr);
+            } else {
+                dragableTable.makeRowDraggable($('#multidata>tbody>tr:last()')[0]);
+            }
+
+            // disable remove
+            if (id > 0) {
+                $('#multidata>tbody>tr:last() button.btn.btn-outline-danger.btn-sm').remove()
+            }
+
+            // return last added row
+            return $('#multidata>tbody>tr:last()')[0];
+        }
+
+        function removeTdItem(s) {
+            // if data is already saved, ask user to confirm
+            if ($(s).parent().parent().data().id > 0) {
+                swal2({
+                    title: 'Remove?',
+                    text: '<b>Are you sure you want to remove this data?</b><br><br><small>(you will still need to press save to commit changes)<small>',
+                    icon: 'warning',
+                    dangerMode: true,
+                }, () => { $(s).parent().parent().remove(); });
+
+            } else {
+                $(s).parent().parent().remove();
+            }
+        }
+
+
+    </script>
+}
+]]>.Value
+
+        txtDest.Text = des
 
     End Sub
 End Class
