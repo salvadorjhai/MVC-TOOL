@@ -4163,6 +4163,12 @@ public class TownModelDataAccess
 
 
         Dim template = <![CDATA[
+
+        // top level
+        [Route("api")]
+        [ApiController]
+
+        // inside class
         string _connectionString;
         public ControllerNameController(IConfiguration configuration)
         {
