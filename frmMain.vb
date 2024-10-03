@@ -3702,7 +3702,7 @@ public class TownModelDataAccess
             </div>
             <div class="card-body">
                 <button type="button" class="btn btn-icon icon-left btn-primary text-uppercase mb-3" onclick="showmymodal()"><span class="fas fa-plus-square"></span> Add New </button>
-                <table class="table table-striped" id="mytable" style="width:100%">
+                <table class="table table-hover" id="mytable" style="width:100%">
                     <thead>
                         <tr>
                             <TH_HEADER>
