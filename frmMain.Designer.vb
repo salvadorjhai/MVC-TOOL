@@ -33,6 +33,7 @@ Partial Class frmMain
         Me.DataAccessBuilderToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ControllerBuilderToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.UIControllerBuilderToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.DataAccessOnUIToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripButton3 = New System.Windows.Forms.ToolStripDropDownButton()
         Me.DefaultToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -63,7 +64,7 @@ Partial Class frmMain
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.ToolStripStatusLabel1 = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
-        Me.DataAccessOnUIToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.GETToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -133,6 +134,12 @@ Partial Class frmMain
         Me.UIControllerBuilderToolStripMenuItem.Name = "UIControllerBuilderToolStripMenuItem"
         Me.UIControllerBuilderToolStripMenuItem.Size = New System.Drawing.Size(207, 22)
         Me.UIControllerBuilderToolStripMenuItem.Text = "UI Controller Builder"
+        '
+        'DataAccessOnUIToolStripMenuItem
+        '
+        Me.DataAccessOnUIToolStripMenuItem.Name = "DataAccessOnUIToolStripMenuItem"
+        Me.DataAccessOnUIToolStripMenuItem.Size = New System.Drawing.Size(207, 22)
+        Me.DataAccessOnUIToolStripMenuItem.Text = "DataAccess on Controller"
         '
         'ToolStripSeparator3
         '
@@ -232,7 +239,7 @@ Partial Class frmMain
         '
         'ToolStripButton2
         '
-        Me.ToolStripButton2.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.FormPOSTToolStripMenuItem, Me.FormPOSTJSToolStripMenuItem, Me.DatatableGETToolStripMenuItem, Me.Select2AjaxToolStripMenuItem, Me.BsSuggestToolStripMenuItem})
+        Me.ToolStripButton2.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.GETToolStripMenuItem, Me.FormPOSTToolStripMenuItem, Me.FormPOSTJSToolStripMenuItem, Me.DatatableGETToolStripMenuItem, Me.Select2AjaxToolStripMenuItem, Me.BsSuggestToolStripMenuItem})
         Me.ToolStripButton2.Image = CType(resources.GetObject("ToolStripButton2.Image"), System.Drawing.Image)
         Me.ToolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripButton2.Name = "ToolStripButton2"
@@ -243,31 +250,31 @@ Partial Class frmMain
         'FormPOSTToolStripMenuItem
         '
         Me.FormPOSTToolStripMenuItem.Name = "FormPOSTToolStripMenuItem"
-        Me.FormPOSTToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.FormPOSTToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.FormPOSTToolStripMenuItem.Text = "Form POST"
         '
         'FormPOSTJSToolStripMenuItem
         '
         Me.FormPOSTJSToolStripMenuItem.Name = "FormPOSTJSToolStripMenuItem"
-        Me.FormPOSTJSToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.FormPOSTJSToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.FormPOSTJSToolStripMenuItem.Text = "Form POST (JS)"
         '
         'DatatableGETToolStripMenuItem
         '
         Me.DatatableGETToolStripMenuItem.Name = "DatatableGETToolStripMenuItem"
-        Me.DatatableGETToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.DatatableGETToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.DatatableGETToolStripMenuItem.Text = "Datatable GET"
         '
         'Select2AjaxToolStripMenuItem
         '
         Me.Select2AjaxToolStripMenuItem.Name = "Select2AjaxToolStripMenuItem"
-        Me.Select2AjaxToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.Select2AjaxToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.Select2AjaxToolStripMenuItem.Text = "Select2 Ajax"
         '
         'BsSuggestToolStripMenuItem
         '
         Me.BsSuggestToolStripMenuItem.Name = "BsSuggestToolStripMenuItem"
-        Me.BsSuggestToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.BsSuggestToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.BsSuggestToolStripMenuItem.Text = "bsSuggest"
         '
         'ToolStripSeparator2
@@ -340,11 +347,11 @@ Partial Class frmMain
         Me.ToolStripStatusLabel1.Spring = True
         Me.ToolStripStatusLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
-        'DataAccessOnUIToolStripMenuItem
+        'GETToolStripMenuItem
         '
-        Me.DataAccessOnUIToolStripMenuItem.Name = "DataAccessOnUIToolStripMenuItem"
-        Me.DataAccessOnUIToolStripMenuItem.Size = New System.Drawing.Size(207, 22)
-        Me.DataAccessOnUIToolStripMenuItem.Text = "DataAccess on Controller"
+        Me.GETToolStripMenuItem.Name = "GETToolStripMenuItem"
+        Me.GETToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.GETToolStripMenuItem.Text = "GET"
         '
         'frmMain
         '
@@ -410,4 +417,5 @@ Partial Class frmMain
     Friend WithEvents ToolStripSeparator7 As ToolStripSeparator
     Friend WithEvents DynamicMultiInputToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents DataAccessOnUIToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents GETToolStripMenuItem As ToolStripMenuItem
 End Class

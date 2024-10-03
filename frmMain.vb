@@ -4217,6 +4217,8 @@ public class TownModelDataAccess
 
         Dim modelName = txtSource.Lines.Where(Function(x) x.Contains("public class ")).FirstOrDefault.Trim.Split(" ").LastOrDefault
 
+        Dim ControllerName = Regex.Replace(modelName, "model", "", RegexOptions.IgnoreCase).Trim
+
         Dim template = <![CDATA[
         string baseURL = ConfigurationManager.AppSettings.Get("APISERVER");
 
@@ -4224,8 +4226,9 @@ public class TownModelDataAccess
         public async Task<string> list()
         {
             Response.ContentType = "application/json";
+
             List<MemberModel> model = new List<MemberModel>();
-            string results = await HelperUtils.API_GET(baseURL + "api/uom");
+            string results = await HelperUtils.API_GET(baseURL + "api/endpoint");
             if (!string.IsNullOrWhiteSpace(results))
                 model = JsonConvert.DeserializeObject<List<MemberModel>>(results);
 
@@ -4235,8 +4238,9 @@ public class TownModelDataAccess
         public async Task<string> getbyid(int id)
         {
             Response.ContentType = "application/json";
+
             MemberModel model = new MemberModel();
-            string results = await HelperUtils.API_GET(baseURL + $"api/uom/{id}");
+            string results = await HelperUtils.API_GET(baseURL + $"api/endpoint/{id}");
             if (!string.IsNullOrWhiteSpace(results))
                 model = JsonConvert.DeserializeObject<MemberModel>(results);
 
@@ -4246,13 +4250,15 @@ public class TownModelDataAccess
         [HttpPost]
         public async Task<string> upsert(MemberModel model)
         {
+            Response.ContentType = "application/json";
+
             Dictionary<string, object> activeuser = HelperUtils.GetActiveUser();
-            model.updatedby = activeuser["id"].ToString().ParseInt();
+            model.updatedbyid = activeuser["id"].ToString().ParseInt();
             model.lastupdated = DateTime.Now;
 
             string msg = string.Empty;
             var myContent = JsonConvert.SerializeObject(model);
-            var res = await HelperUtils.API_POST2(baseURL + "api/uom/upsert", myContent);
+            var res = await HelperUtils.API_POST2(baseURL + "api/endpoint/upsert", myContent);
             msg = res.Content.ReadAsStringAsync().Result;
             if (!res.IsSuccessStatusCode)
             {
@@ -4266,8 +4272,9 @@ public class TownModelDataAccess
 ]]>.Value
 
         txtDest.Text = template.Replace("MemberModel", modelName).Trim.
-            Replace("members", modelName.ToLower)
-
+            Replace("members", modelName.ToLower).
+            Replace("ControllerName", ControllerName).
+            Replace("endpoint", ControllerName.ToLower)
 
     End Sub
 
@@ -4632,6 +4639,28 @@ public class TownModelDataAccess
 
         txtDest.Text = txtDest.Text.Replace("TownModel", modelName).
             Replace("b_towns", tableName)
+
+    End Sub
+
+    Private Sub GETToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles GETToolStripMenuItem.Click
+
+        Dim normalPost = <![CDATA[
+            return $.ajax({
+                    url: "/{controller}/{action}",
+                    type: "GET",
+                    contentType: "application/json;charset=UTF-8",
+                    dataType: "json",
+                    success: function (response, textStatus, jqXHR) {
+                        console.log(response);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        swal("Error!", errorThrown, "error");
+                        return;
+                    }
+                });
+]]>.Value
+
+        txtDest.Text = normalPost
 
     End Sub
 End Class
