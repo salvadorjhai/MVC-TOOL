@@ -3693,6 +3693,37 @@ public class TownModelDataAccess
 
         ' TABLE
         l1.Add(<![CDATA[
+<div class="row">
+    <div class="col-12">
+        <div class="card card-condense">
+            <div class="card-header" style="border-bottom: none;">
+                <h4><span class="fas fa-tags fs-6"></span> JOB ORDER COMPLAINT</h4> (view, add, edit)
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card card-condense">
+            <div class="card-header" style="border-bottom: none;">
+                <h4 data-collapse="#mycard-collapse"><span class="fas fa-search fs-6"></span> SEARCH</h4>
+                <div class="card-header-action">
+                    <a data-collapse="#mycard-collapse" class="btn btn-icon" href="#"><i class="fas fa-plus"></i></a>
+                </div>
+            </div>
+            <div class="collapse" id="mycard-collapse">
+                <div class="card-body">
+                    
+                </div>
+                <div class="card-footer">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @*---------- Datatable -----------*@
 <div class="row">
     <div class="col-12">
