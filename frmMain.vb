@@ -4470,4 +4470,164 @@ public class TownModelDataAccess
         Next
 
     End Sub
+
+    Private Sub DataAccessOnUIToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles DataAccessOnUIToolStripMenuItem.Click
+
+        If txtSource.Text.Contains("public class") = False Then
+            txtDest.Text = "You forgot your Model ..."
+            Return
+        End If
+
+        Dim modelName = txtSource.Lines.Where(Function(x) x.Contains("public class ")).FirstOrDefault.Trim.Split(" ").LastOrDefault
+
+        If frmTableName.ShowDialog <> DialogResult.OK Then
+            Return
+        End If
+
+        If String.IsNullOrWhiteSpace(frmTableName.txtTableName.Text) Then
+            Return
+        End If
+
+        Dim tableName = frmTableName.txtTableName.Text.Trim
+
+        Dim template = <![CDATA[
+        private static SqlDb DB;
+
+        // ctor
+        DB = new SqlDb(ConfigurationManager.ConnectionStrings["getconnstr"].ToString());
+
+        #region "MemberModel"
+        public async Task<string> list()
+        {
+            Response.ContentType = "application/json";
+
+            List<MemberModel> list = new List<MemberModel>();
+            DataTable dt = DB.ExecuteToDatatable("SELECT * FROM b_towns order by name asc");
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                foreach (DataRow dr in dt.Rows)
+                {
+                    MemberModel model = HelperUtils.BindFrom<MemberModel>(dr);
+                    list.Add(model);
+                }
+            }
+
+            return Newtonsoft.Json.JsonConvert.SerializeObject(new { data = list });
+        }
+
+        public async Task<string> getbyid(int id)
+        {
+            Response.ContentType = "application/json";
+
+            MemberModel model = new MemberModel();
+            DataRow dr = DB.QuerySingleResult("SELECT * FROM b_towns WHERE id = " + id, null);
+            if (dr != null)
+            {
+                model = HelperUtils.BindFrom<TownModel>(dr);
+            }
+
+            return Newtonsoft.Json.JsonConvert.SerializeObject(new { data = model });
+        }
+
+        [HttpPost]
+        public async Task<string> upsert(MemberModel model)
+        {
+            Response.ContentType = "application/json";
+
+            Dictionary<string, object> activeuser = HelperUtils.GetActiveUser();
+            model.updatedby = activeuser["id"].ToString().ParseInt();
+            model.lastupdated = DateTime.Now;
+
+            if (string.IsNullOrWhiteSpace(model.name))
+            {
+                Response.StatusCode = 400;
+                return Newtonsoft.Json.JsonConvert.SerializeObject(new { data = origData, result = "nochange" });
+            }
+
+            // for insert
+            if (model.id<=0)
+            {
+                // check for dups
+                Dictionary<string, object> param = new Dictionary<string, object>();
+                param["code"] = model.code;
+
+                DataRow exists = DB.QuerySingleResult($"SELECT * FROM b_towns WHERE code=@code", param);
+                if (DB.LastError != null) { return OleDB.EXEC_ERROR; }
+                if (exists != null) { return OleDB.DUPLICATE; }
+
+                // prepare 
+                param = Utils.HelperUtils.ToDictionary(model);
+                param["madebyid"] = model.updatedbyid;
+                param["madedate"] = model.lastupdated.Value;
+                param["updatedbyid"] = model.updatedbyid;
+                param["lastupdated"] = model.lastupdated.Value;
+
+                // insert
+                var resId = DB.InsertParam("b_towns", param, true);
+                if (DB.LastError != null) { return OleDB.EXEC_ERROR; }
+                if (resId > 0)
+                {
+                    // return updated model (with id)
+                    model = GetById(resId);
+                }
+                return resId;
+
+            } else
+            {
+                // for updating
+
+                // verify id
+                var orig = GetById(model.id);
+                if (orig != null && orig.id > 0)
+                {
+                    // return if nothing to update
+                    if (orig == model)
+					{
+						return OleDB.NO_CHANGES;
+					}
+
+                    Dictionary<string, object> param = new Dictionary<string, object>();
+                    param["code"] = model.code;
+
+                    // check for duplicate
+                    DataRow exists = DB.QuerySingleResult($"SELECT * FROM b_towns WHERE code=@code AND id <> {model.id}", param);
+                    if (DB.LastError != null) { return OleDB.EXEC_ERROR; }
+                    if (exists != null) { return OleDB.DUPLICATE; }
+
+                    // prepare 
+                    param = Utils.HelperUtils.ToDictionary(model);
+                    param.Remove("madedate"); // NOT NEEDED for update
+                    param.Remove("madebyid"); // NOT NEEDED for update
+                    param["updatedbyid"] = model.updatedbyid;
+                    param["lastupdated"] = model.lastupdated.Value;
+
+                    // update
+                    // return DB.UpdateParam("b_towns", $"WHERE id={model.id}", param);
+                    var resId = DB.UpdateParam("b_towns", $"WHERE id={model.id}", param);
+                    if (DB.LastError != null) { return OleDB.EXEC_ERROR; }
+                    if (resId > 0)
+                    {
+                        // return updated model (with id)
+                        model = model = GetById(model.id);
+                    }
+                    return resId;
+
+                }
+            }
+
+            Response.StatusCode = 500;
+            Response.StatusDescription = "Error";
+            return Newtonsoft.Json.JsonConvert.SerializeObject(new { data = model, result = "error" });
+
+        }
+        #endregion
+]]>.Value
+
+        txtDest.Text = template.Replace("MemberModel", modelName).Trim.
+            Replace("members", modelName.ToLower)
+
+        txtDest.Text = txtDest.Text.Replace("TownModel", modelName).
+            Replace("b_towns", tableName)
+
+    End Sub
 End Class
