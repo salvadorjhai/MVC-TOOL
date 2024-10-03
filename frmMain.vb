@@ -4164,13 +4164,13 @@ public class TownModelDataAccess
 
         Dim template = <![CDATA[
         string _connectionString;
-        public ControllerName(IConfiguration configuration)
+        public ControllerNameController(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("connectionString").ToString();
         }
 
-        // get: api/ControllerName
-        [HttpGet("ControllerName")]
+        // get: api/endpoint
+        [HttpGet("endpoint")]
         public ActionResult list()
         {
             List<MemberModel> list = new MemberModelDataAccess(_connectionString).List();
@@ -4178,8 +4178,8 @@ public class TownModelDataAccess
             return BadRequest();
         }
 
-        // get: api/ControllerName/{id}
-        [HttpGet("ControllerName/{id:int}")]
+        // get: api/endpoint/{id}
+        [HttpGet("endpoint/{id:int}")]
         public ActionResult getbyid(int id)
         {
             MemberModel model = new MemberModelDataAccess(_connectionString).GetById(id);
@@ -4187,8 +4187,8 @@ public class TownModelDataAccess
             return NotFound();
         }
 
-        // post: api/ControllerName/upsert
-        [HttpPost("ControllerName/upsert")]
+        // post: api/endpoint/upsert
+        [HttpPost("endpoint/upsert")]
         public IActionResult upsert(MemberModel data)
         {
             //MemberModel data = HelperUtils.BindFrom<MemberModel>(Request.Form);
@@ -4201,8 +4201,8 @@ public class TownModelDataAccess
 ]]>.Value
 
         txtDest.Text = template.Replace("MemberModel", modelName).Trim.
-            Replace("ControllerName", ControllerName.ToLower).
-        Replace("ControllerName", ControllerName)
+            Replace("ControllerName", ControllerName).
+            Replace("endpoint", ControllerName.ToLower)
 
 
 
