@@ -3466,7 +3466,12 @@ public class TownModelFull : TownModel
             Dim ddt = ch(1).Trim.ToLower
             Dim field = ch(2).Trim
 
-            If {"statuslvl", "madebyid", "madedate", "lastupdated", "updatedbyid"}.Contains(field) Then Continue For
+            If {"statuslvl", "madebyid", "madedate", "lastupdated", "updatedbyid"}.Contains(field) Then
+                If field.ToLower = "lastupdated" Then
+                    dtColDef.Add(<![CDATA[ { "data": "brand", "autoWidth": true } ]]>.Value.Replace("brand", field).TrimEnd)
+                End If
+                Continue For
+            End If
 
             dtColDef.Add(<![CDATA[ { "data": "brand", "autoWidth": true } ]]>.Value.Replace("brand", field).TrimEnd)
 
@@ -3981,14 +3986,25 @@ public class TownModelFull : TownModel
                         "className": "text-center text-uppercase"
                     },
                     {
-                        "width": "250px",
-                        "aTargets": [-1], // last column
+                        "width": "450px",
+                        "aTargets": [-1],
                         "mRender": function (data, type, full, meta) {
-                            var l1 = `<small class=""><strong class="themefont text-uppercase">Created By:</strong><br/> ${full.madebyname}</small><br/>`
-                            var l2 = `<small class="">${ToDateTime(full.madedate)}</small><br/>`
-                            var l3 = `<small class=""><strong class="themefont text-uppercase">Updated By:</strong><br/> ${full.updatedbyname}</small><br/>`
-                            var l4 = `<small class="">${ToDateTime(full.lastupdated)}</small><br/>`
-                            return l1 + l2 + l3 + l4;
+                            return `
+                            <div class="d-flex flex-row">
+                                <div class="me-2">
+                                    <small>
+                                        <strong class="themefont text-uppercase">Created By:</strong><br/> ${full.madebyname} <br/>
+                                        ${ToDateTime(full.madedate)}
+                                    </small>
+                                </div>
+                                <div class="me-2">
+                                    <small>
+                                        <strong class="themefont text-uppercase">Updated By:</strong><br/> ${full.updatedbyname} <br/>
+                                        ${ToDateTime(full.lastupdated)}
+                                    </small>
+                                </div>
+                            </div>
+                            `
 
                         },
                         "className": "text-uppercase"
