@@ -3469,6 +3469,7 @@ public class TownModelFull : TownModel
             If {"statuslvl", "madebyid", "madedate", "lastupdated", "updatedbyid"}.Contains(field) Then
                 If field.ToLower = "lastupdated" Then
                     dtColDef.Add(<![CDATA[ { "data": "brand", "autoWidth": true } ]]>.Value.Replace("brand", field).TrimEnd)
+                    lh.Add(<![CDATA[ <th>METER BRAND</th> ]]>.Value.Replace("METER BRAND", field.ToUpper))
                 End If
                 Continue For
             End If
