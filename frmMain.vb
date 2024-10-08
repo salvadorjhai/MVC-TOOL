@@ -1298,7 +1298,7 @@ public class TownModelDataAccess
 
                 l2.Add(<![CDATA[ public DateTime? name { get; set; } ]]>.Value.Replace("name", ddField))
 
-            ElseIf ddType.Contains("numeric") Or ddType.Contains("decimal") Or ddType.Contains("float") Then
+            ElseIf ddType.Contains("numeric") Or ddType.Contains("decimal") Or ddType.Contains("float") Or ddType.Contains("real") Then
                 l2.Add(<![CDATA[ public decimal name { get; set; } ]]>.Value.Replace("name", ddField))
 
             ElseIf ddType.Contains("bit") Then
