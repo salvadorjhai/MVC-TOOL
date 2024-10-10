@@ -1,4 +1,5 @@
 ﻿Imports System.ComponentModel
+Imports System.Security.Cryptography
 Imports System.Text.RegularExpressions
 
 Public Class frmMain
@@ -5057,6 +5058,162 @@ public class TownModelFull : TownModel
 ]]>.Value
 
         txtDest.Text = des
+
+    End Sub
+
+    Private Sub DataAccessOnControllerAPIToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles DataAccessOnControllerAPIToolStripMenuItem.Click
+        If txtSource.Text.Contains("public class") = False Then
+            txtDest.Text = "You forgot your Model ..."
+            Return
+        End If
+
+        Dim modelName = txtSource.Lines.Where(Function(x) x.Contains("public class ")).FirstOrDefault.Trim.Split(" ").LastOrDefault
+        modelName = Regex.Replace(modelName, "Model", "", RegexOptions.IgnoreCase).Trim
+
+        If frmTableName.ShowDialog <> DialogResult.OK Then
+            Return
+        End If
+
+        If String.IsNullOrWhiteSpace(frmTableName.txtTableName.Text) Then
+            Return
+        End If
+
+        Dim tableName = frmTableName.txtTableName.Text.Trim
+
+        Dim dest = <![CDATA[
+        [Route("api")]
+        [ApiController]
+        public class MemberController : ControllerBase
+        {
+            private OleDB DB;
+            public MemberController(IConfiguration configuration)
+            {
+                var conn = configuration.GetConnectionString("connectionString").ToString();
+                DB = new OleDB(conn);
+            }
+
+            // get: api/endpoint
+            [HttpGet("endpoint")]
+            public ActionResult list()
+            {
+                List<NewMemberModel> list = new List<NewMemberModel>();
+                DataTable dt = DB.ExecuteToDatatable("SELECT * FROM b_newapplication order by name asc");
+                if (dt != null && dt.Rows.Count > 0)
+                {
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        NewMemberModel model = HelperUtils.BindFrom<NewMemberModel>(dr);
+                        list.Add(model);
+                    }
+                }
+                if (list != null) { return Ok(list); }
+                return BadRequest();
+            }
+
+            // get: api/endpoint/{id}
+            [HttpGet("endpoint/{id:int}")]
+            public ActionResult getbyid(int id)
+            {
+                DataRow dr = DB.QuerySingleResult("SELECT * FROM b_newapplication WHERE id = " + id, null);
+                NewMemberModel model = null;
+                if (dr != null)
+                {
+                    model = HelperUtils.BindFrom<NewMemberModel>(dr);
+                }
+
+                if (model != null) { return Ok(model); }
+                return NotFound();
+            }
+
+            // post: api/endpoint/upsert
+            [HttpPost("endpoint/upsert")]
+            public ActionResult upsert(NewMemberModel data)
+            {
+                if (string.IsNullOrWhiteSpace(model.name))
+                {
+                    return BadRequest();
+                }
+
+                // for insert
+                if (model.id<=0)
+                {
+                    // check for dups
+                    Dictionary<string, object> param = new Dictionary<string, object>();
+                    param["code"] = model.code;
+
+                    DataRow exists = DB.QuerySingleResult($"SELECT * FROM b_newapplication WHERE code=?", param);
+                    if (DB.LastError != null) { return BadRequest(); }
+                    if (exists != null) { return Conflict(); }
+
+                    // prepare 
+                    param = Utils.HelperUtils.ToDictionary(model);
+                    param["madebyid"] = model.updatedbyid;
+                    param["madedate"] = model.lastupdated.Value;
+                    param["updatedbyid"] = model.updatedbyid;
+                    param["lastupdated"] = model.lastupdated.Value;
+
+                    // insert
+                    var resId = DB.InsertParam("b_newapplication", param, true);
+                    if (DB.LastError != null) { return BadRequest(); }
+                    if (resId > 0)
+                    {
+                        model = GetById(resId); // return updated model (with id)
+                        return Ok(new {result = "success" , data = model});
+                    }
+                    return Ok(new { result = "nochange", data = model });
+
+                } else
+                {
+                    // verify id
+                    var orig = GetById(model.id);
+                    if (orig != null && orig.id > 0)
+                    {
+                        // return if nothing to update
+                        if (orig == model)
+                        {
+                            return Ok(new { result = "nochange", data = model });
+                        }
+
+                        Dictionary<string, object> param = new Dictionary<string, object>();
+                        param["code"] = model.code;
+
+                        // check for duplicate
+                        DataRow exists = DB.QuerySingleResult($"SELECT * FROM b_newapplication WHERE code=@code AND id <> {model.id}", param);
+                        if (DB.LastError != null) { return BadRequest(); }
+                        if (exists != null) { return Conflict(); }
+
+                        // prepare 
+                        param = Utils.HelperUtils.ToDictionary(model);
+                        param.Remove("madedate"); // NOT NEEDED for update
+                        param.Remove("madebyid"); // NOT NEEDED for update
+                        param["updatedbyid"] = model.updatedbyid;
+                        param["lastupdated"] = model.lastupdated.Value;
+
+                        // update
+                        var resId = DB.UpdateParam("b_newapplication", $"WHERE id={model.id}", param);
+                        if (DB.LastError != null) { return BadRequest(); }
+                        if (resId > 0)
+                        {
+                            model = GetById(model.id); // return updated model (with id)
+                            return Ok(new {result = "success" , data = model});
+                        }
+
+                        return Ok(new { result = "nochange", data = orig });
+
+                    }
+                }
+
+                return BadRequest();
+            }
+
+        }
+        ]]>.Value.
+        Replace("NewMemberModel", modelName).
+        Replace("b_newapplication", tableName).
+        Replace("MemberController", modelName & "Controller").
+        Replace("endpoint", modelName.ToLower)
+
+        txtDest.Text = dest
 
     End Sub
 End Class
