@@ -5068,7 +5068,7 @@ public class TownModelFull : TownModel
         End If
 
         Dim modelName = txtSource.Lines.Where(Function(x) x.Contains("public class ")).FirstOrDefault.Trim.Split(" ").LastOrDefault
-        modelName = Regex.Replace(modelName, "Model", "", RegexOptions.IgnoreCase).Trim
+        Dim controllerName = Regex.Replace(modelName, "Model", "", RegexOptions.IgnoreCase).Trim
 
         If frmTableName.ShowDialog <> DialogResult.OK Then
             Return
@@ -5094,7 +5094,7 @@ public class TownModelFull : TownModel
 
             // get: api/endpoint
             [HttpGet("endpoint")]
-            public ActionResult list()
+            public ActionResult List()
             {
                 List<NewMemberModel> list = new List<NewMemberModel>();
                 DataTable dt = DB.ExecuteToDatatable("SELECT * FROM b_newapplication order by name asc");
@@ -5112,7 +5112,7 @@ public class TownModelFull : TownModel
 
             // get: api/endpoint/{id}
             [HttpGet("endpoint/{id:int}")]
-            public ActionResult getbyid(int id)
+            public ActionResult GetById(int id)
             {
                 DataRow dr = DB.QuerySingleResult("SELECT * FROM b_newapplication WHERE id = " + id, null);
                 NewMemberModel model = null;
@@ -5127,7 +5127,7 @@ public class TownModelFull : TownModel
 
             // post: api/endpoint/upsert
             [HttpPost("endpoint/upsert")]
-            public ActionResult upsert(NewMemberModel data)
+            public ActionResult Upsert(NewMemberModel model)
             {
                 if (string.IsNullOrWhiteSpace(model.name))
                 {
@@ -5210,8 +5210,8 @@ public class TownModelFull : TownModel
         ]]>.Value.
         Replace("NewMemberModel", modelName).
         Replace("b_newapplication", tableName).
-        Replace("MemberController", modelName & "Controller").
-        Replace("endpoint", modelName.ToLower)
+        Replace("MemberController", controllerName & "Controller").
+        Replace("endpoint", controllerName.ToLower)
 
         txtDest.Text = dest
 

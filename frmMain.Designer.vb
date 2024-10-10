@@ -34,6 +34,7 @@ Partial Class frmMain
         Me.ControllerBuilderToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.UIControllerBuilderToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.DataAccessOnUIToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.DataAccessOnControllerAPIToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripButton3 = New System.Windows.Forms.ToolStripDropDownButton()
         Me.DefaultToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -66,7 +67,7 @@ Partial Class frmMain
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.ToolStripStatusLabel1 = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
-        Me.DataAccessOnControllerAPIToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripSeparator6 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -106,7 +107,7 @@ Partial Class frmMain
         '
         'ToolStripButton5
         '
-        Me.ToolStripButton5.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ModelBuilderToolStripMenuItem, Me.DataAccessBuilderToolStripMenuItem, Me.ControllerBuilderToolStripMenuItem, Me.UIControllerBuilderToolStripMenuItem, Me.DataAccessOnUIToolStripMenuItem, Me.DataAccessOnControllerAPIToolStripMenuItem})
+        Me.ToolStripButton5.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ModelBuilderToolStripMenuItem, Me.DataAccessBuilderToolStripMenuItem, Me.ControllerBuilderToolStripMenuItem, Me.UIControllerBuilderToolStripMenuItem, Me.ToolStripSeparator6, Me.DataAccessOnUIToolStripMenuItem, Me.DataAccessOnControllerAPIToolStripMenuItem})
         Me.ToolStripButton5.Image = CType(resources.GetObject("ToolStripButton5.Image"), System.Drawing.Image)
         Me.ToolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripButton5.Name = "ToolStripButton5"
@@ -142,6 +143,12 @@ Partial Class frmMain
         Me.DataAccessOnUIToolStripMenuItem.Name = "DataAccessOnUIToolStripMenuItem"
         Me.DataAccessOnUIToolStripMenuItem.Size = New System.Drawing.Size(236, 22)
         Me.DataAccessOnUIToolStripMenuItem.Text = "DataAccess on Controller"
+        '
+        'DataAccessOnControllerAPIToolStripMenuItem
+        '
+        Me.DataAccessOnControllerAPIToolStripMenuItem.Name = "DataAccessOnControllerAPIToolStripMenuItem"
+        Me.DataAccessOnControllerAPIToolStripMenuItem.Size = New System.Drawing.Size(236, 22)
+        Me.DataAccessOnControllerAPIToolStripMenuItem.Text = "DataAccess on Controller (API)"
         '
         'ToolStripSeparator3
         '
@@ -361,11 +368,10 @@ Partial Class frmMain
         Me.ToolStripStatusLabel1.Spring = True
         Me.ToolStripStatusLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
-        'DataAccessOnControllerAPIToolStripMenuItem
+        'ToolStripSeparator6
         '
-        Me.DataAccessOnControllerAPIToolStripMenuItem.Name = "DataAccessOnControllerAPIToolStripMenuItem"
-        Me.DataAccessOnControllerAPIToolStripMenuItem.Size = New System.Drawing.Size(236, 22)
-        Me.DataAccessOnControllerAPIToolStripMenuItem.Text = "DataAccess on Controller (API)"
+        Me.ToolStripSeparator6.Name = "ToolStripSeparator6"
+        Me.ToolStripSeparator6.Size = New System.Drawing.Size(233, 6)
         '
         'frmMain
         '
@@ -434,4 +440,5 @@ Partial Class frmMain
     Friend WithEvents InFormDynamicTableToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ToolStripSeparator8 As ToolStripSeparator
     Friend WithEvents DataAccessOnControllerAPIToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator6 As ToolStripSeparator
 End Class
