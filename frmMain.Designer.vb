@@ -33,7 +33,9 @@ Partial Class frmMain
         Me.DataAccessBuilderToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ControllerBuilderToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.UIControllerBuilderToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripSeparator6 = New System.Windows.Forms.ToolStripSeparator()
         Me.DataAccessOnUIToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.DataAccessOnControllerAPIToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripButton3 = New System.Windows.Forms.ToolStripDropDownButton()
         Me.DefaultToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -66,7 +68,7 @@ Partial Class frmMain
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.ToolStripStatusLabel1 = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
-        Me.DataAccessOnControllerAPIToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripMenuItem2 = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -106,7 +108,7 @@ Partial Class frmMain
         '
         'ToolStripButton5
         '
-        Me.ToolStripButton5.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ModelBuilderToolStripMenuItem, Me.DataAccessBuilderToolStripMenuItem, Me.ControllerBuilderToolStripMenuItem, Me.UIControllerBuilderToolStripMenuItem, Me.DataAccessOnUIToolStripMenuItem, Me.DataAccessOnControllerAPIToolStripMenuItem})
+        Me.ToolStripButton5.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ModelBuilderToolStripMenuItem, Me.DataAccessBuilderToolStripMenuItem, Me.ControllerBuilderToolStripMenuItem, Me.UIControllerBuilderToolStripMenuItem, Me.ToolStripSeparator6, Me.DataAccessOnUIToolStripMenuItem, Me.DataAccessOnControllerAPIToolStripMenuItem})
         Me.ToolStripButton5.Image = CType(resources.GetObject("ToolStripButton5.Image"), System.Drawing.Image)
         Me.ToolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripButton5.Name = "ToolStripButton5"
@@ -137,11 +139,22 @@ Partial Class frmMain
         Me.UIControllerBuilderToolStripMenuItem.Size = New System.Drawing.Size(236, 22)
         Me.UIControllerBuilderToolStripMenuItem.Text = "UI Controller Builder"
         '
+        'ToolStripSeparator6
+        '
+        Me.ToolStripSeparator6.Name = "ToolStripSeparator6"
+        Me.ToolStripSeparator6.Size = New System.Drawing.Size(233, 6)
+        '
         'DataAccessOnUIToolStripMenuItem
         '
         Me.DataAccessOnUIToolStripMenuItem.Name = "DataAccessOnUIToolStripMenuItem"
         Me.DataAccessOnUIToolStripMenuItem.Size = New System.Drawing.Size(236, 22)
         Me.DataAccessOnUIToolStripMenuItem.Text = "DataAccess on Controller"
+        '
+        'DataAccessOnControllerAPIToolStripMenuItem
+        '
+        Me.DataAccessOnControllerAPIToolStripMenuItem.Name = "DataAccessOnControllerAPIToolStripMenuItem"
+        Me.DataAccessOnControllerAPIToolStripMenuItem.Size = New System.Drawing.Size(236, 22)
+        Me.DataAccessOnControllerAPIToolStripMenuItem.Text = "DataAccess on Controller (API)"
         '
         'ToolStripSeparator3
         '
@@ -150,7 +163,7 @@ Partial Class frmMain
         '
         'ToolStripButton3
         '
-        Me.ToolStripButton3.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DefaultToolStripMenuItem, Me.ModalPopupToolStripMenuItem, Me.ModalPopup2TupleToolStripMenuItem, Me.ToolStripSeparator4, Me.BlankModalToolStripMenuItem, Me.HtmlTagHelpersOnlyToolStripMenuItem, Me.Select2ViewBagToolStripMenuItem, Me.ToolStripSeparator5, Me.ModalPopupcjTemplateToolStripMenuItem, Me.ToolStripMenuItem1, Me.ToolStripSeparator8, Me.InFormDynamicTableToolStripMenuItem, Me.TabsGeneratorToolStripMenuItem, Me.ToolStripSeparator7, Me.DynamicMultiInputToolStripMenuItem})
+        Me.ToolStripButton3.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DefaultToolStripMenuItem, Me.ModalPopupToolStripMenuItem, Me.ModalPopup2TupleToolStripMenuItem, Me.ToolStripSeparator4, Me.BlankModalToolStripMenuItem, Me.HtmlTagHelpersOnlyToolStripMenuItem, Me.Select2ViewBagToolStripMenuItem, Me.ToolStripSeparator5, Me.ModalPopupcjTemplateToolStripMenuItem, Me.ToolStripMenuItem1, Me.ToolStripMenuItem2, Me.ToolStripSeparator8, Me.InFormDynamicTableToolStripMenuItem, Me.TabsGeneratorToolStripMenuItem, Me.ToolStripSeparator7, Me.DynamicMultiInputToolStripMenuItem})
         Me.ToolStripButton3.Image = CType(resources.GetObject("ToolStripButton3.Image"), System.Drawing.Image)
         Me.ToolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripButton3.Name = "ToolStripButton3"
@@ -361,11 +374,11 @@ Partial Class frmMain
         Me.ToolStripStatusLabel1.Spring = True
         Me.ToolStripStatusLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
-        'DataAccessOnControllerAPIToolStripMenuItem
+        'ToolStripMenuItem2
         '
-        Me.DataAccessOnControllerAPIToolStripMenuItem.Name = "DataAccessOnControllerAPIToolStripMenuItem"
-        Me.DataAccessOnControllerAPIToolStripMenuItem.Size = New System.Drawing.Size(236, 22)
-        Me.DataAccessOnControllerAPIToolStripMenuItem.Text = "DataAccess on Controller (API)"
+        Me.ToolStripMenuItem2.Name = "ToolStripMenuItem2"
+        Me.ToolStripMenuItem2.Size = New System.Drawing.Size(222, 22)
+        Me.ToolStripMenuItem2.Text = "Modal Popup (select2)"
         '
         'frmMain
         '
@@ -434,4 +447,6 @@ Partial Class frmMain
     Friend WithEvents InFormDynamicTableToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ToolStripSeparator8 As ToolStripSeparator
     Friend WithEvents DataAccessOnControllerAPIToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator6 As ToolStripSeparator
+    Friend WithEvents ToolStripMenuItem2 As ToolStripMenuItem
 End Class
