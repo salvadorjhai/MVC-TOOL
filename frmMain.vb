@@ -1,17 +1,19 @@
 ﻿Imports System.ComponentModel
 Imports System.Security.Cryptography
+Imports System.Text
 Imports System.Text.RegularExpressions
 
 Public Class frmMain
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath)
         Me.CenterToScreen()
+        If IO.File.Exists(".\last.txt") Then
+            Try
+                txtSource.LoadFile(".\last.txt", RichTextBoxStreamType.RichText)
+            Catch ex As Exception
+            End Try
+        End If
     End Sub
-
-    Private Sub ToolStripButton1_Click(sender As Object, e As EventArgs) Handles ToolStripButton1.Click
-
-    End Sub
-
 
     Private Sub DefaultToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles DefaultToolStripMenuItem.Click
 
@@ -1196,7 +1198,7 @@ public class TownModelDataAccess
                     param["code"] = model.code;
 
                     // check for duplicate
-                    DataRow exists = DB.QuerySingleResult($"SELECT * FROM b_towns WHERE code=@code AND id <> {model.id}", param);
+                    DataRow exists = DB.QuerySingleResult($"SELECT * FROM b_towns WHERE code=? AND id <> {model.id}", param);
                     if (DB.LastError != null) { return OleDB.EXEC_ERROR; }
                     if (exists != null) { return OleDB.DUPLICATE; }
 
@@ -1204,6 +1206,7 @@ public class TownModelDataAccess
                     param = Utils.HelperUtils.ToDictionary(model);
                     param.Remove("madedate"); // NOT NEEDED for update
                     param.Remove("madebyid"); // NOT NEEDED for update
+                    param.Remove("statuslvl"); // NOT NEEDED for update
                     param["updatedbyid"] = model.updatedbyid;
                     param["lastupdated"] = model.lastupdated.Value;
 
@@ -4262,37 +4265,30 @@ public class TownModelFull : TownModel
         string baseURL = ConfigurationManager.AppSettings.Get("APISERVER");
 
         #region "MemberModel"
-        public async Task<string> list()
+        public async Task<ActionResult> list()
         {
-            Response.ContentType = "application/json";
-
-            List<MemberModel> model = new List<MemberModel>();
+            List<MemberModelFull> model = new List<MemberModelFull>();
             string results = await HelperUtils.API_GET(baseURL + "api/endpoint");
             if (!string.IsNullOrWhiteSpace(results))
-                model = JsonConvert.DeserializeObject<List<MemberModel>>(results);
+                model = JsonConvert.DeserializeObject<List<MemberModelFull>>(results);
 
-            return Newtonsoft.Json.JsonConvert.SerializeObject(new { data = model });
+            return Content(Newtonsoft.Json.JsonConvert.SerializeObject(new { data = model }), "application/json");
         }
 
-        public async Task<string> getbyid(int id)
+        public async Task<ActionResult> getbyid(int id)
         {
-            Response.ContentType = "application/json";
-
-            MemberModel model = new MemberModel();
+            MemberModelFull model = new MemberModelFull();
             string results = await HelperUtils.API_GET(baseURL + $"api/endpoint/{id}");
             if (!string.IsNullOrWhiteSpace(results))
-                model = JsonConvert.DeserializeObject<MemberModel>(results);
+                model = JsonConvert.DeserializeObject<MemberModelFull>(results);
 
-            return Newtonsoft.Json.JsonConvert.SerializeObject(new { data = model });
+            return Content(Newtonsoft.Json.JsonConvert.SerializeObject(new { data = model }), "application/json");
         }
 
         [HttpPost]
-        public async Task<string> upsert(MemberModel model)
+        public async Task<ActionResult> upsert(MemberModelFull model)
         {
-            Response.ContentType = "application/json";
-
-            Dictionary<string, object> activeuser = HelperUtils.GetActiveUser();
-            model.updatedbyid = activeuser["id"].ToString().ParseInt();
+            model.updatedbyid = model.updatedbyid = User.Identity.Name.ParseInt();
             model.lastupdated = DateTime.Now;
 
             string msg = string.Empty;
@@ -4302,11 +4298,11 @@ public class TownModelFull : TownModel
             if (!res.IsSuccessStatusCode)
             {
                 msg = res.ReasonPhrase.ToString();
-                return Newtonsoft.Json.JsonConvert.SerializeObject(new { result = msg });
+                return Content(Newtonsoft.Json.JsonConvert.SerializeObject(new { result = msg }), "application/json");
             }
-            return msg;
-
+            return Content(msg, "application/json");
         }
+
         #endregion
 ]]>.Value
 
@@ -5246,13 +5242,24 @@ public class TownModelFull : TownModel
 
         Dim formData As New List(Of String)
 
-        l1.Add(<![CDATA[
+        If String.IsNullOrWhiteSpace(tupName) = False Then
+            l1.Add(<![CDATA[
 @model Tuple<TARONEAPI.Models.MeterBrandModel>
 
 @{
 ViewBag.Title = "MeterBrandModel";
 }
-]]>.Value.Replace("MeterBrandModel", modelName).Replace("METER BRAND", modelName).Replace("meterbrandmodel_v1.0.0.js", $"{modelName.ToLower}_v1.0.0.js"))
+]]>.Value.Trim.Replace("MeterBrandModel", modelName).Replace("METER BRAND", modelName).Replace("meterbrandmodel_v1.0.0.js", $"{modelName.ToLower}_v1.0.0.js"))
+
+        Else
+            l1.Add(<![CDATA[
+@model TARONEAPI.Models.MeterBrandModel
+
+@{
+ViewBag.Title = "MeterBrandModel";
+}
+]]>.Value.Trim.Replace("MeterBrandModel", modelName).Replace("METER BRAND", modelName).Replace("meterbrandmodel_v1.0.0.js", $"{modelName.ToLower}_v1.0.0.js"))
+        End If
 
         l1.Add(<![CDATA[  ]]>.Value)
 
@@ -5275,9 +5282,13 @@ ViewBag.Title = "MeterBrandModel";
             Dim field = ch(2).Trim
 
             If {"statuslvl", "madebyid", "madedate", "lastupdated", "updatedbyid"}.Contains(field) Then
-                If field.ToLower = "madedate" Or field.ToLower = "lastupdated" Then
+                If field.ToLower = "madedate" Then
                     dtColDef.Add(<![CDATA[ { "data": "brand", "autoWidth": true } ]]>.Value.Replace("brand", field).TrimEnd)
-                    lh.Add(<![CDATA[ <th>METER BRAND</th> ]]>.Value.Replace("METER BRAND", field.ToUpper))
+                    lh.Add(<![CDATA[ <th class="text-center">CREATED BY</th> ]]>.Value)
+                End If
+                If field.ToLower = "lastupdated" Then
+                    dtColDef.Add(<![CDATA[ { "data": "brand", "autoWidth": true } ]]>.Value.Replace("brand", field).TrimEnd)
+                    lh.Add(<![CDATA[ <th class="text-center">UPDATED BY</th> ]]>.Value)
                 End If
                 Continue For
             End If
@@ -5481,16 +5492,6 @@ ViewBag.Title = "MeterBrandModel";
     <div class="col-12">
         <div class="card card-condense">
             <div class="card-header" style="border-bottom: none;">
-                <h4><span class="fas fa-tags fs-6"></span> JOB ORDER COMPLAINT</h4> (view, add, edit)
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-12">
-        <div class="card card-condense">
-            <div class="card-header" style="border-bottom: none;">
                 <h4 data-collapse="#mycard-collapse"><span class="fas fa-search fs-6"></span> SEARCH</h4>
                 <div class="card-header-action">
                     <a data-collapse="#mycard-collapse" class="btn btn-icon" href="#"><i class="fas fa-plus"></i></a>
@@ -5513,13 +5514,13 @@ ViewBag.Title = "MeterBrandModel";
 <div class="col-12">
 <div class="card">
 <div class="card-header">
-    <h4>@ViewBag.Title</h4>
+    <h4><span class="fas fa-tags fs-6"></span> @ViewBag.Title</h4> (view, add, edit)
 </div>
 <div class="card-body">
     <button type="button" class="btn btn-icon icon-left btn-primary text-uppercase mb-3" onclick="showmymodal()"><span class="fas fa-plus-square"></span> Add New </button>
-    <table class="table table-hover table-responsive" id="mytable" style="width:100%">
+    <table class="table table-hover table-sm table-responsive" id="mytable" style="width:100%">
         <thead>
-            <tr>
+            <tr class="bg-primary text-white text-uppercase">
                 <TH_HEADER>
             </tr>
         </thead>
@@ -5734,7 +5735,7 @@ var dtmytable;
                 ],
                 aoColumnDefs: [
                     {
-                        "width": "50px",
+                        "width": "90px",
                         "aTargets": [0], // target column
                         "bSortable":false,
                         "mRender": function (data, type, full, meta) {
@@ -5743,14 +5744,13 @@ var dtmytable;
                         "className": "text-center text-uppercase"
                     },
                     {
-                        "width": "450px",
                         "aTargets": [-2],
                         "mRender": function (data, type, full, meta) {
                             return `
-                            <div class="d-flex flex-row">
+                            <div class="d-flex flex-row" style="font-size:small;">
                                 <div class="me-2">
                                     <small>
-                                        <strong class="themefont text-uppercase">Created By:</strong><br/> ${full.madebyname} <br/>
+                                        <strong class="themefont text-uppercase">${full.madebyname}</strong><br/>
                                         ${ToDateTime(full.madedate)}
                                     </small>
                                 </div>
@@ -5761,14 +5761,13 @@ var dtmytable;
                         "className": "text-uppercase"
                     },
                     {
-                        "width": "450px",
                         "aTargets": [-1],
                         "mRender": function (data, type, full, meta) {
                             return `
-                            <div class="d-flex flex-row">
+                            <div class="d-flex flex-row" style="font-size:small;">
                                 <div class="me-2">
                                     <small>
-                                        <strong class="themefont text-uppercase">Updated By:</strong><br/> ${full.updatedbyname} <br/>
+                                        <strong class="themefont text-uppercase">${full.updatedbyname}</strong><br/> 
                                         ${ToDateTime(full.lastupdated)}
                                     </small>
                                 </div>
@@ -5848,6 +5847,17 @@ Replace("<SELECT_EVENTS>", String.Join(vbCrLf, sl3).Trim).
 Replace("<CHECK_EVENTS>", String.Join(vbCrLf, l5).Trim).
 Replace("m.Item1.", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"m.{tupName}.", "m.")}").
 Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}_", "")}")
+
+    End Sub
+
+    Private Sub txtSource_LostFocus(sender As Object, e As EventArgs) Handles txtSource.LostFocus
+        Try
+            txtSource.SaveFile(".\last.txt", RichTextBoxStreamType.RichText)
+        Catch ex As Exception
+        End Try
+    End Sub
+
+    Private Sub txtSource_TextChanged(sender As Object, e As EventArgs) Handles txtSource.TextChanged
 
     End Sub
 End Class
