@@ -4104,21 +4104,27 @@ public class TownModelFull : TownModel
 
             Dim str = <![CDATA[<li class="nav-item">
                                 <a class="nav-link active" data-bs-toggle="tab" href="#tabPane1" id="tab1"><span class="fas fa-info-circle"></span> Pane1</a>
-                            </li>]]>.Value.Trim.Replace(" active", IIf(i > 1, "", " active")).Replace("Pane1", "Panel " & i).Replace("tab1", "tab" & i)
+                            </li>]]>.Value.Trim.Replace(" active", IIf(i > 1, "", " active")).Replace("Pane1", "Panel" & i).Replace("tab1", "tab" & i)
             l1.Add(str)
 
-            str = <![CDATA[<div class="tab-pane container-fluid p-2 active" id="tabPane1">
-                                <!-- content goes here -->
+            str = <![CDATA[<div class="tab-pane container-fluid active" id="tabPane1">
+                                <div class="shadow-sm p-3">
+                                    <!-- content goes here -->
+                                </div>
                             </div>]]>.Value.Trim.Replace(" active", IIf(i > 1, "", " active")).Replace("Pane1", "Panel " & i)
             l2.Add(str)
 
             str = <![CDATA[$('#tab1').on('shown.bs.tab', function (e) {
                                     // per tab scripts goes here
-                                });]]>.Value.Trim.Replace("tab1", "tab" & i)
+                            });]]>.Value.Trim.Replace("tab1", "tab" & i)
             l3.Add(str)
 
         Next
 
+        l3.Add("
+            // dont forget to set ; 
+            // $('.nav-tabs a:first').tab('show');
+        ")
 
         txtDest.Text = <![CDATA[<ul class="nav nav-tabs">
                             <!-- NAVS -->
@@ -4136,53 +4142,6 @@ public class TownModelFull : TownModel
 ]]>.Value.Trim.Replace("<!-- NAVS -->", String.Join(vbCrLf, l1)).Trim.
                 Replace("<!-- CONTENTS -->", String.Join(vbCrLf, l2)).Trim.
                 Replace("<!-- JS -->", String.Join(vbCrLf, l3)).Trim
-
-
-
-        '        l1.Add(<![CDATA[<ul class="nav nav-tabs">
-        '                            <li class="nav-item">
-        '                                <a class="nav-link active" data-bs-toggle="tab" href="#tabPane1" id="tab1">General</a>
-        '                            </li>
-        '                            <li class="nav-item">
-        '                                <a class="nav-link" data-bs-toggle="tab" href="#tabPane2" id="tab1">Membership</a>
-        '                            </li>
-        '                            <li class="nav-item">
-        '                                <a class="nav-link" data-bs-toggle="tab" href="#tabPane3" id="tab1">Account</a>
-        '                            </li>
-        '                        </ul>
-
-        '                        <div class="tab-content">
-        '                            <div class="tab-pane container-fluid p-2 active" id="tabPane1">
-        '                                <!-- content goes here -->
-        '                            </div>
-
-        '                            <div class="tab-pane container-fluid p-2 fade" id="tabPane2">
-        '                                <!-- content goes here -->
-        '                            </div>
-
-        '                            <div class="tab-pane container-fluid p-2 fade" id="tabPane3">
-        '                                <!-- content goes here -->
-        '                            </div>
-        '                        </div>
-
-        '                        <script>
-        '                            $(document).ready(function(){
-        '                                $('#tab1').on('shown.bs.tab', function (e) {
-        '                                    // per tab scripts goes here
-        '                                });     
-
-        '                                $('#tab2').on('shown.bs.tab', function (e) {
-        '                                    // per tab scripts goes here
-        '                                });          
-
-        '                                $('#tab3').on('shown.bs.tab', function (e) {
-        '                                    // per tab scripts goes here
-        '                                });                                                    
-        '                            });
-        '                        </script>
-        ']]>.Value)
-
-        '        txtDest.Text = String.Join(vbCrLf, l1).Trim
 
     End Sub
 
@@ -5307,7 +5266,7 @@ ViewBag.Title = "MeterBrandModel";
                 sl.Add(<![CDATA[
     var brandsData;
     function populatebrandCbo() {
-        $.ajax({
+        return $.ajax({
             url: "/{Controller}/{Action}/",
             type: "GET",
             contentType: "application/json;charset=UTF-8",
@@ -5317,9 +5276,9 @@ ViewBag.Title = "MeterBrandModel";
                 setTimeout(function () {
                     $('#Item1_brand').empty();
                     $('#Item1_brand').append("<option value></option>");
-                    for (var i = 0; i < result.data.length; i++) {
-                        var Desc = result.data[i]['name'];
-                        var opt = new Option(Desc, result.data[i]['id']);
+                    for (var i = 0; i < brandsData.length; i++) {
+                        var Desc = `${brandsData[i]['code']} - ${brandsData[i]['description']}`;
+                        var opt = new Option(Desc, brandsData[i]['id']);
                         $('#Item1_brand').append(opt);
                     }
                 },1)
@@ -5382,13 +5341,13 @@ ViewBag.Title = "MeterBrandModel";
 
                 Select Case field.ToLower
                     Case "email"
-                        l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.Item1.brand, new { @type = "email", @class = "form-control" }) ]]>.Value.Replace("brand", field))
+                        l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.Item1.brand, new { @type = "email", @class = "form-control", @placeholder = Html.DisplayNameFor(m => m.Item1.brand) }) ]]>.Value.Replace("brand", field))
 
                     Case "pass", "password", "pwd", "syspassword"
-                        l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.Item1.brand, new { @type = "password", @class = "form-control" }) ]]>.Value.Replace("brand", field))
+                        l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.Item1.brand, new { @type = "password", @class = "form-control", @placeholder = Html.DisplayNameFor(m => m.Item1.brand) }) ]]>.Value.Replace("brand", field))
 
                     Case Else
-                        l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.Item1.brand, new { @class = "form-control" }) ]]>.Value.Replace("brand", field))
+                        l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.Item1.brand, new { @class = "form-control", @placeholder = Html.DisplayNameFor(m => m.Item1.brand) }) ]]>.Value.Replace("brand", field))
 
                 End Select
                 l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.Item1.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
