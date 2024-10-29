@@ -4192,7 +4192,6 @@ public class TownModelFull : TownModel
         [HttpPost("endpoint/upsert")]
         public IActionResult upsert(MemberModel data)
         {
-            //MemberModel data = HelperUtils.BindFrom<MemberModel>(Request.Form);
             var res = new MemberModelDataAccess(_connectionString).Upsert(ref data);
             if (res > 0) { return Ok(new {result = "success" , data = data}); }
             if (res == OleDB.NO_CHANGES) { return Ok(new { result = "nochange", data = data }); }
@@ -4247,7 +4246,7 @@ public class TownModelFull : TownModel
         [HttpPost]
         public async Task<ActionResult> upsert(MemberModelFull model)
         {
-            model.updatedbyid = model.updatedbyid = User.Identity.Name.ParseInt();
+            model.updatedbyid = User.Identity.Name.ParseInt();
             model.lastupdated = DateTime.Now;
 
             string msg = string.Empty;
