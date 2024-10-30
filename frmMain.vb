@@ -5308,6 +5308,9 @@ ViewBag.Title = "MeterBrandModel";
 
                 sl2.Add(<![CDATA[ $('#Item1_brandPreview').attr('src', 'https://place-hold.it/200x200?text=YOUR PHOTO'); ]]>.Value.Replace("brand", field))
 
+            ElseIf ddt.StartsWith("date") Then
+                'ignore
+
             Else
                 dp.Add(<![CDATA[ $('#Item1_brand').val(js['brand']); ]]>.Value.Replace("brand", field))
 
@@ -5408,8 +5411,10 @@ ViewBag.Title = "MeterBrandModel";
 
                 If ddt.Contains("time") Then
                     l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.Item1.brand, new { @type = "datetime-local", @class = "form-control" }) ]]>.Value.Replace("brand", field))
+                    dp.Add(<![CDATA[ $('#Item1_brand').val(js['brand']); ]]>.Value.Replace("brand", field))
                 Else
                     l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.Item1.brand, new { @type = "date", @class = "form-control" }) ]]>.Value.Replace("brand", field))
+                    dp.Add(<![CDATA[ $('#Item1_brand').val(ToDateTime(js['brand'], "yyyy-MM-DD")); ]]>.Value.Replace("brand", field))
                 End If
                 l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.Item1.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
                 l3.Add(<![CDATA[ </div> ]]>.Value)
