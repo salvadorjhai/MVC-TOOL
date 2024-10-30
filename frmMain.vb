@@ -5308,6 +5308,9 @@ ViewBag.Title = "MeterBrandModel";
 
                 sl2.Add(<![CDATA[ $('#Item1_brandPreview').attr('src', 'https://place-hold.it/200x200?text=YOUR PHOTO'); ]]>.Value.Replace("brand", field))
 
+            ElseIf ddt.StartsWith("date") Then
+                dp.Add(<![CDATA[ $('#Item1_brand').val(ToDateTime(js['brand'], "yyyy-MM-DD")); ]]>.Value.Replace("brand", field))
+
             Else
                 dp.Add(<![CDATA[ $('#Item1_brand').val(js['brand']); ]]>.Value.Replace("brand", field))
 
