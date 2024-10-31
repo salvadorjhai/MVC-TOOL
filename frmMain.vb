@@ -1165,6 +1165,7 @@ public class TownModelDataAccess
 
                 // prepare 
                 param = Utils.HelperUtils.ToDictionary(model);
+                param["statuslvl"] = model.statuslvl;
                 param["madebyid"] = model.updatedbyid;
                 param["madedate"] = model.lastupdated.Value;
                 param["updatedbyid"] = model.updatedbyid;
@@ -5338,25 +5339,52 @@ ViewBag.Title = "MeterBrandModel";
             End If
 
             If ddt.Contains("string") Then
-                l3.Add(<![CDATA[ <div class="mb-2"> ]]>.Value)
-                l3.Add(<![CDATA[  @Html.LabelFor(m => m.Item1.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
 
-                Select Case field.ToLower
-                    Case "email"
-                        l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.Item1.brand, new { @type = "email", @class = "form-control", @placeholder = Html.DisplayNameFor(m => m.Item1.brand) }) ]]>.Value.Replace("brand", field))
+                If field.ToLower.EndsWith("filename") Or field.ToLower.Contains("file") Then
+                    l3.Add(<![CDATA[ <div class="mb-2"> ]]>.Value)
+                    l3.Add(<![CDATA[  @Html.LabelFor(m => m.Item1.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
+                    l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.Item1.brand, new { @type = "file", @accept = "image/*", @class = "form-control" }) ]]>.Value.Replace("brand", field))
+                    l3.Add(<![CDATA[  <img id="brandPreview" src="https://place-hold.it/200x200?text=YOUR PHOTO" alt="Preview" class="img-thumbnail mt-2" style="width: 200px; height: 200px;" /> ]]>.Value.Replace("brand", field))
+                    l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.Item1.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
+                    l3.Add(<![CDATA[ </div> ]]>.Value)
 
-                    Case "pass", "password", "pwd", "syspassword"
-                        l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.Item1.brand, new { @type = "password", @class = "form-control", @placeholder = Html.DisplayNameFor(m => m.Item1.brand) }) ]]>.Value.Replace("brand", field))
+                    fl1.Add(<![CDATA[
+                        $("#Item1_brand").change(function () {
+                            var reader = new FileReader();
+                            reader.onload = function (e) {
+                                $('#Item1_brandPreview').attr('src', e.target.result);
+                            };
+                            reader.readAsDataURL(this.files[0]);
+                        });]]>.Value.Replace("brand", field))
 
-                    Case Else
-                        l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.Item1.brand, new { @class = "form-control", @placeholder = Html.DisplayNameFor(m => m.Item1.brand) }) ]]>.Value.Replace("brand", field))
+                    formData.Add(<![CDATA[ formData.append("brand", $("#Item1_brand").prop('files')[0]); ]]>.Value.Replace("brand", field))
+                    formdata2.Add(<![CDATA[ brand: $("#Item1_brand").prop('files')[0] ]]>.Value.Replace("brand", field).TrimEnd)
 
-                End Select
-                l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.Item1.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
-                l3.Add(<![CDATA[ </div> ]]>.Value)
+                    gotFile = True
 
-                formData.Add(<![CDATA[ formData.append("brand", $("#Item1_brand").val()); ]]>.Value.Replace("brand", field))
-                formdata2.Add(<![CDATA[ brand: $('#Item1_brand').val() ]]>.Value.Replace("brand", field).TrimEnd)
+                Else
+
+                    l3.Add(<![CDATA[ <div class="mb-2"> ]]>.Value)
+                    l3.Add(<![CDATA[  @Html.LabelFor(m => m.Item1.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
+
+                    Select Case field.ToLower
+                        Case "email"
+                            l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.Item1.brand, new { @type = "email", @class = "form-control", @placeholder = Html.DisplayNameFor(m => m.Item1.brand) }) ]]>.Value.Replace("brand", field))
+
+                        Case "pass", "password", "pwd", "syspassword"
+                            l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.Item1.brand, new { @type = "password", @class = "form-control", @placeholder = Html.DisplayNameFor(m => m.Item1.brand) }) ]]>.Value.Replace("brand", field))
+
+                        Case Else
+                            l3.Add(<![CDATA[  @Html.TextBoxFor(m => m.Item1.brand, new { @class = "form-control", @placeholder = Html.DisplayNameFor(m => m.Item1.brand) }) ]]>.Value.Replace("brand", field))
+
+                    End Select
+                    l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.Item1.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
+                    l3.Add(<![CDATA[ </div> ]]>.Value)
+
+                    formData.Add(<![CDATA[ formData.append("brand", $("#Item1_brand").val()); ]]>.Value.Replace("brand", field))
+                    formdata2.Add(<![CDATA[ brand: $('#Item1_brand').val() ]]>.Value.Replace("brand", field).TrimEnd)
+
+                End If
 
             ElseIf ddt.Contains("bool") Then
                 l3.Add(<![CDATA[
@@ -5393,6 +5421,27 @@ ViewBag.Title = "MeterBrandModel";
                     '        return;
                     '    }
                     '    ]]>.Value.Replace("brand", field))
+
+                ElseIf field.ToLower.EndsWith("flag") AndAlso ddt.Contains("int") Then
+                    l3.Add(<![CDATA[
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="pretty p-icon p-curve p-jelly">
+                                    @Html.TextBoxFor(m => m.Item1.brand, new { @type = "checkbox" })
+                                    <div class="state p-success-o">
+                                        <i class="icon material-icons">done</i>
+                                        @Html.LabelFor(m => m.Item1.brand)
+                                    </div>
+                                    @Html.ValidationMessageFor(m => m.Item1.brand, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        ]]>.Value.Replace("brand", field))
+
+                    '
+                    formData.Add(<![CDATA[ formData.append("brand", $('#Item1_brand').prop('checked')); ]]>.Value.Replace("brand", field))
+                    formdata2.Add(<![CDATA[ brand: $('#Item1_brand').prop('checked') ]]>.Value.Replace("brand", field).TrimEnd)
+
 
                 Else
                     l3.Add(<![CDATA[ <div class="mb-2 col-4"> ]]>.Value)
