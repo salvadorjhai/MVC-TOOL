@@ -5703,14 +5703,6 @@ $('#btnSave_mymodal').on('click', function () {
 })
 
 EnableDisableControls(false);
-
-// fixed for popup getting disaligned
-$('select.select2:not(.normal)').each(function () {
-    $(this).select2({
-        dropdownParent: $(this).parent().parent()
-    });
-});
-
 }
 
 var dtmytable;
