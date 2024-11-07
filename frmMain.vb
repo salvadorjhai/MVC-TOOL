@@ -5610,7 +5610,19 @@ if (msg.includes("success")) {
 }
 },
 error: function (jqXHR, textStatus, errorThrown) {
-swal("Error!", "Oops! something went wrong ... \n", "error");
+    if (jqXHR.status == 401) {
+        swal2({
+            title: `Unauthorized`,
+            html: 'It seems you have been logged out.<br><b>Please login and try again.</b>',
+            icon: 'error',
+            dangerMode: true,
+            showCancelButton: false,
+        }, () => {
+            window.location = "/Authentication/Logout";
+        });
+        return;
+    }
+    swal("Error!", "Oops! something went wrong ... \n", "error");
 }
 });
 
@@ -5649,6 +5661,18 @@ swal("Error!", "Oops! something went wrong ... \n", "error");
             }
         },
         error: function (jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status == 401) {
+                swal2({
+                    title: `Unauthorized`,
+                    html: 'It seems you have been logged out.<br><b>Please login and try again.</b>',
+                    icon: 'error',
+                    dangerMode: true,
+                    showCancelButton: false,
+                }, () => {
+                    window.location = "/Authentication/Logout";
+                });
+                return;
+            }
             swal("Error!", "Oops! something went wrong ... \n", "error");
         }
     });
