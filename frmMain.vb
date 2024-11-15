@@ -2416,7 +2416,7 @@ public class TownModelFull : TownModel
 
         l1.Add(<![CDATA[ <button id="btnCreateNew_mymodal" type="button" class="btn btn-primary mt-2 mb-2" data-bs-toggle="modal" data-bs-target="#mymodal"> CREATE NEW </button> ]]>.Value.Trim)
         l1.Add(<![CDATA[
-<div class="modal fade" id="mymodal" data-bs-focus="false" data-bs-backdrop="static" tabindex="-1" aria-labelledby="modaltitle" aria-hidden="true">
+<div class="modal fade" id="mymodal" role="dialog" data-bs-focus="false" data-bs-backdrop="static" tabindex="-1" aria-labelledby="modaltitle" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -5242,11 +5242,11 @@ ViewBag.Title = "MeterBrandModel";
 
             If {"statuslvl", "madebyid", "madedate", "lastupdated", "updatedbyid"}.Contains(field) Then
                 If field.ToLower = "madedate" Then
-                    dtColDef.Add(<![CDATA[ { "data": "brand", "autoWidth": true } ]]>.Value.Replace("brand", field).TrimEnd)
+                    dtColDef.Add(<![CDATA[ { "data": "brand", "autoWidth": true, "searchable": false } ]]>.Value.Replace("brand", field).TrimEnd)
                     lh.Add(<![CDATA[ <th class="text-center">CREATED BY</th> ]]>.Value)
                 End If
                 If field.ToLower = "lastupdated" Then
-                    dtColDef.Add(<![CDATA[ { "data": "brand", "autoWidth": true } ]]>.Value.Replace("brand", field).TrimEnd)
+                    dtColDef.Add(<![CDATA[ { "data": "brand", "autoWidth": true, "searchable": false } ]]>.Value.Replace("brand", field).TrimEnd)
                     lh.Add(<![CDATA[ <th class="text-center">UPDATED BY</th> ]]>.Value)
                 End If
                 Continue For
