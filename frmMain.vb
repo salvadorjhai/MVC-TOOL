@@ -5242,11 +5242,11 @@ ViewBag.Title = "MeterBrandModel";
 
             If {"statuslvl", "madebyid", "madedate", "lastupdated", "updatedbyid"}.Contains(field) Then
                 If field.ToLower = "madedate" Then
-                    dtColDef.Add(<![CDATA[ { "data": "brand", "autoWidth": true } ]]>.Value.Replace("brand", field).TrimEnd)
+                    dtColDef.Add(<![CDATA[ { "data": "brand", "autoWidth": true, "searchable": false } ]]>.Value.Replace("brand", field).TrimEnd)
                     lh.Add(<![CDATA[ <th class="text-center">CREATED BY</th> ]]>.Value)
                 End If
                 If field.ToLower = "lastupdated" Then
-                    dtColDef.Add(<![CDATA[ { "data": "brand", "autoWidth": true } ]]>.Value.Replace("brand", field).TrimEnd)
+                    dtColDef.Add(<![CDATA[ { "data": "brand", "autoWidth": true, "searchable": false } ]]>.Value.Replace("brand", field).TrimEnd)
                     lh.Add(<![CDATA[ <th class="text-center">UPDATED BY</th> ]]>.Value)
                 End If
                 Continue For
