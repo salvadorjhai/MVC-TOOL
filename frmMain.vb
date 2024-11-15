@@ -2419,18 +2419,16 @@ public class TownModelFull : TownModel
 <div class="modal fade" id="mymodal" role="dialog" data-bs-focus="false" data-bs-backdrop="static" tabindex="-1" aria-labelledby="modaltitle" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modaltitle">Popup Dialog</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header bg-dark text-uppercase text-light p-3">
+                <h5 class="modal-title"> </h5>
             </div>
-            <div class="modal-body ms-2 me-2" data-js="" id="mymodalBody">
-                    <!-- Content Goes Here -->
-                </div>
-                <div class="modal-footer">
-                    <input type="reset" class="btn btn-outline-secondary" value="Clear" />
-                    <button id="btnClose_mymodal" type="button" class="btn btn-secondary m-1" data-bs-dismiss="modal">Close</button>
-                    <input type="submit" class="btn btn-primary" value="Save changes"/>
-                </div>
+            <div class="modal-body">
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success"><span class="far fa-thumbs-up"></span> OK</button>
+                <button type="button" class="btn btn-danger" onclick="closeFormIfDirty(this)"><span class="far fa-thumbs-down"></span> CANCEL</button>
+            </div>
         </div>
     </div>
 </div>
