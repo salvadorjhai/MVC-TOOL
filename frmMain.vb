@@ -5406,7 +5406,7 @@ ViewBag.Title = "MeterBrandModel";
 
             ElseIf ddt.Contains("int") Or ddt.Contains("decimal") Or ddt.Contains("double") Then
 
-                If field.ToLower.EndsWith("id") Or field.ToLower.EndsWith("code") Or field.ToLower.EndsWith("type") Or field.ToLower.EndsWith("status") Then
+                If field.ToLower.EndsWith("id") Or field.ToLower.EndsWith("code") Or field.ToLower.EndsWith("type") Or field.ToLower.EndsWith("types") Or field.ToLower.EndsWith("status") Then
                     l3.Add(<![CDATA[ <div class="mb-2 col-6"> ]]>.Value)
                     l3.Add(<![CDATA[  @Html.LabelFor(m => m.Item1.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
                     l3.Add(<![CDATA[  @Html.DropDownListFor(m => m.Item1.brand, new SelectList(new List<string>()), new { @class = "form-control form-select select2 custom-select2", @placeholder = "select option" }) ]]>.Value.Replace("brand", field))
@@ -5690,6 +5690,7 @@ $(document).ready(function () {
 @*---------- todo: save as separate script -----------*@
 <script>
 function initializeData() {
+setTimeout(ShowSwalLoader, 1);
 InitValidator();
 initmytable();
 appendRequiredLabel();
@@ -5724,7 +5725,14 @@ $('#btnSave_mymodal').on('click', function () {
     $(this).closest('form').submit();
 })
 
-EnableDisableControls(false);
+// one time run only
+var isrun = 0;
+$(document).ajaxStop(function (e) {
+    if (isrun == 0) {
+        setTimeout(CloseSwalLoader, 800);
+        isrun = 1;
+    }
+})
 }
 
 var dtmytable;
@@ -5733,6 +5741,7 @@ var dtmytable;
             dtmytable.ajax.reload(function (json) {
                 dtmytableData = json.data
                 // add other function to be called after table reloads
+                dtmytableData.columns.adjust();
             }, false)
         }
         function initmytable() {
@@ -5761,7 +5770,6 @@ var dtmytable;
                 initComplete: function (settings, json) {
                     dtmytableData = json.data;
                     document.body.style.cursor = 'default';
-                    setTimeout(EnableDisableControls(true), 1);
                 },
                 columns: [
                     // data: , name: , orderable: , autoWidth: , width: , className: 'text-center' , "visible":false
