@@ -5912,4 +5912,47 @@ Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}
 - Nullam convallis libero eu nunc gravida ullamcorper eget at libero.
                 "
     End Sub
+
+    Private Sub DatasetDummyToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles DatasetDummyToolStripMenuItem.Click
+
+        If txtSource.Text.Contains("public class") = False Then
+            txtDest.Text = "You forgot your Model ..."
+            Return
+        End If
+
+        Dim props = txtSource.Lines.Where(Function(x) x.Contains("public ") And x.Contains(" class ") = False).ToList
+
+        Dim l1 As New List(Of String)
+
+        For i = 0 To props.Count - 1
+            Dim v = props(i).Trim
+            If String.IsNullOrWhiteSpace(v) Then Continue For
+            Dim ch = v.Split(" ")
+
+            Dim ddt = ch(1).Trim.ToLower.Replace("?", "")
+            Dim field = ch(2).Trim
+
+            Select Case ddt
+                Case "int", "float", "decimal"
+                    l1.Add($"0 {field}")
+
+                Case "byte", "byte[]"
+                    l1.Add($"null {field}")
+
+                Case "string"
+                    l1.Add($"'' {field}")
+
+                Case "date", "datetime", "dateonly", "timeonly"
+                    l1.Add($"null {field}")
+
+                Case Else
+                    l1.Add($"null {field}")
+
+            End Select
+
+        Next
+
+        txtDest.Text = $"SELECT {String.Join(", " & vbCrLf, l1)}"
+
+    End Sub
 End Class
