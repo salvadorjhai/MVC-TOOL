@@ -1106,8 +1106,9 @@ public class TownModelDataAccess
 		/// <summary>
 		/// return list of objects
 		/// </summary>
+        /// <param name="q"></param>
 		/// <returns></returns>
-        public List<TownModel> List()
+        public List<TownModel> List(string q = "")
         {
             List<TownModel> list = new List<TownModel>();
             DataTable dt = DB.ExecuteToDatatable("SELECT * FROM b_towns order by name asc");
@@ -1190,7 +1191,7 @@ public class TownModelDataAccess
                 if (orig != null && orig.id > 0)
                 {
                     // check if status is allowed for updating 
-                    if (orig.statuslvl > HelperUtils.STATUS_LEVEL.DRAFT)
+                    if (orig.statuslvl > HelperUtils.STATUS_LEVEL.LEVEL_1)
                     {
                         return OleDB.NO_CHANGES;
                     }
@@ -4174,11 +4175,11 @@ public class TownModelFull : TownModel
             _connectionString = configuration.GetConnectionString("connectionString").ToString();
         }
 
-        // get: api/endpoint
+        // get: api/endpoint/?q=
         [HttpGet("endpoint")]
-        public ActionResult list()
+        public ActionResult list(string q = "")
         {
-            List<MemberModel> list = new MemberModelDataAccess(_connectionString).List();
+            List<MemberModel> list = new MemberModelDataAccess(_connectionString).List(q);
             if (list != null && list.Count >= 0) { return Ok(list); }
             return BadRequest();
         }
