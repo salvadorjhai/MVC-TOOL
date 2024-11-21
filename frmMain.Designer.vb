@@ -55,6 +55,8 @@ Partial Class frmMain
         Me.ToolStripSeparator7 = New System.Windows.Forms.ToolStripSeparator()
         Me.DynamicMultiInputToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.LoremImpsumToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripSeparator9 = New System.Windows.Forms.ToolStripSeparator()
+        Me.DatasetDummyToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripButton2 = New System.Windows.Forms.ToolStripSplitButton()
         Me.GETToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.FormPOSTToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -70,8 +72,8 @@ Partial Class frmMain
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.ToolStripStatusLabel1 = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
-        Me.ToolStripSeparator9 = New System.Windows.Forms.ToolStripSeparator()
-        Me.DatasetDummyToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStrip2 = New System.Windows.Forms.ToolStrip()
+        Me.UseChoicesJSToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -166,7 +168,7 @@ Partial Class frmMain
         '
         'ToolStripButton3
         '
-        Me.ToolStripButton3.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DefaultToolStripMenuItem, Me.ModalPopupToolStripMenuItem, Me.ModalPopup2TupleToolStripMenuItem, Me.ToolStripSeparator4, Me.BlankModalToolStripMenuItem, Me.HtmlTagHelpersOnlyToolStripMenuItem, Me.Select2ViewBagToolStripMenuItem, Me.ToolStripSeparator5, Me.ModalPopupcjTemplateToolStripMenuItem, Me.ToolStripMenuItem1, Me.ToolStripMenuItem2, Me.ToolStripSeparator8, Me.InFormDynamicTableToolStripMenuItem, Me.TabsGeneratorToolStripMenuItem, Me.ToolStripSeparator7, Me.DynamicMultiInputToolStripMenuItem, Me.LoremImpsumToolStripMenuItem, Me.ToolStripSeparator9, Me.DatasetDummyToolStripMenuItem})
+        Me.ToolStripButton3.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DefaultToolStripMenuItem, Me.ModalPopupToolStripMenuItem, Me.ModalPopup2TupleToolStripMenuItem, Me.ToolStripSeparator4, Me.BlankModalToolStripMenuItem, Me.HtmlTagHelpersOnlyToolStripMenuItem, Me.Select2ViewBagToolStripMenuItem, Me.ToolStripSeparator5, Me.ModalPopupcjTemplateToolStripMenuItem, Me.ToolStripMenuItem1, Me.UseChoicesJSToolStripMenuItem, Me.ToolStripMenuItem2, Me.ToolStripSeparator8, Me.InFormDynamicTableToolStripMenuItem, Me.TabsGeneratorToolStripMenuItem, Me.ToolStripSeparator7, Me.DynamicMultiInputToolStripMenuItem, Me.LoremImpsumToolStripMenuItem, Me.ToolStripSeparator9, Me.DatasetDummyToolStripMenuItem})
         Me.ToolStripButton3.Image = CType(resources.GetObject("ToolStripButton3.Image"), System.Drawing.Image)
         Me.ToolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripButton3.Name = "ToolStripButton3"
@@ -236,8 +238,8 @@ Partial Class frmMain
         'ToolStripMenuItem2
         '
         Me.ToolStripMenuItem2.Name = "ToolStripMenuItem2"
-        Me.ToolStripMenuItem2.Size = New System.Drawing.Size(222, 22)
-        Me.ToolStripMenuItem2.Text = "Modal Popup (select2)"
+        Me.ToolStripMenuItem2.Size = New System.Drawing.Size(245, 22)
+        Me.ToolStripMenuItem2.Text = "Modal Popup (dropdown select)"
         '
         'ToolStripSeparator8
         '
@@ -273,6 +275,17 @@ Partial Class frmMain
         Me.LoremImpsumToolStripMenuItem.Size = New System.Drawing.Size(222, 22)
         Me.LoremImpsumToolStripMenuItem.Text = "Lorem impsum"
         '
+        'ToolStripSeparator9
+        '
+        Me.ToolStripSeparator9.Name = "ToolStripSeparator9"
+        Me.ToolStripSeparator9.Size = New System.Drawing.Size(219, 6)
+        '
+        'DatasetDummyToolStripMenuItem
+        '
+        Me.DatasetDummyToolStripMenuItem.Name = "DatasetDummyToolStripMenuItem"
+        Me.DatasetDummyToolStripMenuItem.Size = New System.Drawing.Size(222, 22)
+        Me.DatasetDummyToolStripMenuItem.Text = "Dataset dummy"
+        '
         'ToolStripButton2
         '
         Me.ToolStripButton2.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.GETToolStripMenuItem, Me.FormPOSTToolStripMenuItem, Me.FormPOSTJSToolStripMenuItem, Me.DatatableGETToolStripMenuItem, Me.Select2AjaxToolStripMenuItem, Me.BsSuggestToolStripMenuItem})
@@ -286,37 +299,37 @@ Partial Class frmMain
         'GETToolStripMenuItem
         '
         Me.GETToolStripMenuItem.Name = "GETToolStripMenuItem"
-        Me.GETToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.GETToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
         Me.GETToolStripMenuItem.Text = "GET"
         '
         'FormPOSTToolStripMenuItem
         '
         Me.FormPOSTToolStripMenuItem.Name = "FormPOSTToolStripMenuItem"
-        Me.FormPOSTToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.FormPOSTToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
         Me.FormPOSTToolStripMenuItem.Text = "Form POST"
         '
         'FormPOSTJSToolStripMenuItem
         '
         Me.FormPOSTJSToolStripMenuItem.Name = "FormPOSTJSToolStripMenuItem"
-        Me.FormPOSTJSToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.FormPOSTJSToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
         Me.FormPOSTJSToolStripMenuItem.Text = "Form POST (JS)"
         '
         'DatatableGETToolStripMenuItem
         '
         Me.DatatableGETToolStripMenuItem.Name = "DatatableGETToolStripMenuItem"
-        Me.DatatableGETToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.DatatableGETToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
         Me.DatatableGETToolStripMenuItem.Text = "Datatable GET"
         '
         'Select2AjaxToolStripMenuItem
         '
         Me.Select2AjaxToolStripMenuItem.Name = "Select2AjaxToolStripMenuItem"
-        Me.Select2AjaxToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.Select2AjaxToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
         Me.Select2AjaxToolStripMenuItem.Text = "Select2 Ajax"
         '
         'BsSuggestToolStripMenuItem
         '
         Me.BsSuggestToolStripMenuItem.Name = "BsSuggestToolStripMenuItem"
-        Me.BsSuggestToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.BsSuggestToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
         Me.BsSuggestToolStripMenuItem.Text = "bsSuggest"
         '
         'ToolStripSeparator2
@@ -339,7 +352,7 @@ Partial Class frmMain
         Me.txtSource.Font = New System.Drawing.Font("Courier New", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.txtSource.Location = New System.Drawing.Point(0, 0)
         Me.txtSource.Name = "txtSource"
-        Me.txtSource.Size = New System.Drawing.Size(253, 394)
+        Me.txtSource.Size = New System.Drawing.Size(253, 369)
         Me.txtSource.TabIndex = 1
         Me.txtSource.Text = resources.GetString("txtSource.Text")
         Me.txtSource.WordWrap = False
@@ -347,7 +360,7 @@ Partial Class frmMain
         'SplitContainer1
         '
         Me.SplitContainer1.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.SplitContainer1.Location = New System.Drawing.Point(0, 25)
+        Me.SplitContainer1.Location = New System.Drawing.Point(0, 50)
         Me.SplitContainer1.Name = "SplitContainer1"
         '
         'SplitContainer1.Panel1
@@ -357,7 +370,7 @@ Partial Class frmMain
         'SplitContainer1.Panel2
         '
         Me.SplitContainer1.Panel2.Controls.Add(Me.txtDest)
-        Me.SplitContainer1.Size = New System.Drawing.Size(764, 394)
+        Me.SplitContainer1.Size = New System.Drawing.Size(764, 369)
         Me.SplitContainer1.SplitterDistance = 253
         Me.SplitContainer1.SplitterWidth = 6
         Me.SplitContainer1.TabIndex = 2
@@ -368,7 +381,7 @@ Partial Class frmMain
         Me.txtDest.Font = New System.Drawing.Font("Courier New", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.txtDest.Location = New System.Drawing.Point(0, 0)
         Me.txtDest.Name = "txtDest"
-        Me.txtDest.Size = New System.Drawing.Size(505, 394)
+        Me.txtDest.Size = New System.Drawing.Size(505, 369)
         Me.txtDest.TabIndex = 2
         Me.txtDest.Text = "Hello World!"
         Me.txtDest.WordWrap = False
@@ -389,16 +402,20 @@ Partial Class frmMain
         Me.ToolStripStatusLabel1.Spring = True
         Me.ToolStripStatusLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
-        'ToolStripSeparator9
+        'ToolStrip2
         '
-        Me.ToolStripSeparator9.Name = "ToolStripSeparator9"
-        Me.ToolStripSeparator9.Size = New System.Drawing.Size(219, 6)
+        Me.ToolStrip2.Location = New System.Drawing.Point(0, 25)
+        Me.ToolStrip2.Name = "ToolStrip2"
+        Me.ToolStrip2.Size = New System.Drawing.Size(764, 25)
+        Me.ToolStrip2.TabIndex = 5
+        Me.ToolStrip2.Text = "ToolStrip2"
         '
-        'DatasetDummyToolStripMenuItem
+        'UseChoicesJSToolStripMenuItem
         '
-        Me.DatasetDummyToolStripMenuItem.Name = "DatasetDummyToolStripMenuItem"
-        Me.DatasetDummyToolStripMenuItem.Size = New System.Drawing.Size(222, 22)
-        Me.DatasetDummyToolStripMenuItem.Text = "Dataset dummy"
+        Me.UseChoicesJSToolStripMenuItem.CheckOnClick = True
+        Me.UseChoicesJSToolStripMenuItem.Name = "UseChoicesJSToolStripMenuItem"
+        Me.UseChoicesJSToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
+        Me.UseChoicesJSToolStripMenuItem.Text = "Use ChoicesJS for dropdown select"
         '
         'frmMain
         '
@@ -406,6 +423,7 @@ Partial Class frmMain
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(764, 441)
         Me.Controls.Add(Me.SplitContainer1)
+        Me.Controls.Add(Me.ToolStrip2)
         Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.ToolStrip1)
         Me.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
@@ -472,4 +490,6 @@ Partial Class frmMain
     Friend WithEvents LoremImpsumToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ToolStripSeparator9 As ToolStripSeparator
     Friend WithEvents DatasetDummyToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents ToolStrip2 As ToolStrip
+    Friend WithEvents UseChoicesJSToolStripMenuItem As ToolStripMenuItem
 End Class

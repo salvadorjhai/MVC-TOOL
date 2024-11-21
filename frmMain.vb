@@ -1189,11 +1189,16 @@ public class TownModelDataAccess
                 var orig = GetById(model.id);
                 if (orig != null && orig.id > 0)
                 {
+                    // check if status is allowed for updating 
+                    if (orig.statuslvl > HelperUtils.STATUS_LEVEL.DRAFT)
+                    {
+                        return OleDB.NO_CHANGES;
+                    }
                     // return if nothing to update
-                    if (orig == model)
-					{
-						return OleDB.NO_CHANGES;
-					}
+                    if (HelperUtils.IsModelClean(model, orig))
+                    {
+                        return OleDB.NO_CHANGES;
+                    }
 
                     Dictionary<string, object> param = new Dictionary<string, object>();
                     param["code"] = model.code;
@@ -5229,6 +5234,7 @@ ViewBag.Title = "MeterBrandModel";
         Dim sl3 As New List(Of String)
         Dim l5 As New List(Of String) '
         Dim l6 As New List(Of String)
+        Dim cboFunc As New List(Of String)
 
         For i = 0 To props.Count - 1
             Dim v = props(i).Trim
@@ -5237,6 +5243,8 @@ ViewBag.Title = "MeterBrandModel";
 
             Dim ddt = ch(1).Trim.ToLower
             Dim field = ch(2).Trim
+            Dim useChoicesjs As Boolean = False
+            Dim useChoicesjsMulti As Boolean = False
 
             If {"statuslvl", "madebyid", "madedate", "lastupdated", "updatedbyid"}.Contains(field) Then
                 If field.ToLower = "madedate" Then
@@ -5258,12 +5266,43 @@ ViewBag.Title = "MeterBrandModel";
             'lr.Add(<![CDATA[ <td>@item.brand (<i class="bi bi-pencil-square"></i> edit) </td> ]]>.Value.Replace("brand", field.ToLower))
             lr.Add(<![CDATA[ <td>@item.brand</td> ]]>.Value.Replace("brand", field.ToLower))
 
-            If field.ToLower <> "id" AndAlso (field.ToLower.EndsWith("id") Or field.ToLower.EndsWith("code") Or field.ToLower.EndsWith("type") Or field.ToLower.EndsWith("status")) AndAlso ddt.Contains("int") Then
-                dp.Add(<![CDATA[ $('#Item1_brand').val(js['brand']).trigger('change'); ]]>.Value.Replace("brand", field))
+            If field.ToLower <> "id" AndAlso (field.ToLower.EndsWith("id") Or field.ToLower.EndsWith("code") Or field.ToLower.EndsWith("type") Or field.ToLower.EndsWith("types") Or field.ToLower.EndsWith("status")) AndAlso ddt.Contains("int") Then
 
-                sl.Add(<![CDATA[
+                If ddt.Contains("int[]") Then
+                    useChoicesjs = True
+                    useChoicesjsMulti = True
+
+                    dp.Add(<![CDATA[ 
+                    // select multi items
+                    window._cjs_Item1_brand.removeActiveItems();
+                    js.Item1_brand.forEach((e)=>{
+                        window._cjs_Item1_brand.setChoiceByValue(e.toString())
+                    })
+                    ]]>.Value.Replace("brand", field))
+
+                Else
+                    dp.Add(<![CDATA[ $('#Item1_brand').val(js['brand']).trigger('change'); ]]>.Value.Replace("brand", field))
+
+                End If
+
+                Dim add1 As String = ""
+                If UseChoicesJSToolStripMenuItem.Checked Or
+                    ddt.Contains("int[]") Then
+
+                    useChoicesjs = True
+
+                    add1 = "
+                // init choices js
+                window._cjs_Item1_brand = new Choices($('#Item1_brand')[0], {
+                    removeItemButton: true,
+                    closeDropdownOnSelect: true
+                });" & vbCrLf
+
+                End If
+
+                Dim fn = <![CDATA[
     var brandsData;
-    function populatebrandCbo() {
+    function populate_brand_cbo() {
         return $.ajax({
             url: "/{Controller}/{Action}/",
             type: "GET",
@@ -5279,6 +5318,7 @@ ViewBag.Title = "MeterBrandModel";
                         var opt = new Option(Desc, brandsData[i]['id']);
                         $('#Item1_brand').append(opt);
                     }
+                    <add1>
                 },1)
             },
             error: function (errormessage) {
@@ -5286,13 +5326,16 @@ ViewBag.Title = "MeterBrandModel";
             }
         });
     }
-    ]]>.Value.Replace("brand", field).Replace("mymodal", $"{modelName}Modal"))
+    ]]>.Value.Replace("<add1>", add1).Replace("brand", field).Replace("mymodal", $"{modelName}Modal")
+
+                sl.Add(fn)
 
                 sl2.Add(<![CDATA[ $('#Item1_brand').val(null).trigger('change'); ]]>.Value.Replace("brand", field))
                 sl3.Add(<![CDATA[ $('#Item1_brand').on('change', function () {
-                // do what you want ;
-            }); 
-        ]]>.Value.Replace("brand", field))
+                    // do what you want ;
+                });]]>.Value.Replace("brand", field))
+
+                cboFunc.Add(Regex.Match(fn, "function (.*?\(\))").Groups(1).Value.Trim)
 
             ElseIf ddt.Contains("bool") Then
                 dp.Add(<![CDATA[ if(js['brand']==1) { $('#Item1_brand').prop('checked','checked'); } ]]>.Value.Replace("brand", field))
@@ -5409,7 +5452,15 @@ ViewBag.Title = "MeterBrandModel";
                 If field.ToLower.EndsWith("id") Or field.ToLower.EndsWith("code") Or field.ToLower.EndsWith("type") Or field.ToLower.EndsWith("types") Or field.ToLower.EndsWith("status") Then
                     l3.Add(<![CDATA[ <div class="mb-2 col-6"> ]]>.Value)
                     l3.Add(<![CDATA[  @Html.LabelFor(m => m.Item1.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
-                    l3.Add(<![CDATA[  @Html.DropDownListFor(m => m.Item1.brand, new SelectList(new List<string>()), new { @class = "form-control form-select select2 custom-select2", @placeholder = "select option" }) ]]>.Value.Replace("brand", field))
+
+                    If useChoicesjsMulti = False Then
+                        l3.Add(<![CDATA[  @Html.DropDownListFor(m => m.Item1.brand, new SelectList(new List<string>()), new { @class = "form-control form-select select2 custom-select2", @placeholder = "select option" }) ]]>.Value.Replace("brand", field))
+
+                    Else
+                        l3.Add(<![CDATA[  @Html.DropDownListFor(m => m.Item1.brand, new SelectList(new List<string>()), new { @class = "form-control form-select", @placeholder = "select option", @multiple = "multiple" }) ]]>.Value.Replace("brand", field))
+
+                    End If
+
                     l3.Add(<![CDATA[  @Html.ValidationMessageFor(m => m.Item1.brand, "", new { @class = "text-danger" }) ]]>.Value.Replace("brand", field))
                     l3.Add(<![CDATA[ </div> ]]>.Value)
 
@@ -5449,8 +5500,15 @@ ViewBag.Title = "MeterBrandModel";
                     l3.Add(<![CDATA[ </div> ]]>.Value)
                 End If
 
-                formData.Add(<![CDATA[ formData.append("brand", _.toNumber($("#Item1_brand").val())); ]]>.Value.Replace("brand", field))
-                formdata2.Add(<![CDATA[ brand: _.toNumber($('#Item1_brand').val()) ]]>.Value.Replace("brand", field).TrimEnd)
+                If useChoicesjsMulti Then
+                    formData.Add(<![CDATA[ formData.append("brand", $('#Item1_brand').val().select(function (x) { return _.toNumber(x) })); ]]>.Value.Replace("brand", field))
+                    formdata2.Add(<![CDATA[ brand: $('#Item1_brand').val().select(function (x) { return _.toNumber(x) }) ]]>.Value.Replace("brand", field).TrimEnd)
+
+                Else
+                    formData.Add(<![CDATA[ formData.append("brand", _.toNumber($("#Item1_brand").val())); ]]>.Value.Replace("brand", field))
+                    formdata2.Add(<![CDATA[ brand: _.toNumber($('#Item1_brand').val()) ]]>.Value.Replace("brand", field).TrimEnd)
+
+                End If
 
             ElseIf ddt.StartsWith("date") Then
                 l3.Add(<![CDATA[ <div class="mb-2"> ]]>.Value)
@@ -5694,6 +5752,8 @@ setTimeout(ShowSwalLoader, 1);
 InitValidator();
 initmytable();
 appendRequiredLabel();
+
+<SELECT_FUNCTIONS>
 <SELECT_EVENTS>
 <CHECK_EVENTS>
 
@@ -5889,6 +5949,8 @@ Replace("<SELECT_EVENTS>", String.Join(vbCrLf, sl3).Trim).
 Replace("<CHECK_EVENTS>", String.Join(vbCrLf, l5).Trim).
 Replace("m.Item1.", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"m.{tupName}.", "m.")}").
 Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}_", "")}")
+
+        txtDest.Text = txtDest.Text.Replace("<SELECT_FUNCTIONS>", String.Join(vbCrLf, cboFunc) & vbCrLf)
 
     End Sub
 
