@@ -6018,4 +6018,36 @@ Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}
         txtDest.Text = $"SELECT {String.Join(", " & vbCrLf, l1)}"
 
     End Sub
+
+    Private Sub ToolStripButton6_Click(sender As Object, e As EventArgs) Handles ToolStripButton6.Click
+        Using frmSQL = New frmSQL
+            If frmSQL.ShowDialog = DialogResult.OK Then
+                txtSQLConnectionString.Text = frmSQL.connectionString
+            End If
+        End Using
+    End Sub
+
+    Private Sub ToolStripButton7_Click(sender As Object, e As EventArgs) Handles ToolStripButton7.Click
+        Dim l1 = txtSource.Lines.Select(Function(x) $"('{x.Trim}')").ToList
+
+        'Dim tbl = InputBox($"Are you sure you want to INSERT the following values; {vbCrLf}{vbCrLf}{String.Join(vbCrLf, l1.Take(3))}...{vbCrLf}{vbCrLf}from table name:", "Enter Table Name", "")
+
+        'If String.IsNullOrWhiteSpace(tbl) = False Then
+        '    Using db = New cSQLServer(txtSQLConnectionString.Text)
+        '        Try
+        '            db.TransactionBegin()
+        '            For i = 0 To l1.Count - 1
+        '                db.ExecuteNonQuery("INSERT INTO ")
+        '            Next
+        '            db.TransactionCommit()
+        '        Catch ex As Exception
+        '            db.TransactionRollback()
+        '        End Try
+        '    End Using
+        'End If
+
+        txtDest.Text = $"INSERT INTO [TABLE_NAME] (COLUMN_NAME) {vbCrLf} VALUES {vbCrLf} {String.Join($", {vbCrLf} ", l1)}"
+
+
+    End Sub
 End Class

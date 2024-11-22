@@ -78,6 +78,7 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Class\cSQLServer.vb" />
     <Compile Include="frmAjaxGenerator.Designer.vb">
       <DependentUpon>frmAjaxGenerator.vb</DependentUpon>
     </Compile>
@@ -107,6 +108,12 @@
     </Compile>
     <Compile Include="frmMain.Designer.vb">
       <DependentUpon>frmMain.vb</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmSQL.Designer.vb">
+      <DependentUpon>frmSQL.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmSQL.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="frmTableName.Designer.vb">
@@ -153,6 +160,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmSQL.resx">
+      <DependentUpon>frmSQL.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmTableName.resx">
       <DependentUpon>frmTableName.vb</DependentUpon>

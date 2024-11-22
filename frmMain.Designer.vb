@@ -48,6 +48,7 @@ Partial Class frmMain
         Me.ToolStripSeparator5 = New System.Windows.Forms.ToolStripSeparator()
         Me.ModalPopupcjTemplateToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem()
+        Me.UseChoicesJSToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripMenuItem2 = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator8 = New System.Windows.Forms.ToolStripSeparator()
         Me.InFormDynamicTableToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -73,13 +74,18 @@ Partial Class frmMain
         Me.ToolStripStatusLabel1 = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
         Me.ToolStrip2 = New System.Windows.Forms.ToolStrip()
-        Me.UseChoicesJSToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripLabel1 = New System.Windows.Forms.ToolStripLabel()
+        Me.txtSQLConnectionString = New System.Windows.Forms.ToolStripTextBox()
+        Me.ToolStripButton6 = New System.Windows.Forms.ToolStripButton()
+        Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator()
+        Me.ToolStripButton7 = New System.Windows.Forms.ToolStripButton()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
         Me.SplitContainer1.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
+        Me.ToolStrip2.SuspendLayout()
         Me.SuspendLayout()
         '
         'ToolStrip1
@@ -178,112 +184,119 @@ Partial Class frmMain
         'DefaultToolStripMenuItem
         '
         Me.DefaultToolStripMenuItem.Name = "DefaultToolStripMenuItem"
-        Me.DefaultToolStripMenuItem.Size = New System.Drawing.Size(222, 22)
+        Me.DefaultToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
         Me.DefaultToolStripMenuItem.Text = "Default"
         '
         'ModalPopupToolStripMenuItem
         '
         Me.ModalPopupToolStripMenuItem.Name = "ModalPopupToolStripMenuItem"
-        Me.ModalPopupToolStripMenuItem.Size = New System.Drawing.Size(222, 22)
+        Me.ModalPopupToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
         Me.ModalPopupToolStripMenuItem.Text = "Modal Popup"
         Me.ModalPopupToolStripMenuItem.ToolTipText = "Generate Table+Modal from given class (single model only)"
         '
         'ModalPopup2TupleToolStripMenuItem
         '
         Me.ModalPopup2TupleToolStripMenuItem.Name = "ModalPopup2TupleToolStripMenuItem"
-        Me.ModalPopup2TupleToolStripMenuItem.Size = New System.Drawing.Size(222, 22)
+        Me.ModalPopup2TupleToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
         Me.ModalPopup2TupleToolStripMenuItem.Text = "Modal Popup 2 (Tuple)"
         Me.ModalPopup2TupleToolStripMenuItem.ToolTipText = "Generate Table+Modal from given class (multiple model)"
         '
         'ToolStripSeparator4
         '
         Me.ToolStripSeparator4.Name = "ToolStripSeparator4"
-        Me.ToolStripSeparator4.Size = New System.Drawing.Size(219, 6)
+        Me.ToolStripSeparator4.Size = New System.Drawing.Size(254, 6)
         '
         'BlankModalToolStripMenuItem
         '
         Me.BlankModalToolStripMenuItem.Name = "BlankModalToolStripMenuItem"
-        Me.BlankModalToolStripMenuItem.Size = New System.Drawing.Size(222, 22)
+        Me.BlankModalToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
         Me.BlankModalToolStripMenuItem.Text = "Blank Modal"
         '
         'HtmlTagHelpersOnlyToolStripMenuItem
         '
         Me.HtmlTagHelpersOnlyToolStripMenuItem.Name = "HtmlTagHelpersOnlyToolStripMenuItem"
-        Me.HtmlTagHelpersOnlyToolStripMenuItem.Size = New System.Drawing.Size(222, 22)
+        Me.HtmlTagHelpersOnlyToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
         Me.HtmlTagHelpersOnlyToolStripMenuItem.Text = "@HtmlTag Helpers Only"
         '
         'Select2ViewBagToolStripMenuItem
         '
         Me.Select2ViewBagToolStripMenuItem.Name = "Select2ViewBagToolStripMenuItem"
-        Me.Select2ViewBagToolStripMenuItem.Size = New System.Drawing.Size(222, 22)
+        Me.Select2ViewBagToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
         Me.Select2ViewBagToolStripMenuItem.Text = "Select2 - ViewBag"
         '
         'ToolStripSeparator5
         '
         Me.ToolStripSeparator5.Name = "ToolStripSeparator5"
-        Me.ToolStripSeparator5.Size = New System.Drawing.Size(219, 6)
+        Me.ToolStripSeparator5.Size = New System.Drawing.Size(254, 6)
         '
         'ModalPopupcjTemplateToolStripMenuItem
         '
         Me.ModalPopupcjTemplateToolStripMenuItem.Name = "ModalPopupcjTemplateToolStripMenuItem"
-        Me.ModalPopupcjTemplateToolStripMenuItem.Size = New System.Drawing.Size(222, 22)
+        Me.ModalPopupcjTemplateToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
         Me.ModalPopupcjTemplateToolStripMenuItem.Text = "Modal Popup (cj template)"
         '
         'ToolStripMenuItem1
         '
         Me.ToolStripMenuItem1.Name = "ToolStripMenuItem1"
-        Me.ToolStripMenuItem1.Size = New System.Drawing.Size(222, 22)
+        Me.ToolStripMenuItem1.Size = New System.Drawing.Size(257, 22)
         Me.ToolStripMenuItem1.Text = "Modal Popup (jee template)"
+        '
+        'UseChoicesJSToolStripMenuItem
+        '
+        Me.UseChoicesJSToolStripMenuItem.CheckOnClick = True
+        Me.UseChoicesJSToolStripMenuItem.Name = "UseChoicesJSToolStripMenuItem"
+        Me.UseChoicesJSToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
+        Me.UseChoicesJSToolStripMenuItem.Text = "Use ChoicesJS for dropdown select"
         '
         'ToolStripMenuItem2
         '
         Me.ToolStripMenuItem2.Name = "ToolStripMenuItem2"
-        Me.ToolStripMenuItem2.Size = New System.Drawing.Size(245, 22)
+        Me.ToolStripMenuItem2.Size = New System.Drawing.Size(257, 22)
         Me.ToolStripMenuItem2.Text = "Modal Popup (dropdown select)"
         '
         'ToolStripSeparator8
         '
         Me.ToolStripSeparator8.Name = "ToolStripSeparator8"
-        Me.ToolStripSeparator8.Size = New System.Drawing.Size(219, 6)
+        Me.ToolStripSeparator8.Size = New System.Drawing.Size(254, 6)
         '
         'InFormDynamicTableToolStripMenuItem
         '
         Me.InFormDynamicTableToolStripMenuItem.Name = "InFormDynamicTableToolStripMenuItem"
-        Me.InFormDynamicTableToolStripMenuItem.Size = New System.Drawing.Size(222, 22)
+        Me.InFormDynamicTableToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
         Me.InFormDynamicTableToolStripMenuItem.Text = "In Form (Dynamic Table)"
         '
         'TabsGeneratorToolStripMenuItem
         '
         Me.TabsGeneratorToolStripMenuItem.Name = "TabsGeneratorToolStripMenuItem"
-        Me.TabsGeneratorToolStripMenuItem.Size = New System.Drawing.Size(222, 22)
+        Me.TabsGeneratorToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
         Me.TabsGeneratorToolStripMenuItem.Text = "Tabs Generator"
         '
         'ToolStripSeparator7
         '
         Me.ToolStripSeparator7.Name = "ToolStripSeparator7"
-        Me.ToolStripSeparator7.Size = New System.Drawing.Size(219, 6)
+        Me.ToolStripSeparator7.Size = New System.Drawing.Size(254, 6)
         '
         'DynamicMultiInputToolStripMenuItem
         '
         Me.DynamicMultiInputToolStripMenuItem.Name = "DynamicMultiInputToolStripMenuItem"
-        Me.DynamicMultiInputToolStripMenuItem.Size = New System.Drawing.Size(222, 22)
+        Me.DynamicMultiInputToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
         Me.DynamicMultiInputToolStripMenuItem.Text = "Dynamic Multi Input (Table)"
         '
         'LoremImpsumToolStripMenuItem
         '
         Me.LoremImpsumToolStripMenuItem.Name = "LoremImpsumToolStripMenuItem"
-        Me.LoremImpsumToolStripMenuItem.Size = New System.Drawing.Size(222, 22)
+        Me.LoremImpsumToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
         Me.LoremImpsumToolStripMenuItem.Text = "Lorem impsum"
         '
         'ToolStripSeparator9
         '
         Me.ToolStripSeparator9.Name = "ToolStripSeparator9"
-        Me.ToolStripSeparator9.Size = New System.Drawing.Size(219, 6)
+        Me.ToolStripSeparator9.Size = New System.Drawing.Size(254, 6)
         '
         'DatasetDummyToolStripMenuItem
         '
         Me.DatasetDummyToolStripMenuItem.Name = "DatasetDummyToolStripMenuItem"
-        Me.DatasetDummyToolStripMenuItem.Size = New System.Drawing.Size(222, 22)
+        Me.DatasetDummyToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
         Me.DatasetDummyToolStripMenuItem.Text = "Dataset dummy"
         '
         'ToolStripButton2
@@ -404,18 +417,45 @@ Partial Class frmMain
         '
         'ToolStrip2
         '
+        Me.ToolStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripLabel1, Me.txtSQLConnectionString, Me.ToolStripButton6, Me.ToolStripSeparator10, Me.ToolStripButton7})
         Me.ToolStrip2.Location = New System.Drawing.Point(0, 25)
         Me.ToolStrip2.Name = "ToolStrip2"
         Me.ToolStrip2.Size = New System.Drawing.Size(764, 25)
         Me.ToolStrip2.TabIndex = 5
         Me.ToolStrip2.Text = "ToolStrip2"
         '
-        'UseChoicesJSToolStripMenuItem
+        'ToolStripLabel1
         '
-        Me.UseChoicesJSToolStripMenuItem.CheckOnClick = True
-        Me.UseChoicesJSToolStripMenuItem.Name = "UseChoicesJSToolStripMenuItem"
-        Me.UseChoicesJSToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
-        Me.UseChoicesJSToolStripMenuItem.Text = "Use ChoicesJS for dropdown select"
+        Me.ToolStripLabel1.Name = "ToolStripLabel1"
+        Me.ToolStripLabel1.Size = New System.Drawing.Size(106, 22)
+        Me.ToolStripLabel1.Text = "Connection String:"
+        '
+        'txtSQLConnectionString
+        '
+        Me.txtSQLConnectionString.Font = New System.Drawing.Font("Segoe UI", 9.0!)
+        Me.txtSQLConnectionString.Name = "txtSQLConnectionString"
+        Me.txtSQLConnectionString.Size = New System.Drawing.Size(250, 25)
+        '
+        'ToolStripButton6
+        '
+        Me.ToolStripButton6.Image = CType(resources.GetObject("ToolStripButton6.Image"), System.Drawing.Image)
+        Me.ToolStripButton6.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripButton6.Name = "ToolStripButton6"
+        Me.ToolStripButton6.Size = New System.Drawing.Size(54, 22)
+        Me.ToolStripButton6.Text = "Build"
+        '
+        'ToolStripSeparator10
+        '
+        Me.ToolStripSeparator10.Name = "ToolStripSeparator10"
+        Me.ToolStripSeparator10.Size = New System.Drawing.Size(6, 25)
+        '
+        'ToolStripButton7
+        '
+        Me.ToolStripButton7.Image = CType(resources.GetObject("ToolStripButton7.Image"), System.Drawing.Image)
+        Me.ToolStripButton7.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripButton7.Name = "ToolStripButton7"
+        Me.ToolStripButton7.Size = New System.Drawing.Size(63, 22)
+        Me.ToolStripButton7.Text = "INSERT"
         '
         'frmMain
         '
@@ -437,6 +477,8 @@ Partial Class frmMain
         Me.SplitContainer1.ResumeLayout(False)
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
+        Me.ToolStrip2.ResumeLayout(False)
+        Me.ToolStrip2.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -492,4 +534,9 @@ Partial Class frmMain
     Friend WithEvents DatasetDummyToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ToolStrip2 As ToolStrip
     Friend WithEvents UseChoicesJSToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents ToolStripLabel1 As ToolStripLabel
+    Friend WithEvents txtSQLConnectionString As ToolStripTextBox
+    Friend WithEvents ToolStripButton6 As ToolStripButton
+    Friend WithEvents ToolStripSeparator10 As ToolStripSeparator
+    Friend WithEvents ToolStripButton7 As ToolStripButton
 End Class
