@@ -5802,7 +5802,7 @@ var dtmytable;
             dtmytable.ajax.reload(function (json) {
                 dtmytableData = json.data
                 // add other function to be called after table reloads
-                dtmytableData.columns.adjust();
+                dtmytable.columns.adjust();
             }, false)
         }
         function initmytable() {
