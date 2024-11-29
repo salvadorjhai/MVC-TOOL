@@ -1166,6 +1166,7 @@ public class TownModelDataAccess
 
                 // prepare 
                 param = Utils.HelperUtils.ToDictionary(model);
+                param["statuslvl_text"] = model.statuslvl_text;
                 param["statuslvl"] = model.statuslvl;
                 param["madebyid"] = model.updatedbyid;
                 param["madedate"] = model.lastupdated.Value;
@@ -1214,11 +1215,11 @@ public class TownModelDataAccess
                     param.Remove("madedate"); // NOT NEEDED for update
                     param.Remove("madebyid"); // NOT NEEDED for update
                     param.Remove("statuslvl"); // NOT NEEDED for update
+                    param.Remove("statuslvl_text"); // NOT NEEDED for update
                     param["updatedbyid"] = model.updatedbyid;
                     param["lastupdated"] = model.lastupdated.Value;
 
                     // update
-                    // return DB.UpdateParam("b_towns", $"WHERE id={model.id}", param);
                     var resId = DB.UpdateParam("b_towns", $"WHERE id={model.id}", param);
                     if (DB.LastError != null) { return OleDB.EXEC_ERROR; }
                     if (resId > 0)
@@ -1234,6 +1235,43 @@ public class TownModelDataAccess
             return -1;
         }
 
+        /// <summary>
+        /// perform status update
+        /// if id value is <= 0 , it will perform insert
+        /// if id value is > 0 , it will perform update
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns>positive number is success, negative means failed</returns>
+        public int status_update(ref TownModel model)
+        {
+            if (model.id <= 0)
+            {
+                return -1;
+            }
+
+            var orig = GetById(model.id);
+            if (orig != null && orig.id > 0)
+            {
+                // prepare 
+                var param = new Dictionary<string, object>();
+                param["statuslvl_text"] = model.statuslvl_text;
+                param["statuslvl"] = model.statuslvl;
+                param["updatedbyid"] = model.updatedbyid;
+                param["lastupdated"] = model.lastupdated.Value;
+
+                // update
+                var resId = DB.UpdateParam("b_towns", $"WHERE id={model.id}", param);
+                if (DB.LastError != null) { return OleDB.EXEC_ERROR; }
+                if (resId > 0)
+                {
+                    // return updated model (with id)
+                    model = GetById(model.id);
+                }
+                return resId;
+            }
+
+            return -1;
+        }
 
     }
 
@@ -4203,6 +4241,18 @@ public class TownModelFull : TownModel
             if (res == OleDB.DUPLICATE) { return Conflict(); }
             return BadRequest("failed");
         }
+
+        // post: api/endpoint/status/update
+        [HttpPost("endpoint/status/update")]
+        public IActionResult status_update(MemberModel data)
+        {
+            var res = new MemberModelDataAccess(_connectionString).status_update(ref data);
+            if (res > 0) { return Ok(new { result = "success", data = data }); }
+            if (res == OleDB.NO_CHANGES) { return Ok(new { result = "nochange", data = data }); }
+            if (res == OleDB.DUPLICATE) { return Conflict(); }
+            return BadRequest("failed");
+        }
+
 ]]>.Value
 
         txtDest.Text = template.Replace("MemberModel", modelName).Trim.
@@ -4230,10 +4280,31 @@ public class TownModelFull : TownModel
         #region "MemberModel"
         public async Task<ActionResult> list()
         {
+            var param = JsonConvert.DeserializeObject<Dictionary<string, string>>(Request.QueryString["q"]);
+            var user = HelperUtils.GetUser(User.Identity.Name.ParseInt());
+            //var q = $"WHERE madebyid = {user.id} OR assigned_area_id = {user.empInfo.areaid}";
+
             List<MemberModelFull> model = new List<MemberModelFull>();
-            string results = await HelperUtils.API_GET(baseURL + "api/endpoint");
+            string results = await HelperUtils.API_GET(baseURL + "api/endpoint/?q=");
             if (!string.IsNullOrWhiteSpace(results))
                 model = JsonConvert.DeserializeObject<List<MemberModelFull>>(results);
+
+            
+            if (param.ContainsKey("statuslvl"))
+            {
+                // Group by StatusLvl and get counts
+                var transBadge = model
+                    .GroupBy(item => item.statuslvl)
+                    .Select(group => new
+                    {
+                        id = group.Key,
+                        count = group.Count()
+                    }).ToList();
+
+                model = new List<MemberModelFull>(model.Where(x => x.statuslvl == int.Parse(param["statuslvl"].ToString())).ToList());
+
+                return Content(Newtonsoft.Json.JsonConvert.SerializeObject(new { data = model, badgecount = transBadge }), "application/json");
+            }
 
             return Content(Newtonsoft.Json.JsonConvert.SerializeObject(new { data = model }), "application/json");
         }
@@ -4266,6 +4337,23 @@ public class TownModelFull : TownModel
             return Content(msg, "application/json");
         }
 
+        [HttpPost]
+        public async Task<ActionResult> updatestatus(MemberModelFull model)
+        {
+            model.updatedbyid = User.Identity.Name.ParseInt();
+            model.lastupdated = DateTime.Now;
+
+            string msg = string.Empty;
+            var myContent = JsonConvert.SerializeObject(model);
+            var res = await HelperUtils.API_POST2(baseURL + "api/endpoint/status/update", myContent);
+            msg = res.Content.ReadAsStringAsync().Result;
+            if (!res.IsSuccessStatusCode)
+            {
+                msg = res.ReasonPhrase.ToString();
+                return Content(Newtonsoft.Json.JsonConvert.SerializeObject(new { result = msg }), "application/json");
+            }
+            return Content(msg, "application/json");
+        }
         #endregion
 ]]>.Value
 
@@ -5247,7 +5335,7 @@ ViewBag.Title = "MeterBrandModel";
             Dim useChoicesjs As Boolean = False
             Dim useChoicesjsMulti As Boolean = False
 
-            If {"statuslvl", "madebyid", "madedate", "lastupdated", "updatedbyid"}.Contains(field) Then
+            If {"statuslvl_text", "statuslvl", "madebyid", "madedate", "lastupdated", "updatedbyid"}.Contains(field) Then
                 If field.ToLower = "madedate" Then
                     dtColDef.Add(<![CDATA[ { "data": "brand", "autoWidth": true, "searchable": false } ]]>.Value.Replace("brand", field).TrimEnd)
                     lh.Add(<![CDATA[ <th class="text-center">CREATED BY</th> ]]>.Value)
@@ -5255,6 +5343,14 @@ ViewBag.Title = "MeterBrandModel";
                 If field.ToLower = "lastupdated" Then
                     dtColDef.Add(<![CDATA[ { "data": "brand", "autoWidth": true, "searchable": false } ]]>.Value.Replace("brand", field).TrimEnd)
                     lh.Add(<![CDATA[ <th class="text-center">UPDATED BY</th> ]]>.Value)
+                End If
+                If field.ToLower = "statuslvl_text" Then
+                    formData.Add(<![CDATA[ formData.append("statuslvl_text", statuslevelfilter.default_level_text); ]]>.Value.TrimEnd)
+                    formdata2.Add(<![CDATA[ statuslvl_text: statuslevelfilter.default_level_text, // set to default  ]]>.Value.TrimEnd)
+                End If
+                If field.ToLower = "statuslvl" Then
+                    formData.Add(<![CDATA[ formData.append("statuslvl", statuslevelfilter.default_level); ]]>.Value.TrimEnd)
+                    formdata2.Add(<![CDATA[ statuslvl: statuslevelfilter.default_level, // set to default  ]]>.Value.TrimEnd)
                 End If
                 Continue For
             End If
@@ -5586,7 +5682,25 @@ ViewBag.Title = "MeterBrandModel";
     <h4><span class="fas fa-tags fs-6"></span> @ViewBag.Title</h4> (view, add, edit)
 </div>
 <div class="card-body">
-    <button type="button" class="btn btn-icon icon-left btn-primary text-uppercase mb-3" onclick="showmymodal()"><span class="fas fa-plus-square"></span> Add New </button>
+
+    <!-- js-level-filter -->
+    <div class="row mb-2" id="js-level-filter" style="display:none">
+        <div class="col-12">
+            <div class="btn-group" role="group" aria-label="status level filter">
+                <button type="button" class="btn btn-outline-primary" data-filter="1">Draft <span class="badge bg-secondary">0</span></button>
+                <button type="button" class="btn btn-outline-primary" data-filter="2">For Checking <span class="badge bg-warning">0</span></button>
+                <button type="button" class="btn btn-outline-primary" data-filter="3">Checked <span class="badge bg-warning">0</span></button>
+                <button type="button" class="btn btn-outline-primary" data-filter="9">Approved <span class="badge bg-success">0</span></button>
+                <button type="button" class="btn btn-outline-danger" data-filter="5">Cancelled/Deleted <span class="badge bg-danger">0</span></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-group" id="js-crud">
+        <button type="button" class="btn btn-icon icon-left btn-primary text-uppercase mb-3" onclick="showmymodal()"><span class="fas fa-plus-square"></span> Add New </button>
+        <button type="button" class="btn btn-icon icon-left btn-warning text-uppercase mb-3"><span class="fas fa-print"></span> Reports </button>
+    </div>
+
     <table class="table table-hover table-sm table-responsive" id="mytable" style="width:100%">
         <thead>
             <tr class="bg-primary text-white text-uppercase">
@@ -5612,12 +5726,20 @@ Replace("<TD_DATA>", String.Join(vbCrLf, lr)).Trim)
 <div class="modal-content">
     <div class="modal-header bg-dark text-uppercase text-light p-3">
         <h5 class="modal-title"> </h5>
+        
+        <!-- js-level-update -->
+        <div class="btn-group btn-group-sm js-level-update" id="js-level-update" style="display:none">
+            <button id="" type="button" class="btn btn-danger" data-filter="backlevel" data-value="-1" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="Move back to previous status/level..."><span class="fas fa-arrow-circle-left"></span> Back to level</button>
+            <button id="" type="button" class="btn btn-warning" data-filter="movelevel" data-value="-1" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="Move or Submit For..."><span class="fas fa-arrow-circle-right"></span> Submit for checking</button>
+        </div>
+
     </div>
     <form id="ProductModelForm" autocomplete="off" dirty-checker>
         <div class="modal-body">
             <FORM CONTENT>
         </div>
         <div class="modal-footer">
+            <button id="btnPrint_mymodal" type="button" class="btn btn-warning"><span class="fas fa-print"></span> PRINT PREVIEW</button>
             <button id="btnSave_mymodal" type="button" class="btn btn-success"><span class="far fa-thumbs-up"></span> SAVE</button>
             <button id="btnClose_mymodal" type="button" class="btn btn-danger" onclick="closeFormIfDirty(this)"><span class="far fa-thumbs-down"></span> CLOSE</button>
         </div>
@@ -5796,16 +5918,43 @@ $(document).ajaxStop(function (e) {
 })
 }
 
-var dtmytable;
+        var dtmytable;
         var dtmytableData;
         function reloadmytable() {
+            // ---- using normal reload
             dtmytable.ajax.reload(function (json) {
                 dtmytableData = json.data
                 // add other function to be called after table reloads
                 dtmytable.columns.adjust();
             }, false)
+
+            // ---- If using status level filter
+            // check if initialized
+            if (dtmytable == null) {
+                initmytable()
+                return;
+            }
+
+            // else change url
+            var q = {
+                statuslvl: statuslevelfilter.active_filter
+            }
+
+            dtmytable.ajax.url("/{Controller}/list?q=" + JSON.stringify(q)).load(function (json) {
+                dtmytableData = json.data
+                // add other function to be called after table reloads
+                dtmytable.columns.adjust();
+
+                setTimeout(statuslevelfilter.updateBadgeCount(json.badgecount), 1); // update badge count
+            }, false)
+
         }
         function initmytable() {
+
+            var q = {
+                statuslvl: statuslevelfilter.active_filter
+            }
+
             $('#mytable').DataTable().destroy();
             dtmytable = $('#mytable').DataTable({
                 dom:
@@ -5814,7 +5963,7 @@ var dtmytable;
                     "<'row'<'pl-2 pt-0 pb-2 col-sm-12 col-md-5'i><'pt-1 pb-1 pr-2 col-sm-12 col-md-7'p>>",
                 stateSave: true,
                 ajax: {
-                    "url": "/{Controller}/{Action}",
+                    "url": "/{Controller}/list?q=" + JSON.stringify(q),
                     "type": "GET",
                     datatype: "json",
                     error: function (errormessage) {
@@ -5831,6 +5980,12 @@ var dtmytable;
                 initComplete: function (settings, json) {
                     dtmytableData = json.data;
                     document.body.style.cursor = 'default';
+
+                    // ----
+                    if (json.badgecount!=null){
+                        setTimeout(statuslevelfilter.updateBadgeCount(json.badgecount), 1); // update badge count
+                    }
+
                 },
                 columns: [
                     // data: , name: , orderable: , autoWidth: , width: , className: 'text-center' , "visible":false
@@ -5892,6 +6047,12 @@ $('#Item1_id').val('-1');
 <SELECT2_MODIFIER>
 $('#mymodal h5').text('ADD NEW DETAILS');
 $('#mymodal').modal('show');
+
+btnPrint_mymodal.hidden = true;
+
+// ---- to update next level display
+statuslevelfilter.BuildMoveToButtons(0)
+
 }
 
 function showEditmymodal(id) {
@@ -5921,6 +6082,12 @@ $.ajax({
 function fillProductModelForm(js) {
 window._seldata = js;
 <EDIT_VAL>
+
+btnPrint_mymodal.hidden = false;
+
+// ---- to update next level display
+statuslevelfilter.BuildMoveToButtons(js.statuslvl)
+
 }
 
 function saveProductModelForm() {
@@ -5930,6 +6097,126 @@ function saveProductModelForm() {
 <SELECT2>
 
 </script>
+
+<script>
+// *******
+
+function onMoveToLevelButtonClicked(sender) {
+    var moveToId = $(sender)[0].dataset.value
+    var moveToText = $(sender)[0].dataset.valueText
+    var moveToTitle = $(sender)[0].dataset.title
+
+    swal2({
+        title: `Update Status?`,
+        html: `Are you sure you want to move and update the status to <b>${moveToTitle}</b>`,
+        icon: 'warning',
+        dangerMode: true,
+    }, () => {
+        UpdatemymodalStatus(window._seldata.id, moveToId, moveToText)
+    });
+}
+
+function UpdatemymodalStatus(id, newstatusid, newstatustext) {
+
+    var model = {
+        id: _.toNumber($('#id').val()),
+        statuslvl: _.toNumber(newstatusid),
+        statuslvl_text: newstatustext,
+    }
+
+    $.ajax({
+        url: "/{Controller}/updatestatus",
+        data: JSON.stringify(model),
+        type: "POST",
+        contentType: "application/json;charset=UTF-8",
+        dataType: "json",
+        success: function (response, textStatus, jqXHR) {
+            var msg;
+            if (response.result == null) {
+                msg = response.toLowerCase();
+            } else {
+                msg = response.result.toLowerCase();
+            }
+            if (msg.includes("success")) {
+                $('#mymodal').find('form').data('isDirty', false);
+                $('#mymodal').modal('hide');
+                reloadmytable(); // or dtmytable.ajax.reload(null,false)
+                swal("Saved!", "Status has been updated", "success");
+
+            } else if (msg.includes("nochange")) {
+                $('#mymodal').find('form').data('isDirty', false);
+                $('#mymodal').modal('hide');
+            } else {
+                swal("Error", "An error occured: " + msg + "\n", "warning");
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status == 401) {
+                swal2({
+                    title: `Unauthorized`,
+                    html: 'It seems you have been logged out.<br><b>Please login and try again.</b>',
+                    icon: 'error',
+                    dangerMode: true,
+                    showCancelButton: false,
+                }, () => {
+                    window.location = "/Authentication/Logout";
+                });
+                return;
+            }
+            swal("Error!", "Oops! something went wrong ... \n", "error");
+        }
+        
+    });
+
+}
+
+
+var statuslevelfilter = new StatusLevelFilter({
+    parent_filter: $('#js-level-filter'),
+    parent_statusbutton: $('#js-level-update'),
+    // function to call after filter
+    onLevelFilterClicked_Handler: reloadmytable,
+    // function to click on status update
+    onMoveToLevelButtonClicked_Handler: onMoveToLevelButtonClicked,
+    // default level id
+    default_level: 1,
+    // approval level
+    approval_levels: [
+        {
+            id: 1,
+            status: "Draft",
+            name: "Draft",
+            btnclass: `btn btn-outline-primary`,
+            badgeclass: `badge bg-primary`,
+            backclass: `btn btn-danger`,
+            moveclass: `btn btn-success`,
+        },
+        {
+            id: 9,
+            status: "Active",
+            name: "Active",
+            btnclass: `btn btn-outline-primary`,
+            badgeclass: `badge bg-primary`,
+            backclass: `btn btn-danger`,
+            moveclass: `btn btn-success`,
+        },
+        {
+            id: 5,
+            status: "Inactive",
+            name: "Inactive",
+            btnclass: `btn btn-outline-danger`,
+            badgeclass: `badge bg-danger`,
+            backclass: `btn btn-danger`,
+            moveclass: `btn btn-warning`,
+        }
+    ],
+})
+
+// initialize
+statuslevelfilter.Initialize()
+
+</script>
+
 ]]>.Value.Replace("ProductModelForm", modelName & "Form").
 Replace("mymodal", $"{modelName}Modal").
 Replace("dtmytable", $"dt{modelName}").
