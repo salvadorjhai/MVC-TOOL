@@ -5363,9 +5363,11 @@ ViewBag.Title = "MeterBrandModel";
             'lr.Add(<![CDATA[ <td>@item.brand (<i class="bi bi-pencil-square"></i> edit) </td> ]]>.Value.Replace("brand", field.ToLower))
             lr.Add(<![CDATA[ <td>@item.brand</td> ]]>.Value.Replace("brand", field.ToLower))
 
-            If field.ToLower <> "id" AndAlso (field.ToLower.EndsWith("id") Or field.ToLower.EndsWith("code") Or field.ToLower.EndsWith("type") Or field.ToLower.EndsWith("types") Or field.ToLower.EndsWith("status")) AndAlso ddt.Contains("int") Then
+            If field.ToLower <> "id" AndAlso (field.ToLower.EndsWith("id") Or
+                field.ToLower.EndsWith("code") Or field.ToLower.EndsWith("type") Or
+                field.ToLower.EndsWith("types") Or field.ToLower.EndsWith("status") Or ddt.Contains("list")) AndAlso (ddt.Contains("int") Or ddt.Contains("list")) Then
 
-                If ddt.Contains("int[]") Then
+                If ddt.Contains("int[]") Or ddt.Contains("list") Then
                     useChoicesjs = True
                     useChoicesjsMulti = True
 
@@ -5383,8 +5385,7 @@ ViewBag.Title = "MeterBrandModel";
                 End If
 
                 Dim add1 As String = ""
-                If UseChoicesJSToolStripMenuItem.Checked Or
-                    ddt.Contains("int[]") Then
+                If UseChoicesJSToolStripMenuItem.Checked Or (ddt.Contains("int[]") Or ddt.Contains("list")) Then
 
                     useChoicesjs = True
 
@@ -5544,9 +5545,11 @@ ViewBag.Title = "MeterBrandModel";
                 formData.Add(<![CDATA[ formData.append("brand", $('#Item1_brand').prop('checked')); ]]>.Value.Replace("brand", field))
                 formdata2.Add(<![CDATA[ brand: $('#Item1_brand').prop('checked') ]]>.Value.Replace("brand", field).TrimEnd)
 
-            ElseIf ddt.Contains("int") Or ddt.Contains("decimal") Or ddt.Contains("double") Then
+            ElseIf ddt.Contains("int") Or ddt.Contains("decimal") Or ddt.Contains("double") Or ddt.Contains("list") Then
 
-                If field.ToLower.EndsWith("id") Or field.ToLower.EndsWith("code") Or field.ToLower.EndsWith("type") Or field.ToLower.EndsWith("types") Or field.ToLower.EndsWith("status") Then
+                If field.ToLower.EndsWith("id") Or field.ToLower.EndsWith("code") Or
+                    field.ToLower.EndsWith("type") Or field.ToLower.EndsWith("types") Or
+                    field.ToLower.EndsWith("status") Or ddt.Contains("int[]") Or ddt.Contains("list") Then
                     l3.Add(<![CDATA[ <div class="mb-2 col-6"> ]]>.Value)
                     l3.Add(<![CDATA[  @Html.LabelFor(m => m.Item1.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
 
