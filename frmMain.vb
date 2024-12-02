@@ -5392,8 +5392,17 @@ ViewBag.Title = "MeterBrandModel";
                     add1 = "
                 // init choices js
                 window._cjs_Item1_brand = new Choices($('#Item1_brand')[0], {
+                    allowHTML: true,
+                    closeDropdownOnSelect: true,
+                    duplicateItemsAllowed: false,
+                    //maxItemCount: 3,
+                    shouldSort: false,
+                    // user can remove item
+                    removeItems: true,
                     removeItemButton: true,
-                    closeDropdownOnSelect: true
+                    // Whether a user can add choices dynamically
+                    //addItems: true,
+                    //addChoices: true,
                 });" & vbCrLf
 
                 End If
