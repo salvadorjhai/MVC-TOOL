@@ -5365,9 +5365,9 @@ ViewBag.Title = "MeterBrandModel";
 
             If field.ToLower <> "id" AndAlso (field.ToLower.EndsWith("id") Or
                 field.ToLower.EndsWith("code") Or field.ToLower.EndsWith("type") Or
-                field.ToLower.EndsWith("types") Or field.ToLower.EndsWith("status") Or ddt.Contains("list")) AndAlso (ddt.Contains("int") Or ddt.Contains("list")) Then
+                field.ToLower.EndsWith("types") Or field.ToLower.EndsWith("status") Or ddt.Contains("list") Or ddt.Contains("[]")) AndAlso (ddt.Contains("int") Or ddt.Contains("list") Or ddt.Contains("[]")) AndAlso Not ddt.Contains("byte") Then
 
-                If ddt.Contains("int[]") Or ddt.Contains("list") Then
+                If ddt.Contains("[]") Or ddt.Contains("list") Then
                     useChoicesjs = True
                     useChoicesjsMulti = True
 
@@ -5385,7 +5385,7 @@ ViewBag.Title = "MeterBrandModel";
                 End If
 
                 Dim add1 As String = ""
-                If UseChoicesJSToolStripMenuItem.Checked Or (ddt.Contains("int[]") Or ddt.Contains("list")) Then
+                If UseChoicesJSToolStripMenuItem.Checked Or (ddt.Contains("[]") Or ddt.Contains("list")) Then
 
                     useChoicesjs = True
 
@@ -5403,6 +5403,7 @@ ViewBag.Title = "MeterBrandModel";
                     // Whether a user can add choices dynamically
                     //addItems: true,
                     //addChoices: true,
+                    //editItems: true,
                 });" & vbCrLf
 
                 End If
@@ -5437,10 +5438,12 @@ ViewBag.Title = "MeterBrandModel";
 
                 sl.Add(fn)
 
-                sl2.Add(<![CDATA[ $('#Item1_brand').val(null).trigger('change'); ]]>.Value.Replace("brand", field))
-                sl3.Add(<![CDATA[ $('#Item1_brand').on('change', function () {
+                If useChoicesjs = False Then
+                    sl2.Add(<![CDATA[ $('#Item1_brand').val(null).trigger('change'); ]]>.Value.Replace("brand", field))
+                    sl3.Add(<![CDATA[ $('#Item1_brand').on('change', function () {
                     // do what you want ;
                 });]]>.Value.Replace("brand", field))
+                End If
 
                 cboFunc.Add(Regex.Match(fn, "function (.*?\(\))").Groups(1).Value.Trim)
 
@@ -5486,7 +5489,7 @@ ViewBag.Title = "MeterBrandModel";
                 Continue For
             End If
 
-            If ddt.Contains("string") Then
+            If ddt.Contains("string") And Not ddt.Contains("[]") Then
 
                 If field.ToLower.EndsWith("filename") Or field.ToLower.Contains("file") Then
                     l3.Add(<![CDATA[ <div class="mb-2"> ]]>.Value)
@@ -5554,11 +5557,11 @@ ViewBag.Title = "MeterBrandModel";
                 formData.Add(<![CDATA[ formData.append("brand", $('#Item1_brand').prop('checked')); ]]>.Value.Replace("brand", field))
                 formdata2.Add(<![CDATA[ brand: $('#Item1_brand').prop('checked') ]]>.Value.Replace("brand", field).TrimEnd)
 
-            ElseIf ddt.Contains("int") Or ddt.Contains("decimal") Or ddt.Contains("double") Or ddt.Contains("list") Then
+            ElseIf ddt.Contains("int") Or ddt.Contains("decimal") Or ddt.Contains("double") Or ddt.Contains("list") Or ddt.Contains("[]") And Not ddt.Contains("byte") Then
 
                 If field.ToLower.EndsWith("id") Or field.ToLower.EndsWith("code") Or
                     field.ToLower.EndsWith("type") Or field.ToLower.EndsWith("types") Or
-                    field.ToLower.EndsWith("status") Or ddt.Contains("int[]") Or ddt.Contains("list") Then
+                    field.ToLower.EndsWith("status") Or ddt.Contains("[]") Or ddt.Contains("list") Then
                     l3.Add(<![CDATA[ <div class="mb-2 col-6"> ]]>.Value)
                     l3.Add(<![CDATA[  @Html.LabelFor(m => m.Item1.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
 
