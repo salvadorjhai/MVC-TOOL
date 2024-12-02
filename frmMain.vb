@@ -5949,7 +5949,7 @@ $(document).ajaxStop(function (e) {
                 dtmytable.columns.adjust();
 
                 setTimeout(statuslevelfilter.updateBadgeCount(json.badgecount), 1); // update badge count
-            }, false)
+            }, true) // true to reset paging after reload
 
         }
         function initmytable() {
