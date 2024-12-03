@@ -6298,7 +6298,7 @@ Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}
             Dim field = ch(2).Trim
 
             Select Case ddt
-                Case "int", "float", "decimal"
+                Case "int", "float", "decimal", "bool"
                     l1.Add($"0 {field}")
 
                 Case "byte", "byte[]"
