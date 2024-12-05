@@ -6002,6 +6002,9 @@ $(document).ajaxStop(function (e) {
                     }
 
                 },
+                drawCallback: function (settings) {
+                    // dtanimation2(this)
+                },
                 columns: [
                     // data: , name: , orderable: , autoWidth: , width: , className: 'text-center' , "visible":false
                     <DT_COL_DEF>
