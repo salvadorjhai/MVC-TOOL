@@ -5947,15 +5947,14 @@ $(document).ajaxStop(function (e) {
             }, false)
 
             // ---- If using status level filter
-            // check if initialized
-            if (dtmytable == null) {
-                initmytable()
-                return;
-            }
-
-            // else change url
             var q = {
                 statuslvl: statuslevelfilter.active_filter
+            }
+
+            // check if initialized
+            if (dtmytable == null) {
+                initmytable(JSON.stringify(q))
+                return;
             }
 
             dtmytable.ajax.url("/{Controller}/list?q=" + JSON.stringify(q)).load(function (json) {
@@ -5967,11 +5966,7 @@ $(document).ajaxStop(function (e) {
             }, true) // true to reset paging after reload
 
         }
-        function initmytable() {
-
-            var q = {
-                statuslvl: statuslevelfilter.active_filter
-            }
+        function initmytable(q = "") {
 
             $('#mytable').DataTable().destroy();
             dtmytable = $('#mytable').DataTable({
@@ -5981,7 +5976,7 @@ $(document).ajaxStop(function (e) {
                     "<'row'<'pl-2 pt-0 pb-2 col-sm-12 col-md-5'i><'pt-1 pb-1 pr-2 col-sm-12 col-md-7'p>>",
                 stateSave: true,
                 ajax: {
-                    "url": "/{Controller}/list?q=" + JSON.stringify(q),
+                    "url": "/{Controller}/list?q=" + q,
                     "type": "GET",
                     datatype: "json",
                     error: function (errormessage) {
