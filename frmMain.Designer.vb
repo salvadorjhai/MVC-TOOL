@@ -93,7 +93,7 @@ Partial Class frmMain
         Me.ToolStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripButton1, Me.ToolStripSeparator1, Me.ToolStripButton5, Me.ToolStripSeparator3, Me.ToolStripButton3, Me.ToolStripButton2, Me.ToolStripSeparator2, Me.ToolStripButton4})
         Me.ToolStrip1.Location = New System.Drawing.Point(0, 0)
         Me.ToolStrip1.Name = "ToolStrip1"
-        Me.ToolStrip1.Size = New System.Drawing.Size(764, 25)
+        Me.ToolStrip1.Size = New System.Drawing.Size(1130, 25)
         Me.ToolStrip1.TabIndex = 0
         Me.ToolStrip1.Text = "ToolStrip1"
         '
@@ -365,7 +365,7 @@ Partial Class frmMain
         Me.txtSource.Font = New System.Drawing.Font("Courier New", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.txtSource.Location = New System.Drawing.Point(0, 0)
         Me.txtSource.Name = "txtSource"
-        Me.txtSource.Size = New System.Drawing.Size(253, 369)
+        Me.txtSource.Size = New System.Drawing.Size(293, 554)
         Me.txtSource.TabIndex = 1
         Me.txtSource.Text = resources.GetString("txtSource.Text")
         Me.txtSource.WordWrap = False
@@ -383,8 +383,8 @@ Partial Class frmMain
         'SplitContainer1.Panel2
         '
         Me.SplitContainer1.Panel2.Controls.Add(Me.txtDest)
-        Me.SplitContainer1.Size = New System.Drawing.Size(764, 369)
-        Me.SplitContainer1.SplitterDistance = 253
+        Me.SplitContainer1.Size = New System.Drawing.Size(1130, 554)
+        Me.SplitContainer1.SplitterDistance = 293
         Me.SplitContainer1.SplitterWidth = 6
         Me.SplitContainer1.TabIndex = 2
         '
@@ -394,7 +394,7 @@ Partial Class frmMain
         Me.txtDest.Font = New System.Drawing.Font("Courier New", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.txtDest.Location = New System.Drawing.Point(0, 0)
         Me.txtDest.Name = "txtDest"
-        Me.txtDest.Size = New System.Drawing.Size(505, 369)
+        Me.txtDest.Size = New System.Drawing.Size(831, 554)
         Me.txtDest.TabIndex = 2
         Me.txtDest.Text = "Hello World!"
         Me.txtDest.WordWrap = False
@@ -402,16 +402,16 @@ Partial Class frmMain
         'StatusStrip1
         '
         Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusLabel1})
-        Me.StatusStrip1.Location = New System.Drawing.Point(0, 419)
+        Me.StatusStrip1.Location = New System.Drawing.Point(0, 604)
         Me.StatusStrip1.Name = "StatusStrip1"
-        Me.StatusStrip1.Size = New System.Drawing.Size(764, 22)
+        Me.StatusStrip1.Size = New System.Drawing.Size(1130, 22)
         Me.StatusStrip1.TabIndex = 4
         Me.StatusStrip1.Text = "StatusStrip1"
         '
         'ToolStripStatusLabel1
         '
         Me.ToolStripStatusLabel1.Name = "ToolStripStatusLabel1"
-        Me.ToolStripStatusLabel1.Size = New System.Drawing.Size(749, 17)
+        Me.ToolStripStatusLabel1.Size = New System.Drawing.Size(1115, 17)
         Me.ToolStripStatusLabel1.Spring = True
         Me.ToolStripStatusLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
@@ -420,7 +420,7 @@ Partial Class frmMain
         Me.ToolStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripLabel1, Me.txtSQLConnectionString, Me.ToolStripButton6, Me.ToolStripSeparator10, Me.ToolStripButton7})
         Me.ToolStrip2.Location = New System.Drawing.Point(0, 25)
         Me.ToolStrip2.Name = "ToolStrip2"
-        Me.ToolStrip2.Size = New System.Drawing.Size(764, 25)
+        Me.ToolStrip2.Size = New System.Drawing.Size(1130, 25)
         Me.ToolStrip2.TabIndex = 5
         Me.ToolStrip2.Text = "ToolStrip2"
         '
@@ -461,7 +461,7 @@ Partial Class frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(764, 441)
+        Me.ClientSize = New System.Drawing.Size(1130, 626)
         Me.Controls.Add(Me.SplitContainer1)
         Me.Controls.Add(Me.ToolStrip2)
         Me.Controls.Add(Me.StatusStrip1)

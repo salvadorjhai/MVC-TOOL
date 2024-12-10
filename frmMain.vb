@@ -5765,6 +5765,7 @@ Replace("<TD_DATA>", String.Join(vbCrLf, lr)).Trim)
 }
 @section css{
 @* --- stylesheet goes here --- *@
+<link href="~/Content/js/status-level-filter/StatusLevelFilter.css" rel="stylesheet" />
 }
 ]]>.Value.Replace("<FORM CONTENT>", String.Join(vbCrLf, l3)).Replace("ProductModelForm", modelName & "Form"))
 
@@ -5876,6 +5877,8 @@ error: function (jqXHR, textStatus, errorThrown) {
         l1.Add(<![CDATA[
 @section scripts{
 @* --- additional scripts goes here --- *@
+<script src="~/Content/js/status-level-filter/StatusLevelFilter.js"></script>
+
 <script>
 $(document).ready(function () {
     initializeData();
