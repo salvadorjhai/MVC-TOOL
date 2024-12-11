@@ -5765,6 +5765,11 @@ Replace("<TD_DATA>", String.Join(vbCrLf, lr)).Trim)
 }
 @section css{
 @* --- stylesheet goes here --- *@
+<style>
+    input, textarea, table {
+        text-transform: uppercase;
+    }
+</style>
 <link href="~/Content/js/status-level-filter/StatusLevelFilter.css" rel="stylesheet" />
 }
 ]]>.Value.Replace("<FORM CONTENT>", String.Join(vbCrLf, l3)).Replace("ProductModelForm", modelName & "Form"))
