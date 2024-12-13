@@ -5885,14 +5885,14 @@ error: function (jqXHR, textStatus, errorThrown) {
 <script src="~/Content/js/status-level-filter/StatusLevelFilter.js"></script>
 
 <script>
-$(document).ready(function () {
-    initializeData();
-});
+    $(document).ready(function () {
+        initializeData();
+    });
 </script>
-} 
 
 @*---------- todo: save as separate script -----------*@
 <script>
+
 function initializeData() {
 setTimeout(ShowSwalLoader, 1);
 InitValidator();
@@ -6237,7 +6237,7 @@ var statuslevelfilter = new StatusLevelFilter({
 statuslevelfilter.Initialize()
 
 </script>
-
+} 
 ]]>.Value.Replace("ProductModelForm", modelName & "Form").
 Replace("mymodal", $"{modelName}Modal").
 Replace("dtmytable", $"dt{modelName}").
@@ -6251,7 +6251,7 @@ Replace("// Make the AJAX POST request", normalPost)
 
         l1.Add("")
 
-        txtDest.Text = String.Join(vbCrLf, l1).Replace("mymodal", $"{modelName}Modal").
+        Dim htmlRes = String.Join(vbCrLf, l1).Replace("mymodal", $"{modelName}Modal").
 Replace("<SELECT2_MODIFIER>", String.Join(vbCrLf, sl2)).
 Replace("<DT_COL_DEF>", String.Join("," & vbCrLf, dtColDef)).
 Replace("<SELECT_EVENTS>", String.Join(vbCrLf, sl3).Trim).
@@ -6259,7 +6259,12 @@ Replace("<CHECK_EVENTS>", String.Join(vbCrLf, l5).Trim).
 Replace("m.Item1.", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"m.{tupName}.", "m.")}").
 Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}_", "")}")
 
-        txtDest.Text = txtDest.Text.Replace("<SELECT_FUNCTIONS>", String.Join(vbCrLf, cboFunc) & vbCrLf)
+        htmlRes = htmlRes.Replace("<SELECT_FUNCTIONS>", String.Join(vbCrLf, cboFunc) & vbCrLf)
+
+        txtDest.Text = htmlRes
+
+        txtDest2.Text = htmlRes.Substring(htmlRes.IndexOf("@section scripts{"))
+
 
     End Sub
 

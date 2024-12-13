@@ -69,7 +69,10 @@ Partial Class frmMain
         Me.ToolStripButton4 = New System.Windows.Forms.ToolStripButton()
         Me.txtSource = New System.Windows.Forms.RichTextBox()
         Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
+        Me.TabControl1 = New System.Windows.Forms.TabControl()
+        Me.TabPage1 = New System.Windows.Forms.TabPage()
         Me.txtDest = New System.Windows.Forms.RichTextBox()
+        Me.TabPage2 = New System.Windows.Forms.TabPage()
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.ToolStripStatusLabel1 = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
@@ -79,11 +82,15 @@ Partial Class frmMain
         Me.ToolStripButton6 = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripButton7 = New System.Windows.Forms.ToolStripButton()
+        Me.txtDest2 = New System.Windows.Forms.RichTextBox()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
         Me.SplitContainer1.SuspendLayout()
+        Me.TabControl1.SuspendLayout()
+        Me.TabPage1.SuspendLayout()
+        Me.TabPage2.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
         Me.ToolStrip2.SuspendLayout()
         Me.SuspendLayout()
@@ -365,7 +372,7 @@ Partial Class frmMain
         Me.txtSource.Font = New System.Drawing.Font("Courier New", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.txtSource.Location = New System.Drawing.Point(0, 0)
         Me.txtSource.Name = "txtSource"
-        Me.txtSource.Size = New System.Drawing.Size(293, 554)
+        Me.txtSource.Size = New System.Drawing.Size(292, 554)
         Me.txtSource.TabIndex = 1
         Me.txtSource.Text = resources.GetString("txtSource.Text")
         Me.txtSource.WordWrap = False
@@ -382,22 +389,58 @@ Partial Class frmMain
         '
         'SplitContainer1.Panel2
         '
-        Me.SplitContainer1.Panel2.Controls.Add(Me.txtDest)
+        Me.SplitContainer1.Panel2.Controls.Add(Me.TabControl1)
         Me.SplitContainer1.Size = New System.Drawing.Size(1130, 554)
-        Me.SplitContainer1.SplitterDistance = 293
+        Me.SplitContainer1.SplitterDistance = 292
         Me.SplitContainer1.SplitterWidth = 6
         Me.SplitContainer1.TabIndex = 2
         '
+        'TabControl1
+        '
+        Me.TabControl1.Appearance = System.Windows.Forms.TabAppearance.FlatButtons
+        Me.TabControl1.Controls.Add(Me.TabPage1)
+        Me.TabControl1.Controls.Add(Me.TabPage2)
+        Me.TabControl1.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.TabControl1.Location = New System.Drawing.Point(0, 0)
+        Me.TabControl1.Margin = New System.Windows.Forms.Padding(0)
+        Me.TabControl1.Name = "TabControl1"
+        Me.TabControl1.SelectedIndex = 0
+        Me.TabControl1.Size = New System.Drawing.Size(832, 554)
+        Me.TabControl1.TabIndex = 3
+        '
+        'TabPage1
+        '
+        Me.TabPage1.Controls.Add(Me.txtDest)
+        Me.TabPage1.Location = New System.Drawing.Point(4, 25)
+        Me.TabPage1.Name = "TabPage1"
+        Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabPage1.Size = New System.Drawing.Size(824, 525)
+        Me.TabPage1.TabIndex = 0
+        Me.TabPage1.Text = "Source Result"
+        Me.TabPage1.UseVisualStyleBackColor = True
+        '
         'txtDest
         '
+        Me.txtDest.BorderStyle = System.Windows.Forms.BorderStyle.None
         Me.txtDest.Dock = System.Windows.Forms.DockStyle.Fill
         Me.txtDest.Font = New System.Drawing.Font("Courier New", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtDest.Location = New System.Drawing.Point(0, 0)
+        Me.txtDest.Location = New System.Drawing.Point(3, 3)
         Me.txtDest.Name = "txtDest"
-        Me.txtDest.Size = New System.Drawing.Size(831, 554)
+        Me.txtDest.Size = New System.Drawing.Size(818, 519)
         Me.txtDest.TabIndex = 2
         Me.txtDest.Text = "Hello World!"
         Me.txtDest.WordWrap = False
+        '
+        'TabPage2
+        '
+        Me.TabPage2.Controls.Add(Me.txtDest2)
+        Me.TabPage2.Location = New System.Drawing.Point(4, 25)
+        Me.TabPage2.Name = "TabPage2"
+        Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabPage2.Size = New System.Drawing.Size(824, 525)
+        Me.TabPage2.TabIndex = 1
+        Me.TabPage2.Text = "Script View"
+        Me.TabPage2.UseVisualStyleBackColor = True
         '
         'StatusStrip1
         '
@@ -457,6 +500,20 @@ Partial Class frmMain
         Me.ToolStripButton7.Size = New System.Drawing.Size(63, 22)
         Me.ToolStripButton7.Text = "INSERT"
         '
+        'txtDest2
+        '
+        Me.txtDest2.BackColor = System.Drawing.SystemColors.Window
+        Me.txtDest2.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.txtDest2.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.txtDest2.Font = New System.Drawing.Font("Courier New", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.txtDest2.Location = New System.Drawing.Point(3, 3)
+        Me.txtDest2.Name = "txtDest2"
+        Me.txtDest2.ReadOnly = True
+        Me.txtDest2.Size = New System.Drawing.Size(818, 519)
+        Me.txtDest2.TabIndex = 3
+        Me.txtDest2.Text = "Hello World!"
+        Me.txtDest2.WordWrap = False
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -475,6 +532,9 @@ Partial Class frmMain
         Me.SplitContainer1.Panel2.ResumeLayout(False)
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer1.ResumeLayout(False)
+        Me.TabControl1.ResumeLayout(False)
+        Me.TabPage1.ResumeLayout(False)
+        Me.TabPage2.ResumeLayout(False)
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
         Me.ToolStrip2.ResumeLayout(False)
@@ -539,4 +599,8 @@ Partial Class frmMain
     Friend WithEvents ToolStripButton6 As ToolStripButton
     Friend WithEvents ToolStripSeparator10 As ToolStripSeparator
     Friend WithEvents ToolStripButton7 As ToolStripButton
+    Friend WithEvents TabControl1 As TabControl
+    Friend WithEvents TabPage1 As TabPage
+    Friend WithEvents TabPage2 As TabPage
+    Friend WithEvents txtDest2 As RichTextBox
 End Class
