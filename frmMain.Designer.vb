@@ -73,6 +73,7 @@ Partial Class frmMain
         Me.TabPage1 = New System.Windows.Forms.TabPage()
         Me.txtDest = New System.Windows.Forms.RichTextBox()
         Me.TabPage2 = New System.Windows.Forms.TabPage()
+        Me.txtDest2 = New System.Windows.Forms.RichTextBox()
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.ToolStripStatusLabel1 = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
@@ -82,7 +83,7 @@ Partial Class frmMain
         Me.ToolStripButton6 = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripButton7 = New System.Windows.Forms.ToolStripButton()
-        Me.txtDest2 = New System.Windows.Forms.RichTextBox()
+        Me.AccordionToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -181,7 +182,7 @@ Partial Class frmMain
         '
         'ToolStripButton3
         '
-        Me.ToolStripButton3.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DefaultToolStripMenuItem, Me.ModalPopupToolStripMenuItem, Me.ModalPopup2TupleToolStripMenuItem, Me.ToolStripSeparator4, Me.BlankModalToolStripMenuItem, Me.HtmlTagHelpersOnlyToolStripMenuItem, Me.Select2ViewBagToolStripMenuItem, Me.ToolStripSeparator5, Me.ModalPopupcjTemplateToolStripMenuItem, Me.ToolStripMenuItem1, Me.UseChoicesJSToolStripMenuItem, Me.ToolStripMenuItem2, Me.ToolStripSeparator8, Me.InFormDynamicTableToolStripMenuItem, Me.TabsGeneratorToolStripMenuItem, Me.ToolStripSeparator7, Me.DynamicMultiInputToolStripMenuItem, Me.LoremImpsumToolStripMenuItem, Me.ToolStripSeparator9, Me.DatasetDummyToolStripMenuItem})
+        Me.ToolStripButton3.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DefaultToolStripMenuItem, Me.ModalPopupToolStripMenuItem, Me.ModalPopup2TupleToolStripMenuItem, Me.ToolStripSeparator4, Me.BlankModalToolStripMenuItem, Me.HtmlTagHelpersOnlyToolStripMenuItem, Me.Select2ViewBagToolStripMenuItem, Me.ToolStripSeparator5, Me.ModalPopupcjTemplateToolStripMenuItem, Me.ToolStripMenuItem1, Me.UseChoicesJSToolStripMenuItem, Me.ToolStripMenuItem2, Me.ToolStripSeparator8, Me.InFormDynamicTableToolStripMenuItem, Me.TabsGeneratorToolStripMenuItem, Me.ToolStripSeparator7, Me.DynamicMultiInputToolStripMenuItem, Me.LoremImpsumToolStripMenuItem, Me.ToolStripSeparator9, Me.DatasetDummyToolStripMenuItem, Me.AccordionToolStripMenuItem})
         Me.ToolStripButton3.Image = CType(resources.GetObject("ToolStripButton3.Image"), System.Drawing.Image)
         Me.ToolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripButton3.Name = "ToolStripButton3"
@@ -442,6 +443,20 @@ Partial Class frmMain
         Me.TabPage2.Text = "Script View"
         Me.TabPage2.UseVisualStyleBackColor = True
         '
+        'txtDest2
+        '
+        Me.txtDest2.BackColor = System.Drawing.SystemColors.Window
+        Me.txtDest2.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.txtDest2.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.txtDest2.Font = New System.Drawing.Font("Courier New", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.txtDest2.Location = New System.Drawing.Point(3, 3)
+        Me.txtDest2.Name = "txtDest2"
+        Me.txtDest2.ReadOnly = True
+        Me.txtDest2.Size = New System.Drawing.Size(818, 519)
+        Me.txtDest2.TabIndex = 3
+        Me.txtDest2.Text = "Hello World!"
+        Me.txtDest2.WordWrap = False
+        '
         'StatusStrip1
         '
         Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusLabel1})
@@ -500,19 +515,11 @@ Partial Class frmMain
         Me.ToolStripButton7.Size = New System.Drawing.Size(63, 22)
         Me.ToolStripButton7.Text = "INSERT"
         '
-        'txtDest2
+        'AccordionToolStripMenuItem
         '
-        Me.txtDest2.BackColor = System.Drawing.SystemColors.Window
-        Me.txtDest2.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.txtDest2.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.txtDest2.Font = New System.Drawing.Font("Courier New", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtDest2.Location = New System.Drawing.Point(3, 3)
-        Me.txtDest2.Name = "txtDest2"
-        Me.txtDest2.ReadOnly = True
-        Me.txtDest2.Size = New System.Drawing.Size(818, 519)
-        Me.txtDest2.TabIndex = 3
-        Me.txtDest2.Text = "Hello World!"
-        Me.txtDest2.WordWrap = False
+        Me.AccordionToolStripMenuItem.Name = "AccordionToolStripMenuItem"
+        Me.AccordionToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
+        Me.AccordionToolStripMenuItem.Text = "Accordion"
         '
         'frmMain
         '
@@ -603,4 +610,5 @@ Partial Class frmMain
     Friend WithEvents TabPage1 As TabPage
     Friend WithEvents TabPage2 As TabPage
     Friend WithEvents txtDest2 As RichTextBox
+    Friend WithEvents AccordionToolStripMenuItem As ToolStripMenuItem
 End Class

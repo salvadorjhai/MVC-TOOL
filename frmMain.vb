@@ -6363,4 +6363,28 @@ Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}
 
 
     End Sub
+
+    Private Sub AccordionToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles AccordionToolStripMenuItem.Click
+
+        Dim dest = <![CDATA[
+        <div id="accordion_parent_id" style="display:none;">
+            <div class="accordion">
+                <div class="accordion-header" role="button" data-bs-toggle="collapse" data-bs-target="#panel-body-1" aria-expanded="false">
+                    <h4 class="text-uppercase text-center"> <span class="fas fa-flag-checkered"></span> Accomplishment Report</h4>
+                </div>
+
+                <!-- panel -->
+                <div class="accordion-body collapse" id="panel-body-1" data-parent="#accordion_parent_id" style="">
+                    <!-- content -->
+                    <SOURCE>
+                </div>
+
+            </div>
+        </div>
+]]>.Value.Replace("<SOURCE>", txtDest.Text)
+
+        txtDest.Text = dest
+
+    End Sub
+
 End Class
