@@ -6233,6 +6233,25 @@ var statuslevelfilter = new StatusLevelFilter({
     ],
 })
 
+// allowed movement
+statuslevelfilter.allowed_movement = [
+    {
+        id: 1,
+        backlevel: 1,
+        movelevel: 1, 
+    },
+    {
+        id: 2,
+        backlevel: 1,
+        movelevel: 1, 
+    },
+    {
+        id: 9,
+        backlevel: 1,
+        movelevel: 1, 
+    },
+]
+
 // initialize
 statuslevelfilter.Initialize()
 
