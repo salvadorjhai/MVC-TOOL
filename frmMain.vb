@@ -6220,6 +6220,7 @@ var statuslevelfilter = new StatusLevelFilter({
             badgeclass: `badge bg-primary`,
             backclass: `btn btn-danger`,
             moveclass: `btn btn-success`,
+            dontshowcancel: 1, // dont show cancel button on this
         },
         {
             id: 5,
@@ -6229,6 +6230,7 @@ var statuslevelfilter = new StatusLevelFilter({
             badgeclass: `badge bg-danger`,
             backclass: `btn btn-danger`,
             moveclass: `btn btn-warning`,
+            iscancelled: true, // to work as 3rd option
         }
     ],
 })
