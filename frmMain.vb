@@ -5409,7 +5409,6 @@ ViewBag.Title = "MeterBrandModel";
                 End If
 
                 Dim fn = <![CDATA[
-    var brandsData;
     function populate_brand_cbo() {
         return $.ajax({
             url: "/{Controller}/{Action}/",
@@ -5417,7 +5416,7 @@ ViewBag.Title = "MeterBrandModel";
             contentType: "application/json;charset=UTF-8",
             dataType: "json",
             success: function (result) {
-                brandsData = result.data;
+                window.brandsData = result.data;
                 setTimeout(function () {
                     $('#Item1_brand').empty();
                     $('#Item1_brand').append("<option value></option>");
@@ -6066,7 +6065,7 @@ $(".field-validation-error, .validation-summary-errors > ul").empty();
 $('#ProductModelForm')[0].reset();
 $('#Item1_id').val('-1');
 <SELECT2_MODIFIER>
-$('#mymodal h5').text('ADD NEW DETAILS');
+$('#mymodal h5').html(`<span class="fas fa-file fs-6"></span> ADD NEW DETAILS`);
 $('#mymodal').modal('show');
 
 btnPrint_mymodal.hidden = true;
@@ -6086,9 +6085,7 @@ $.ajax({
     success: function (result, textStatus, jqXHR) {
         if (result.data != null) {
             fillProductModelForm(result.data);
-            $('#mymodal h5').text('EDIT DETAILS');
             $('#mymodal').modal('show');
-            $('#mymodal').find('form').data('isDirty', false);
         } else {
             swal("Error!", "There are no details to display.\n", "warning");
         }
@@ -6105,6 +6102,9 @@ window._seldata = js;
 <EDIT_VAL>
 
 btnPrint_mymodal.hidden = false;
+
+$('#mymodal h5').html(`<span class="fas fa-edit fs-6"></span> EDIT DETAILS`);
+$('#mymodal').find('form').data('isDirty', false);
 
 // ---- to update next level display
 statuslevelfilter.BuildMoveToButtons(js.statuslvl)
