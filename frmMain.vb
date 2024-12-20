@@ -5735,7 +5735,7 @@ Replace("<TD_DATA>", String.Join(vbCrLf, lr)).Trim)
         l1.Add(<![CDATA[ 
 @section popups{
 @* --- modals and popups goes here --- *@
-<div class="modal fade bg-opacity-75 modal2" id="mymodal" role="dialog" data-bs-focus="false" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="mymodalTitle" aria-hidden="true">
+<div class="modal fade bg-opacity-75" id="mymodal" role="dialog" data-bs-focus="false" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="mymodalTitle" aria-hidden="true">
 <div class="modal-dialog">
 <div class="modal-content">
     <div class="modal-header bg-dark text-uppercase text-light p-3">
@@ -5777,58 +5777,69 @@ Replace("<TD_DATA>", String.Join(vbCrLf, lr)).Trim)
         l1.Add("")
 
         Dim normalPost = <![CDATA[
-var model = {
-<FORM_DATA>
-}
 
-$.ajax({
-url: "/{Controller}/{Action}",
-data: JSON.stringify(model),
-type: "POST",
-contentType: "application/json;charset=UTF-8",
-dataType: "json",
-success: function (response, textStatus, jqXHR) {
-var msg;
-if (response.result == null) {
-    msg = response.toLowerCase();
-} else {
-    msg = response.result.toLowerCase();
-}
-if (msg.includes("success")) {
-    $('#mymodal').find('form').data('isDirty', false);
-    $('#mymodal').modal('hide');
-    reloadmytable(); // or dtmytable.ajax.reload(null,false)
-    swal("Saved!", "Record has been saved", "success");
+    $(sender).addClass('btn-progress');
 
-} else if (msg.includes("nochange")) {
-    $('#mymodal').find('form').data('isDirty', false);
-    $('#mymodal').modal('hide');
-} else {
-    swal("Error", "An error occured: " + msg + "\n", "warning");
-
-}
-},
-error: function (jqXHR, textStatus, errorThrown) {
-    if (jqXHR.status == 401) {
-        swal2({
-            title: `Unauthorized`,
-            html: 'It seems you have been logged out.<br><b>Please login and try again.</b>',
-            icon: 'error',
-            dangerMode: true,
-            showCancelButton: false,
-        }, () => {
-            window.location = "/Authentication/Logout";
-        });
-        return;
+    var model = {
+    <FORM_DATA>
     }
-    swal("Error!", "Oops! something went wrong ... \n", "error");
-}
-});
+
+    $.ajax({
+    url: "/{Controller}/{Action}",
+    data: JSON.stringify(model),
+    type: "POST",
+    contentType: "application/json;charset=UTF-8",
+    dataType: "json",
+    complete: function (jqXHR, textStatus) {
+        setTimeout(() => {
+            $(sender).removeClass('btn-progress');
+        }, 300);
+    },
+    success: function (response, textStatus, jqXHR) {
+    var msg;
+    if (response.result == null) {
+        msg = response.toLowerCase();
+    } else {
+        msg = response.result.toLowerCase();
+    }
+    if (msg.includes("success")) {
+        $('#mymodal').find('form').data('isDirty', false);
+        $('#mymodal').modal('hide');
+        reloadmytable(); // or dtmytable.ajax.reload(null,false)
+        swal("Saved!", "Record has been saved", "success");
+
+    } else if (msg.includes("nochange")) {
+        $('#mymodal').find('form').data('isDirty', false);
+        $('#mymodal').modal('hide');
+    } else {
+        swal("Error", "An error occured: " + msg + "\n", "warning");
+
+    }
+    },
+    error: function (jqXHR, textStatus, errorThrown) {
+        if (jqXHR.status == 401) {
+            swal2({
+                title: `Unauthorized`,
+                html: 'It seems you have been logged out.<br><b>Please login and try again.</b>',
+                icon: 'error',
+                dangerMode: true,
+                showCancelButton: false,
+            }, () => {
+                window.location = "/Authentication/Logout";
+            });
+            return;
+        }
+        swal("Error!", "Oops! something went wrong ... \n", "error");
+    }
+    });
 
 ]]>.Value.Replace("ProductModelForm", modelName & "Form").Replace("mymodal", $"{modelName}Modal").Replace("<FORM_DATA>", String.Join("," & vbCrLf, formdata2).Trim).Replace("mytable", $"{modelName}Table")
 
         If gotFile Then
             normalPost = <![CDATA[
+
+    $(sender).addClass('btn-progress');
+
     // Make the AJAX POST request
     var formData = new FormData(); // Get the form data
     <FORM_DATA>
@@ -5838,6 +5849,11 @@ error: function (jqXHR, textStatus, errorThrown) {
         data: formData,
         contentType: false, // Important for multipart form data
         processData: false, // Don't process data automatically
+        complete: function (jqXHR, textStatus) {
+            setTimeout(() => {
+                $(sender).removeClass('btn-progress');
+            }, 300);
+        },
         success: function (response, textStatus, jqXHR) {
             var msg;
             if (response.result == null) {
@@ -5914,20 +5930,13 @@ $('#mymodal').on('shown.bs.modal', function () {
     <SELECT2_MODIFIER>
 });
 
-// on form submit
-$("#ProductModelForm").on("submit", function (event) {
-    event.preventDefault(); // Prevent the default form submission
-    // check if current form is valid
-    if (!$(this).valid()) {
+$('#btnSave_mymodal').on('click', function () {
+    if (!$(this).closest('form').valid()) {
         swal("Something went wrong!", "Please fill all required field to proceed.", "error");
         return;
     } 
     clearFormValidation();
-    saveProductModelForm();
-});
-
-$('#btnSave_mymodal').on('click', function () {
-    $(this).closest('form').submit();
+    saveProductModelForm(this);
 })
 
 // one time run only
@@ -6017,7 +6026,7 @@ $(document).ajaxStop(function (e) {
                         "aTargets": [0], // target column
                         "bSortable":false,
                         "mRender": function (data, type, full, meta) {
-                            return `<button class="btn btn-primary btn-sm btnRowEdit" style="font-size:smaller;" id="vw_${full.id}" data-id="${full.id}" onclick="showEditmymodal(${full.id})"> <span class="fas fa-edit"></span> VIEW</button> `;
+                            return `<button class="btn btn-primary btn-sm btnRowEdit" style="font-size:smaller;" id="vw_${full.id}" data-id="${full.id}" onclick="showEditmymodal(this, ${full.id})"> <span class="fas fa-edit"></span> VIEW</button> `;
                         },
                         "className": "text-center text-uppercase"
                     },
@@ -6075,13 +6084,20 @@ statuslevelfilter.BuildMoveToButtons(0)
 
 }
 
-function showEditmymodal(id) {
+function showEditmymodal(sender, id) {
+
+$(sender).addClass('btn-progress');
 
 $.ajax({
     url: "/{Controller}/{Action}/?id=" + id,
     type: "GET",
     contentType: "application/json;charset=UTF-8",
     dataType: "json",
+    complete: function (jqXHR, textStatus) {
+        setTimeout(() => {
+            $(sender).removeClass('btn-progress');
+        }, 300);
+    },
     success: function (result, textStatus, jqXHR) {
         if (result.data != null) {
             fillProductModelForm(result.data);
@@ -6111,7 +6127,7 @@ statuslevelfilter.BuildMoveToButtons(js.statuslvl)
 
 }
 
-function saveProductModelForm() {
+function saveProductModelForm(sender) {
 // Make the AJAX POST request
 }
 
@@ -6133,11 +6149,13 @@ function onMoveToLevelButtonClicked(sender) {
         icon: 'warning',
         dangerMode: true,
     }, () => {
-        UpdatemymodalStatus(window._seldata.id, moveToId, moveToText)
+        UpdatemymodalStatus(sender, window._seldata.id, moveToId, moveToText)
     });
 }
 
-function UpdatemymodalStatus(id, newstatusid, newstatustext) {
+function UpdatemymodalStatus(sender, id, newstatusid, newstatustext) {
+    
+    $(sender).addClass('btn-progress');
 
     var model = {
         id: _.toNumber($('#id').val()),
@@ -6151,6 +6169,11 @@ function UpdatemymodalStatus(id, newstatusid, newstatustext) {
         type: "POST",
         contentType: "application/json;charset=UTF-8",
         dataType: "json",
+        complete: function (jqXHR, textStatus) {
+            setTimeout(() => {
+                $(sender).removeClass('btn-progress');
+            }, 300);
+        },
         success: function (response, textStatus, jqXHR) {
             var msg;
             if (response.result == null) {
