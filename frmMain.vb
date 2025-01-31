@@ -2196,39 +2196,54 @@ public class TownModelFull : TownModel
 
         Dim normalPost = <![CDATA[
                 // Make the AJAX POST request
+                $(sender).addClass('btn-progress');
                 var formData = $(this).serialize(); // Get the form data
                 $.ajax({
                     type: "POST",
-                    url: "../api/products/upsert",
-                    contentType: "application/x-www-form-urlencoded",
+                    url: "/{Controller}/{Action}",
                     data: formData,
-                    success: function (response) {
-                        console.log("Response:", response['result']);
-                        if (response['result'] != "OK") {
-                            if (response['result'] == "duplicate") {
-                                $('#ajaxResponseError').text('').append('<i class="bi bi-exclamation-triangle-fill"></i> Duplicate records found!').show();
-                                return;
-                            }
-                            if (response['message']) {
-                                $('#ajaxResponseError').text('').append('<i class="bi bi-exclamation-triangle-fill"></i> ' + response['message']).show();
-                                return;
-                            }
-                        }
-                        // success
-                        $(".field-validation-error, .validation-summary-errors > ul").empty();
-                        $('#ProductModelForm')[0].reset();
-                        $('#clse_mymodal').click();
-
-                        // reload
-                        if (response['result'] != 'no changes') {
-                            ShowSwal('Success').then(()=>{
-                                location.reload();
-                            });
-                        }
-
+                    contentType: false, // Important for multipart form data
+                    processData: false, // Don't process data automatically
+                    complete: function (jqXHR, textStatus) {
+                        setTimeout(() => {
+                            $(sender).removeClass('btn-progress');
+                        }, 300);
                     },
-                    error: function (xhr, status, error) {
-                        console.error("Error:", error);
+                    success: function (response, textStatus, jqXHR) {
+                        var msg;
+                        if (response.result == null) {
+                            msg = response.toLowerCase();
+                        } else {
+                            msg = response.result.toLowerCase();
+                        }
+                        if (msg.includes("success")) {
+                            $('#mymodal').find('form').data('isDirty', false);
+                            $('#mymodal').modal('hide');
+                            reloadmytable(); // or dtmytable.ajax.reload(null,false)
+
+                            swal("Saved!", "Record has been saved", "success");
+
+                        } else if (msg.includes("nochange")) {
+                            $('#mymodal').find('form').data('isDirty', false);
+                            $('#mymodal').modal('hide');
+                        } else {
+                            swal("Error", "An error occured: " + msg + "\n", "warning");
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        if (jqXHR.status == 401) {
+                            swal2({
+                                title: `Unauthorized`,
+                                html: 'It seems you have been logged out.<br><b>Please login and try again.</b>',
+                                icon: 'error',
+                                dangerMode: true,
+                                showCancelButton: false,
+                            }, () => {
+                                window.location = "/Authentication/Logout";
+                            });
+                            return;
+                        }
+                        swal("Error!", "Oops! something went wrong ... \n", "error");
                     }
                 });
 ]]>.Value.Replace("ProductModelForm", modelName & "Form").Replace("mymodal", $"{modelName}Modal")
@@ -2236,41 +2251,55 @@ public class TownModelFull : TownModel
         If gotFile Then
             normalPost = <![CDATA[
                 // Make the AJAX POST request
+                $(sender).addClass('btn-progress');
                 var formData = new FormData(); // Get the form data
                 <FORM_DATA>
                 $.ajax({
                     type: "POST",
-                    url: "../api/products/upsert",
+                    url: "/{Controller}/{Action}",
                     data: formData,
                     contentType: false, // Important for multipart form data
                     processData: false, // Don't process data automatically
-                    success: function (response) {
-                        console.log("Response:", response['result']);
-                        if (response['result'] != "OK") {
-                            if (response['result'] == "duplicate") {
-                                $('#ajaxResponseError').text('').append('<i class="bi bi-exclamation-triangle-fill"></i> Duplicate records found!').show();
-                                return;
-                            }
-                            if (response['message']) {
-                                $('#ajaxResponseError').text('').append('<i class="bi bi-exclamation-triangle-fill"></i> ' + response['message']).show();
-                                return;
-                            }
-                        }
-                        // success
-                        $(".field-validation-error, .validation-summary-errors > ul").empty();
-                        $('#ProductModelForm')[0].reset();
-                        $('#clse_mymodal').click();
-
-                        // reload
-                        if (response['result'] != 'no changes') {
-                            ShowSwal('Success').then(()=>{
-                                location.reload();
-                            });
-                        }
-
+                    complete: function (jqXHR, textStatus) {
+                        setTimeout(() => {
+                            $(sender).removeClass('btn-progress');
+                        }, 300);
                     },
-                    error: function (xhr, status, error) {
-                        console.error("Error:", error);
+                    success: function (response, textStatus, jqXHR) {
+                        var msg;
+                        if (response.result == null) {
+                            msg = response.toLowerCase();
+                        } else {
+                            msg = response.result.toLowerCase();
+                        }
+                        if (msg.includes("success")) {
+                            $('#mymodal').find('form').data('isDirty', false);
+                            $('#mymodal').modal('hide');
+                            reloadmytable(); // or dtmytable.ajax.reload(null,false)
+
+                            swal("Saved!", "Record has been saved", "success");
+
+                        } else if (msg.includes("nochange")) {
+                            $('#mymodal').find('form').data('isDirty', false);
+                            $('#mymodal').modal('hide');
+                        } else {
+                            swal("Error", "An error occured: " + msg + "\n", "warning");
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        if (jqXHR.status == 401) {
+                            swal2({
+                                title: `Unauthorized`,
+                                html: 'It seems you have been logged out.<br><b>Please login and try again.</b>',
+                                icon: 'error',
+                                dangerMode: true,
+                                showCancelButton: false,
+                            }, () => {
+                                window.location = "/Authentication/Logout";
+                            });
+                            return;
+                        }
+                        swal("Error!", "Oops! something went wrong ... \n", "error");
                     }
                 });
 ]]>.Value.Replace("<FORM_DATA>", String.Join(vbCrLf, formData)).Replace("ProductModelForm", modelName & "Form").Replace("mymodal", $"{modelName}Modal")
@@ -2739,39 +2768,57 @@ public class TownModelFull : TownModel
         gotFile = False ' tuple, so build ajax form
 
         Dim normalPost = <![CDATA[
+                // Make the AJAX POST request
+                $(sender).addClass('btn-progress');
                 var model = {
                     <FORM_DATA>
                 }
                 $.ajax({
                     type: "POST",
-                    url: "../api/products/upsert",
+                    url: "/{Controller}/{Action}",
                     data: JSON.stringify(model),
                     contentType: "application/json;charset=UTF-8",
                     dataType: "json",
-                    success: function (response) {
-                        if (response.result === "Success") {
-                            $('#mymodal').modal('hide');
-                            swal({
-                                title: "Saved!",
-                                text: "Data has been saved." + "\n",
-                                type: "success",
-                                showCancelButton: false,
-                                confirmButtonClass: "btn-success",
-                                confirmButtonText: "OK",
-                                closeOnConfirm: false
-                            },
-                                function () {
-                                    window.location = "/Meter/MeterTypes";
-                                }
-                            );
-
-                        } else {
-                            swal("Error", "An error occured: " + response.result + "\n", "warning");
-                        }                        
-
+                    complete: function (jqXHR, textStatus) {
+                        setTimeout(() => {
+                            $(sender).removeClass('btn-progress');
+                        }, 300);
                     },
-                    error: function (xhr, status, error) {
-                        console.error("Error:", error);
+                    success: function (response, textStatus, jqXHR) {
+                        var msg;
+                        if (response.result == null) {
+                            msg = response.toLowerCase();
+                        } else {
+                            msg = response.result.toLowerCase();
+                        }
+                        if (msg.includes("success")) {
+                            $('#mymodal').find('form').data('isDirty', false);
+                            $('#mymodal').modal('hide');
+                            reloadmytable(); // or dtmytable.ajax.reload(null,false)
+
+                            swal("Saved!", "Record has been saved", "success");
+
+                        } else if (msg.includes("nochange")) {
+                            $('#mymodal').find('form').data('isDirty', false);
+                            $('#mymodal').modal('hide');
+                        } else {
+                            swal("Error", "An error occured: " + msg + "\n", "warning");
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        if (jqXHR.status == 401) {
+                            swal2({
+                                title: `Unauthorized`,
+                                html: 'It seems you have been logged out.<br><b>Please login and try again.</b>',
+                                icon: 'error',
+                                dangerMode: true,
+                                showCancelButton: false,
+                            }, () => {
+                                window.location = "/Authentication/Logout";
+                            });
+                            return;
+                        }
+                        swal("Error!", "Oops! something went wrong ... \n", "error");
                     }
                 });
 ]]>.Value.Replace("ProductModelForm", modelName & "Form").Replace("mymodal", $"{modelName}Modal").Replace("<FORM_DATA>", String.Join("," & vbCrLf, formData))
@@ -2779,41 +2826,55 @@ public class TownModelFull : TownModel
         If gotFile Then
             normalPost = <![CDATA[
                 // Make the AJAX POST request
+                $(sender).addClass('btn-progress');
                 var formData = new FormData(); // Get the form data
                 <FORM_DATA>
                 $.ajax({
                     type: "POST",
-                    url: "../api/products/upsert",
+                    url: "/{Controller}/{Action}",
                     data: formData,
                     contentType: false, // Important for multipart form data
                     processData: false, // Don't process data automatically
-                    success: function (response) {
-                        console.log("Response:", response['result']);
-                        if (response['result'] != "OK") {
-                            if (response['result'] == "duplicate") {
-                                $('#ajaxResponseError').text('').append('<i class="bi bi-exclamation-triangle-fill"></i> Duplicate records found!').show();
-                                return;
-                            }
-                            if (response['message']) {
-                                $('#ajaxResponseError').text('').append('<i class="bi bi-exclamation-triangle-fill"></i> ' + response['message']).show();
-                                return;
-                            }
-                        }
-                        // success
-                        $(".field-validation-error, .validation-summary-errors > ul").empty();
-                        $('#ProductModelForm')[0].reset();
-                        $('#clse_mymodal').click();
-
-                        // reload
-                        if (response['result'] != 'no changes') {
-                            ShowSwal('Success').then(()=>{
-                                location.reload();
-                            });
-                        }
-
+                    complete: function (jqXHR, textStatus) {
+                        setTimeout(() => {
+                            $(sender).removeClass('btn-progress');
+                        }, 300);
                     },
-                    error: function (xhr, status, error) {
-                        console.error("Error:", error);
+                    success: function (response, textStatus, jqXHR) {
+                        var msg;
+                        if (response.result == null) {
+                            msg = response.toLowerCase();
+                        } else {
+                            msg = response.result.toLowerCase();
+                        }
+                        if (msg.includes("success")) {
+                            $('#mymodal').find('form').data('isDirty', false);
+                            $('#mymodal').modal('hide');
+                            reloadmytable(); // or dtmytable.ajax.reload(null,false)
+
+                            swal("Saved!", "Record has been saved", "success");
+
+                        } else if (msg.includes("nochange")) {
+                            $('#mymodal').find('form').data('isDirty', false);
+                            $('#mymodal').modal('hide');
+                        } else {
+                            swal("Error", "An error occured: " + msg + "\n", "warning");
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        if (jqXHR.status == 401) {
+                            swal2({
+                                title: `Unauthorized`,
+                                html: 'It seems you have been logged out.<br><b>Please login and try again.</b>',
+                                icon: 'error',
+                                dangerMode: true,
+                                showCancelButton: false,
+                            }, () => {
+                                window.location = "/Authentication/Logout";
+                            });
+                            return;
+                        }
+                        swal("Error!", "Oops! something went wrong ... \n", "error");
                     }
                 });
 ]]>.Value.Replace("<FORM_DATA>", String.Join(vbCrLf, formData)).Replace("ProductModelForm", modelName & "Form").Replace("mymodal", $"{modelName}Modal")
