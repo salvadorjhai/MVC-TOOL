@@ -1,4 +1,6 @@
 ﻿Imports System.ComponentModel
+Imports System.Data.OleDb
+Imports System.Reflection
 Imports System.Security.Cryptography
 Imports System.Text
 Imports System.Text.RegularExpressions
@@ -1295,6 +1297,7 @@ public class TownModelDataAccess
 
         Dim tableName = Regex.Match(txtSource.Text, "\[dbo\].\[(.*?)\]", RegexOptions.IgnoreCase).Groups(1).Value
         If String.IsNullOrWhiteSpace(tableName) Then tableName = Regex.Match(txtSource.Text, "CREATE TABLE ""(.*?)"" ", RegexOptions.IgnoreCase).Groups(1).Value
+        If String.IsNullOrWhiteSpace(tableName) Then tableName = Regex.Match(txtSource.Text, "CREATE TABLE \[(.*?)\] ", RegexOptions.IgnoreCase).Groups(1).Value
 
         'Dim modelName = txtSource.Lines.Where(Function(x) x.Contains("public class ")).FirstOrDefault.Trim.Split(" ").LastOrDefault
         'Dim props = txtSource.Lines.Where(Function(x) x.Contains("public ") And x.Contains(" class ") = False).ToList
@@ -1311,6 +1314,7 @@ public class TownModelDataAccess
             '[age] [Decimal](18, 2) NULL,
 
             Dim mm = Regex.Match(txtSource.Lines(i).Trim, "\[(.*?)\] \[(.*?)\](:?\((.*?)\))?")
+            If mm.Success = False Then mm = Regex.Match(txtSource.Lines(i).Trim, "\[(.*?)\]   ")
             'If mm.Success = False Then mm = Regex.Match(txtSource.Lines(i).Trim, """(.*?)"" (.*?)(:?\((.*?)\))?")
             If mm.Success = False Then Continue For
 
@@ -6491,5 +6495,165 @@ Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}
         txtDest.Text = dest
 
     End Sub
+
+    Private Sub btnConnect_Click(sender As Object, e As EventArgs) Handles btnConnect.Click
+        Using conn = New OleDbConnection(txtSQLConnectionString.Text)
+            conn.Open()
+
+            Dim tbls = conn.GetSchema("Tables")
+            cboTable.Items.Clear()
+            cboTable.Items.AddRange(tbls.Rows.OfType(Of DataRow).Where(Function(x) x("TABLE_TYPE").ToString = "TABLE").Select(Function(x) x("TABLE_NAME").ToString).ToArray)
+
+        End Using
+    End Sub
+
+    Private Sub btnGenerateFromTable_Click(sender As Object, e As EventArgs) Handles btnGenerateFromTable.Click
+
+        Dim l2 As New List(Of String)
+
+        Using conn = New OleDbConnection(txtSQLConnectionString.Text)
+            conn.Open()
+
+            Using cmd = conn.CreateCommand()
+                cmd.CommandText = $"SELECT * FROM [{cboTable.Text}]"
+
+                Dim dt As New DataTable
+                dt.Load(cmd.ExecuteReader(CommandBehavior.SchemaOnly))
+
+                'txtSource.Text = CreateTableSchema(dt, cboTable.Text)
+
+                Dim tps = dt.Columns.OfType(Of DataColumn).ToList.Select(Function(x) x.DataType.FullName).ToList
+
+                For i = 0 To dt.Columns.Count - 1
+                    Dim colName = Regex.Replace(dt.Columns(i).ColumnName.Trim().ToLower, "[^a-z0-9_]", "", RegexOptions.IgnoreCase)
+                    Dim tp = dt.Columns(i).DataType.FullName.ToLower
+
+                    Select Case True
+                        Case tp.Contains("int"), tp.Contains("long")
+                            l2.Add("   public int name { get; set; }".Replace("name", colName))
+
+                        Case tp.Contains("boolean")
+                            l2.Add("   public bool name { get; set; }".Replace("name", colName))
+
+                        Case tp.Contains("double"), tp.Contains("decimal"), tp.Contains("single")
+                            l2.Add("   public decimal name { get; set; }".Replace("name", colName))
+
+                        Case tp.Contains("date"), tp.Contains("datetime")
+                            l2.Add("   public DateTime? name { get; set; }".Replace("name", colName))
+
+                        Case tp.Contains("byte")
+                            l2.Add("   public byte[]? name { get; set; }".Replace("name", colName))
+
+                        Case Else
+                            If dt.Columns(i).AllowDBNull = False Then l2.Add("   [Required]")
+                            If dt.Columns(i).MaxLength > 0 Then l2.Add($"   [MaxLength({dt.Columns(i).MaxLength})]")
+                            l2.Add("   public string name { get; set; }".Replace("name", colName))
+
+                    End Select
+
+                Next
+
+            End Using
+
+        End Using
+
+
+        txtSource.Text = <![CDATA[
+public class PositionModel
+{
+// replace
+}
+]]>.Value.Replace("// replace", String.Join(vbCrLf, l2)).Replace("PositionModel", Regex.Replace(StrConv(cboTable.Text, VbStrConv.ProperCase), "[^a-z0-9_]", "", RegexOptions.IgnoreCase))
+
+
+    End Sub
+
+
+    Function CreateTableSchema(dt As DataTable, tblName As String) As String
+
+        Dim l1 As New List(Of String)
+        l1.Add("id".PadRight(20) & "int IDENTITY(1, 1) PRIMARY KEY")
+
+        For i = 0 To dt.Columns.Count - 1
+            Dim l2 As New List(Of String)
+            Dim index = i
+            Dim colName = dt.Columns(i).ColumnName.Trim().ToLower
+            Dim colPart = $"[{colName}]".ToLower
+            Dim mx = 30
+
+            Dim pad = Math.Max(colPart.Length + 5, 20)
+
+            l2.Add(colPart.PadRight(pad))
+
+            Dim tp = dt.Columns(i).DataType.FullName.ToLower
+
+            Select Case True
+                Case tp.Contains("int"), tp.Contains("long")
+                    l2.Add("int")
+
+                Case tp.Contains("boolean")
+                    l2.Add("bit DEFAULT 0")
+
+                Case tp.Contains("double"), tp.Contains("decimal")
+                    l2.Add("numeric(15,2)")
+
+                Case tp.Contains("date"), tp.Contains("datetime")
+                    l2.Add("datetime")
+
+                Case tp.Contains("byte")
+                    l2.Add("image")
+
+                Case Else
+
+                    If dt.Columns(i).MaxLength > 0 Then
+                        If dt.Columns(i).MaxLength > 2000 Then
+                            l2.Add($"nvarchar(max)")
+                        Else
+                            l2.Add($"nvarchar({dt.Columns(i).MaxLength})")
+                        End If
+                    Else
+                        If colName.ToLower.EndsWith("id") OrElse colName.ToLower.EndsWith("number") OrElse colName.ToLower.EndsWith("num") Then
+                            If dt.Rows.Count > 0 Then
+                                mx = dt.Rows.OfType(Of DataRow).OrderByDescending(Function(x) x.ItemArray(index).ToString.Length).FirstOrDefault.ItemArray(index).ToString.Length
+                            End If
+                            If mx < 30 Then mx = 30
+                            l2.Add($"nvarchar({Math.Min(mx, 30)})")
+                        Else
+                            l2.Add("nvarchar(255)")
+
+                        End If
+                    End If
+
+            End Select
+
+            If dt.Columns(i).AllowDBNull = False Then
+                l2.Add(" NOT NULL")
+            End If
+
+            If dt.Columns(i).Unique Then
+                l2.Add(" UNIQUE")
+            End If
+
+            l1.Add(String.Join("", l2))
+
+        Next
+
+        l1.Add("statuslvl_text".PadRight(20) & "nvarchar(50)")
+        l1.Add("statuslvl".PadRight(20) & "int")
+        l1.Add("madebyid".PadRight(20) & "int")
+        l1.Add("madedate".PadRight(20) & "datetime")
+        l1.Add("updatedbyid".PadRight(20) & "int")
+        l1.Add("lastupdated".PadRight(20) & "datetime")
+
+        Dim l3 As New List(Of String)
+
+        l3.Add($"CREATE TABLE [{tblName}] (")
+        l3.Add(String.Join("," & vbCrLf, l1))
+        l3.Add($");")
+
+        Return String.Join(vbCrLf, l3)
+    End Function
+
+
 
 End Class

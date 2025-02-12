@@ -58,6 +58,7 @@ Partial Class frmMain
         Me.LoremImpsumToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator9 = New System.Windows.Forms.ToolStripSeparator()
         Me.DatasetDummyToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.AccordionToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripButton2 = New System.Windows.Forms.ToolStripSplitButton()
         Me.GETToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.FormPOSTToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -83,7 +84,9 @@ Partial Class frmMain
         Me.ToolStripButton6 = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripButton7 = New System.Windows.Forms.ToolStripButton()
-        Me.AccordionToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.btnConnect = New System.Windows.Forms.ToolStripButton()
+        Me.cboTable = New System.Windows.Forms.ToolStripComboBox()
+        Me.btnGenerateFromTable = New System.Windows.Forms.ToolStripButton()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -307,6 +310,12 @@ Partial Class frmMain
         Me.DatasetDummyToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
         Me.DatasetDummyToolStripMenuItem.Text = "Dataset dummy"
         '
+        'AccordionToolStripMenuItem
+        '
+        Me.AccordionToolStripMenuItem.Name = "AccordionToolStripMenuItem"
+        Me.AccordionToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
+        Me.AccordionToolStripMenuItem.Text = "Accordion"
+        '
         'ToolStripButton2
         '
         Me.ToolStripButton2.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.GETToolStripMenuItem, Me.FormPOSTToolStripMenuItem, Me.FormPOSTJSToolStripMenuItem, Me.DatatableGETToolStripMenuItem, Me.Select2AjaxToolStripMenuItem, Me.BsSuggestToolStripMenuItem})
@@ -320,37 +329,37 @@ Partial Class frmMain
         'GETToolStripMenuItem
         '
         Me.GETToolStripMenuItem.Name = "GETToolStripMenuItem"
-        Me.GETToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.GETToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
         Me.GETToolStripMenuItem.Text = "GET"
         '
         'FormPOSTToolStripMenuItem
         '
         Me.FormPOSTToolStripMenuItem.Name = "FormPOSTToolStripMenuItem"
-        Me.FormPOSTToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.FormPOSTToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
         Me.FormPOSTToolStripMenuItem.Text = "Form POST"
         '
         'FormPOSTJSToolStripMenuItem
         '
         Me.FormPOSTJSToolStripMenuItem.Name = "FormPOSTJSToolStripMenuItem"
-        Me.FormPOSTJSToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.FormPOSTJSToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
         Me.FormPOSTJSToolStripMenuItem.Text = "Form POST (JS)"
         '
         'DatatableGETToolStripMenuItem
         '
         Me.DatatableGETToolStripMenuItem.Name = "DatatableGETToolStripMenuItem"
-        Me.DatatableGETToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.DatatableGETToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
         Me.DatatableGETToolStripMenuItem.Text = "Datatable GET"
         '
         'Select2AjaxToolStripMenuItem
         '
         Me.Select2AjaxToolStripMenuItem.Name = "Select2AjaxToolStripMenuItem"
-        Me.Select2AjaxToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.Select2AjaxToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
         Me.Select2AjaxToolStripMenuItem.Text = "Select2 Ajax"
         '
         'BsSuggestToolStripMenuItem
         '
         Me.BsSuggestToolStripMenuItem.Name = "BsSuggestToolStripMenuItem"
-        Me.BsSuggestToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.BsSuggestToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
         Me.BsSuggestToolStripMenuItem.Text = "bsSuggest"
         '
         'ToolStripSeparator2
@@ -475,7 +484,7 @@ Partial Class frmMain
         '
         'ToolStrip2
         '
-        Me.ToolStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripLabel1, Me.txtSQLConnectionString, Me.ToolStripButton6, Me.ToolStripSeparator10, Me.ToolStripButton7})
+        Me.ToolStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripLabel1, Me.txtSQLConnectionString, Me.ToolStripButton6, Me.btnConnect, Me.cboTable, Me.btnGenerateFromTable, Me.ToolStripSeparator10, Me.ToolStripButton7})
         Me.ToolStrip2.Location = New System.Drawing.Point(0, 25)
         Me.ToolStrip2.Name = "ToolStrip2"
         Me.ToolStrip2.Size = New System.Drawing.Size(1130, 25)
@@ -493,6 +502,8 @@ Partial Class frmMain
         Me.txtSQLConnectionString.Font = New System.Drawing.Font("Segoe UI", 9.0!)
         Me.txtSQLConnectionString.Name = "txtSQLConnectionString"
         Me.txtSQLConnectionString.Size = New System.Drawing.Size(250, 25)
+        Me.txtSQLConnectionString.Text = "Provider=MSOLEDBSQL;Password=sa;Persist Security Info=True;User ID=sa;Initial Cat" &
+    "alog=EBS_01312025;Data Source=DESKTOP-ABGBBCK"
         '
         'ToolStripButton6
         '
@@ -512,14 +523,31 @@ Partial Class frmMain
         Me.ToolStripButton7.Image = CType(resources.GetObject("ToolStripButton7.Image"), System.Drawing.Image)
         Me.ToolStripButton7.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripButton7.Name = "ToolStripButton7"
-        Me.ToolStripButton7.Size = New System.Drawing.Size(63, 22)
+        Me.ToolStripButton7.Size = New System.Drawing.Size(64, 22)
         Me.ToolStripButton7.Text = "INSERT"
         '
-        'AccordionToolStripMenuItem
+        'btnConnect
         '
-        Me.AccordionToolStripMenuItem.Name = "AccordionToolStripMenuItem"
-        Me.AccordionToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
-        Me.AccordionToolStripMenuItem.Text = "Accordion"
+        Me.btnConnect.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.btnConnect.Image = CType(resources.GetObject("btnConnect.Image"), System.Drawing.Image)
+        Me.btnConnect.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.btnConnect.Name = "btnConnect"
+        Me.btnConnect.Size = New System.Drawing.Size(23, 22)
+        Me.btnConnect.Text = "ToolStripButton8"
+        '
+        'cboTable
+        '
+        Me.cboTable.Name = "cboTable"
+        Me.cboTable.Size = New System.Drawing.Size(200, 25)
+        '
+        'btnGenerateFromTable
+        '
+        Me.btnGenerateFromTable.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.btnGenerateFromTable.Image = CType(resources.GetObject("btnGenerateFromTable.Image"), System.Drawing.Image)
+        Me.btnGenerateFromTable.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.btnGenerateFromTable.Name = "btnGenerateFromTable"
+        Me.btnGenerateFromTable.Size = New System.Drawing.Size(23, 22)
+        Me.btnGenerateFromTable.Text = "ToolStripButton9"
         '
         'frmMain
         '
@@ -611,4 +639,7 @@ Partial Class frmMain
     Friend WithEvents TabPage2 As TabPage
     Friend WithEvents txtDest2 As RichTextBox
     Friend WithEvents AccordionToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents btnConnect As ToolStripButton
+    Friend WithEvents cboTable As ToolStripComboBox
+    Friend WithEvents btnGenerateFromTable As ToolStripButton
 End Class
