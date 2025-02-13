@@ -6514,46 +6514,52 @@ Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}
         Using conn = New OleDbConnection(txtSQLConnectionString.Text)
             conn.Open()
 
-            Using cmd = conn.CreateCommand()
-                cmd.CommandText = $"SELECT * FROM [{cboTable.Text}]"
+            Dim dt = conn.GetOleDbSchemaTable(OleDbSchemaGuid.Columns, {Nothing, Nothing, cboTable.Text, Nothing})
+            For i = 0 To dt.Rows.Count - 1
+                Dim propertyString As String = DbTypeToString(dt.Rows(i))
+                l2.Add(propertyString)
+            Next
 
-                Dim dt As New DataTable
-                dt.Load(cmd.ExecuteReader(CommandBehavior.SchemaOnly))
+            'Using cmd = conn.CreateCommand()
+            '    cmd.CommandText = $"SELECT * FROM [{cboTable.Text}]"
 
-                'txtSource.Text = CreateTableSchema(dt, cboTable.Text)
+            '    Dim dt As New DataTable
+            '    dt.Load(cmd.ExecuteReader(CommandBehavior.SchemaOnly))
 
-                Dim tps = dt.Columns.OfType(Of DataColumn).ToList.Select(Function(x) x.DataType.FullName).ToList
+            '    'txtSource.Text = CreateTableSchema(dt, cboTable.Text)
 
-                For i = 0 To dt.Columns.Count - 1
-                    Dim colName = Regex.Replace(dt.Columns(i).ColumnName.Trim().ToLower, "[^a-z0-9_]", "", RegexOptions.IgnoreCase)
-                    Dim tp = dt.Columns(i).DataType.FullName.ToLower
+            '    Dim tps = dt.Columns.OfType(Of DataColumn).ToList.Select(Function(x) x.DataType.FullName).ToList
 
-                    Select Case True
-                        Case tp.Contains("int"), tp.Contains("long")
-                            l2.Add("   public int name { get; set; }".Replace("name", colName))
+            '    For i = 0 To dt.Columns.Count - 1
+            '        Dim colName = Regex.Replace(dt.Columns(i).ColumnName.Trim().ToLower, "[^a-z0-9_]", "", RegexOptions.IgnoreCase)
+            '        Dim tp = dt.Columns(i).DataType.FullName.ToLower
 
-                        Case tp.Contains("boolean")
-                            l2.Add("   public bool name { get; set; }".Replace("name", colName))
+            '        Select Case True
+            '            Case tp.Contains("int"), tp.Contains("long")
+            '                l2.Add("   public int name { get; set; }".Replace("name", colName))
 
-                        Case tp.Contains("double"), tp.Contains("decimal"), tp.Contains("single")
-                            l2.Add("   public decimal name { get; set; }".Replace("name", colName))
+            '            Case tp.Contains("boolean")
+            '                l2.Add("   public bool name { get; set; }".Replace("name", colName))
 
-                        Case tp.Contains("date"), tp.Contains("datetime")
-                            l2.Add("   public DateTime? name { get; set; }".Replace("name", colName))
+            '            Case tp.Contains("double"), tp.Contains("decimal"), tp.Contains("single")
+            '                l2.Add("   public decimal name { get; set; }".Replace("name", colName))
 
-                        Case tp.Contains("byte")
-                            l2.Add("   public byte[]? name { get; set; }".Replace("name", colName))
+            '            Case tp.Contains("date"), tp.Contains("datetime")
+            '                l2.Add("   public DateTime? name { get; set; }".Replace("name", colName))
 
-                        Case Else
-                            If dt.Columns(i).AllowDBNull = False Then l2.Add("   [Required]")
-                            If dt.Columns(i).MaxLength > 0 Then l2.Add($"   [MaxLength({dt.Columns(i).MaxLength})]")
-                            l2.Add("   public string name { get; set; }".Replace("name", colName))
+            '            Case tp.Contains("byte")
+            '                l2.Add("   public byte[]? name { get; set; }".Replace("name", colName))
 
-                    End Select
+            '            Case Else
+            '                If dt.Columns(i).AllowDBNull = False Then l2.Add("   [Required]")
+            '                If dt.Columns(i).MaxLength > 0 Then l2.Add($"   [MaxLength({dt.Columns(i).MaxLength})]")
+            '                l2.Add("   public string name { get; set; }".Replace("name", colName))
 
-                Next
+            '        End Select
 
-            End Using
+            '    Next
+
+            'End Using
 
         End Using
 
@@ -6567,6 +6573,69 @@ public class PositionModel
 
 
     End Sub
+
+    Function DbTypeToString(row As DataRow) As String
+        ' Extract column information from the DataRow
+        Dim columnName As String = Regex.Replace(row("COLUMN_NAME").ToString().ToLower, "[^a-z0-9_]", "", RegexOptions.IgnoreCase)
+        Dim dataType As Integer = Convert.ToInt32(row("DATA_TYPE"))
+        Dim isNullable As Boolean = row("IS_NULLABLE").ToString() = "YES"
+        Dim maxLength As Integer = If(row("CHARACTER_MAXIMUM_LENGTH") Is DBNull.Value, 0, Convert.ToInt32(row("CHARACTER_MAXIMUM_LENGTH")))
+
+        ' Map OleDbType to C# data type
+        Dim csType As String = GetCsNetType(dataType)
+        Dim annotations As String = ""
+        If csType = "string" And optAnnotation.Checked Then
+            annotations = GetAnnotations(isNullable, maxLength)
+        End If
+        ' Build the property string in C# syntax
+        Dim propertyString As String = $"{annotations}   public {csType} {columnName} {{ get; set; }}"
+
+        Return propertyString
+    End Function
+
+    Function GetCsNetType(dataType As Integer) As String
+        ' Map OleDbType to C# data type
+        Select Case dataType
+            Case CInt(OleDbType.Char), CInt(OleDbType.VarWChar), CInt(OleDbType.LongVarWChar)
+                Return "string"
+            Case CInt(OleDbType.Integer), CInt(OleDbType.UnsignedTinyInt), CInt(OleDbType.UnsignedInt), CInt(OleDbType.SmallInt), CInt(OleDbType.UnsignedSmallInt)
+                Return "int"
+            Case CInt(OleDbType.BigInt), CInt(OleDbType.UnsignedBigInt)
+                Return "long"
+            'Case CInt(OleDbType.SmallInt), CInt(OleDbType.UnsignedSmallInt)
+            '    Return "short"
+            Case CInt(OleDbType.Decimal), CInt(OleDbType.Numeric), CInt(OleDbType.Currency), CInt(OleDbType.Double), CInt(OleDbType.Single)
+                Return "decimal"
+            'Case CInt(OleDbType.Double)
+            '    Return "double"
+            'Case CInt(OleDbType.Single)
+            '    Return "float"
+            Case CInt(OleDbType.Boolean)
+                Return "bool"
+            Case CInt(OleDbType.Date), CInt(OleDbType.DBDate), CInt(OleDbType.DBTimeStamp)
+                Return "DateTime?"
+            Case CInt(OleDbType.Binary), CInt(OleDbType.LongVarBinary) ' Handle binary data (e.g., image type)
+                Return "byte[]?"
+            Case Else
+                Return "object?" ' Fallback for unknown types
+        End Select
+    End Function
+
+    Function GetAnnotations(isNullable As Boolean, maxLength As Integer) As String
+        Dim annotations As String = ""
+
+        ' Add [Required] annotation if the column is not nullable
+        If Not isNullable Then
+            annotations &= "   [Required]" & vbCrLf
+        End If
+
+        ' Add [MaxLength] annotation if the column has a maximum length
+        If maxLength > 0 Then
+            annotations &= $"   [MaxLength({maxLength})]" & vbCrLf
+        End If
+
+        Return annotations
+    End Function
 
 
     Function CreateTableSchema(dt As DataTable, tblName As String) As String
