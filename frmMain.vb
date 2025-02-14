@@ -6621,6 +6621,52 @@ public class PositionModel
         End Select
     End Function
 
+
+    ' dt = cmd.ExecuteReader(CommandBehavior.SchemaOnly).GetSchemaTable
+    Function DbTypeToStringFromGetSchemaTable(row As DataRow) As String
+        ' Extract column information from the DataRow
+        Dim columnName As String = row("ColumnName").ToString()
+        Dim dataType As Type = CType(row("DataType"), Type)
+        Dim isNullable As Boolean = CBool(row("AllowDBNull"))
+        Dim maxLength As Integer = CInt(row("ColumnSize"))
+
+        ' Map OleDbType to C# data type
+        Dim csType As String = GetCsNetTypeFromSchema(dataType)
+        Dim annotations As String = ""
+        'If csType = "string" And optAnnotation.Checked Then
+        '    annotations = GetAnnotations(isNullable, maxLength)
+        'End If
+        ' Build the property string in C# syntax
+        Dim propertyString As String = $"{annotations}   public {csType} {columnName} {{ get; set; }}"
+
+        Return propertyString
+    End Function
+
+    ' Function to map .NET Type to C# data type
+    Function GetCsNetTypeFromSchema(dataType As Type) As String
+        ' Map .NET Type to C# data type
+        Select Case dataType
+            Case GetType(String)
+                Return "string"
+            Case GetType(Integer), GetType(Short)
+                Return "int"
+            Case GetType(Long)
+                Return "long"
+            Case GetType(Byte)
+                Return "byte"
+            Case GetType(Decimal), GetType(Double), GetType(Single)
+                Return "decimal"
+            Case GetType(Boolean)
+                Return "bool"
+            Case GetType(DateTime)
+                Return "DateTime?"
+            Case GetType(Byte())
+                Return "byte[]"
+            Case Else
+                Return "object?"
+        End Select
+    End Function
+
     Function GetAnnotations(isNullable As Boolean, maxLength As Integer) As String
         Dim annotations As String = ""
 
