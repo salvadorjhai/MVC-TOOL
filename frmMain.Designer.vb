@@ -59,6 +59,8 @@ Partial Class frmMain
         Me.ToolStripSeparator9 = New System.Windows.Forms.ToolStripSeparator()
         Me.DatasetDummyToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.AccordionToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripSeparator11 = New System.Windows.Forms.ToolStripSeparator()
+        Me.JSControllerObjectLiteralToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripButton2 = New System.Windows.Forms.ToolStripSplitButton()
         Me.GETToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.FormPOSTToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -85,10 +87,13 @@ Partial Class frmMain
         Me.btnConnect = New System.Windows.Forms.ToolStripButton()
         Me.cboTable = New System.Windows.Forms.ToolStripComboBox()
         Me.btnGenerateFromTable = New System.Windows.Forms.ToolStripButton()
-        Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator()
-        Me.ToolStripButton7 = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripButton8 = New System.Windows.Forms.ToolStripDropDownButton()
         Me.optAnnotation = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator()
+        Me.ToolStripButton7 = New System.Windows.Forms.ToolStripButton()
+        Me.optCommandTimeout = New System.Windows.Forms.ToolStripTextBox()
+        Me.btnEditor = New System.Windows.Forms.ToolStripButton()
+        Me.ToolStripButton9 = New System.Windows.Forms.ToolStripButton()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -187,7 +192,7 @@ Partial Class frmMain
         '
         'ToolStripButton3
         '
-        Me.ToolStripButton3.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DefaultToolStripMenuItem, Me.ModalPopupToolStripMenuItem, Me.ModalPopup2TupleToolStripMenuItem, Me.ToolStripSeparator4, Me.BlankModalToolStripMenuItem, Me.HtmlTagHelpersOnlyToolStripMenuItem, Me.Select2ViewBagToolStripMenuItem, Me.ToolStripSeparator5, Me.ModalPopupcjTemplateToolStripMenuItem, Me.ToolStripMenuItem1, Me.UseChoicesJSToolStripMenuItem, Me.ToolStripMenuItem2, Me.ToolStripSeparator8, Me.InFormDynamicTableToolStripMenuItem, Me.TabsGeneratorToolStripMenuItem, Me.ToolStripSeparator7, Me.DynamicMultiInputToolStripMenuItem, Me.LoremImpsumToolStripMenuItem, Me.ToolStripSeparator9, Me.DatasetDummyToolStripMenuItem, Me.AccordionToolStripMenuItem})
+        Me.ToolStripButton3.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DefaultToolStripMenuItem, Me.ModalPopupToolStripMenuItem, Me.ModalPopup2TupleToolStripMenuItem, Me.ToolStripSeparator4, Me.BlankModalToolStripMenuItem, Me.HtmlTagHelpersOnlyToolStripMenuItem, Me.Select2ViewBagToolStripMenuItem, Me.ToolStripSeparator5, Me.ModalPopupcjTemplateToolStripMenuItem, Me.ToolStripMenuItem1, Me.UseChoicesJSToolStripMenuItem, Me.ToolStripMenuItem2, Me.ToolStripSeparator8, Me.InFormDynamicTableToolStripMenuItem, Me.TabsGeneratorToolStripMenuItem, Me.ToolStripSeparator7, Me.DynamicMultiInputToolStripMenuItem, Me.LoremImpsumToolStripMenuItem, Me.ToolStripSeparator9, Me.DatasetDummyToolStripMenuItem, Me.AccordionToolStripMenuItem, Me.ToolStripSeparator11, Me.JSControllerObjectLiteralToolStripMenuItem})
         Me.ToolStripButton3.Image = CType(resources.GetObject("ToolStripButton3.Image"), System.Drawing.Image)
         Me.ToolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripButton3.Name = "ToolStripButton3"
@@ -317,6 +322,17 @@ Partial Class frmMain
         Me.AccordionToolStripMenuItem.Name = "AccordionToolStripMenuItem"
         Me.AccordionToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
         Me.AccordionToolStripMenuItem.Text = "Accordion"
+        '
+        'ToolStripSeparator11
+        '
+        Me.ToolStripSeparator11.Name = "ToolStripSeparator11"
+        Me.ToolStripSeparator11.Size = New System.Drawing.Size(254, 6)
+        '
+        'JSControllerObjectLiteralToolStripMenuItem
+        '
+        Me.JSControllerObjectLiteralToolStripMenuItem.Name = "JSControllerObjectLiteralToolStripMenuItem"
+        Me.JSControllerObjectLiteralToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
+        Me.JSControllerObjectLiteralToolStripMenuItem.Text = "JS - Controller (Object Literal)"
         '
         'ToolStripButton2
         '
@@ -486,7 +502,7 @@ Partial Class frmMain
         '
         'ToolStrip2
         '
-        Me.ToolStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripLabel1, Me.txtSQLConnectionString, Me.ToolStripButton6, Me.btnConnect, Me.cboTable, Me.btnGenerateFromTable, Me.ToolStripButton8, Me.ToolStripSeparator10, Me.ToolStripButton7})
+        Me.ToolStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripLabel1, Me.txtSQLConnectionString, Me.ToolStripButton9, Me.ToolStripButton6, Me.btnConnect, Me.cboTable, Me.btnEditor, Me.btnGenerateFromTable, Me.ToolStripButton8, Me.ToolStripSeparator10, Me.ToolStripButton7})
         Me.ToolStrip2.Location = New System.Drawing.Point(0, 25)
         Me.ToolStrip2.Name = "ToolStrip2"
         Me.ToolStrip2.Size = New System.Drawing.Size(1130, 25)
@@ -505,7 +521,7 @@ Partial Class frmMain
         Me.txtSQLConnectionString.Name = "txtSQLConnectionString"
         Me.txtSQLConnectionString.Size = New System.Drawing.Size(250, 25)
         Me.txtSQLConnectionString.Text = "Provider=MSOLEDBSQL;Password=sa;Persist Security Info=True;User ID=sa;Initial Cat" &
-    "alog=EBS_01312025;Data Source=DESKTOP-ABGBBCK"
+    "alog=ebs;Data Source=DESKTOP-ABGBBCK"
         '
         'ToolStripButton6
         '
@@ -536,25 +552,12 @@ Partial Class frmMain
         Me.btnGenerateFromTable.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.btnGenerateFromTable.Name = "btnGenerateFromTable"
         Me.btnGenerateFromTable.Size = New System.Drawing.Size(23, 22)
-        Me.btnGenerateFromTable.Text = "Generate from table"
-        '
-        'ToolStripSeparator10
-        '
-        Me.ToolStripSeparator10.Name = "ToolStripSeparator10"
-        Me.ToolStripSeparator10.Size = New System.Drawing.Size(6, 25)
-        '
-        'ToolStripButton7
-        '
-        Me.ToolStripButton7.Image = CType(resources.GetObject("ToolStripButton7.Image"), System.Drawing.Image)
-        Me.ToolStripButton7.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.ToolStripButton7.Name = "ToolStripButton7"
-        Me.ToolStripButton7.Size = New System.Drawing.Size(64, 22)
-        Me.ToolStripButton7.Text = "INSERT"
+        Me.btnGenerateFromTable.Text = "Generate from selected table or using SQL Query"
         '
         'ToolStripButton8
         '
         Me.ToolStripButton8.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.ToolStripButton8.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.optAnnotation})
+        Me.ToolStripButton8.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.optAnnotation, Me.optCommandTimeout})
         Me.ToolStripButton8.Image = CType(resources.GetObject("ToolStripButton8.Image"), System.Drawing.Image)
         Me.ToolStripButton8.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripButton8.Name = "ToolStripButton8"
@@ -569,6 +572,42 @@ Partial Class frmMain
         Me.optAnnotation.Name = "optAnnotation"
         Me.optAnnotation.Size = New System.Drawing.Size(210, 22)
         Me.optAnnotation.Text = "Generate with Annotation"
+        '
+        'ToolStripSeparator10
+        '
+        Me.ToolStripSeparator10.Name = "ToolStripSeparator10"
+        Me.ToolStripSeparator10.Size = New System.Drawing.Size(6, 25)
+        '
+        'ToolStripButton7
+        '
+        Me.ToolStripButton7.Image = CType(resources.GetObject("ToolStripButton7.Image"), System.Drawing.Image)
+        Me.ToolStripButton7.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripButton7.Name = "ToolStripButton7"
+        Me.ToolStripButton7.Size = New System.Drawing.Size(64, 22)
+        Me.ToolStripButton7.Text = "INSERT"
+        '
+        'optCommandTimeout
+        '
+        Me.optCommandTimeout.Font = New System.Drawing.Font("Segoe UI", 9.0!)
+        Me.optCommandTimeout.Name = "optCommandTimeout"
+        Me.optCommandTimeout.Size = New System.Drawing.Size(100, 23)
+        Me.optCommandTimeout.Text = "25"
+        '
+        'btnEditor
+        '
+        Me.btnEditor.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.btnEditor.Image = CType(resources.GetObject("btnEditor.Image"), System.Drawing.Image)
+        Me.btnEditor.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.btnEditor.Name = "btnEditor"
+        Me.btnEditor.Size = New System.Drawing.Size(23, 22)
+        '
+        'ToolStripButton9
+        '
+        Me.ToolStripButton9.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripButton9.Image = CType(resources.GetObject("ToolStripButton9.Image"), System.Drawing.Image)
+        Me.ToolStripButton9.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripButton9.Name = "ToolStripButton9"
+        Me.ToolStripButton9.Size = New System.Drawing.Size(23, 22)
         '
         'frmMain
         '
@@ -665,4 +704,9 @@ Partial Class frmMain
     Friend WithEvents btnGenerateFromTable As ToolStripButton
     Friend WithEvents ToolStripButton8 As ToolStripDropDownButton
     Friend WithEvents optAnnotation As ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator11 As ToolStripSeparator
+    Friend WithEvents JSControllerObjectLiteralToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents optCommandTimeout As ToolStripTextBox
+    Friend WithEvents btnEditor As ToolStripButton
+    Friend WithEvents ToolStripButton9 As ToolStripButton
 End Class

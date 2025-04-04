@@ -6509,68 +6509,73 @@ Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}
 
     Private Sub btnGenerateFromTable_Click(sender As Object, e As EventArgs) Handles btnGenerateFromTable.Click
 
+        If String.IsNullOrWhiteSpace(cboTable.Text) Then Return
+
+        Dim tblName = cboTable.Text
         Dim l2 As New List(Of String)
+        Dim l3 As New List(Of String)
+        l3.Add("var dic = new Dictionary<string, object>();")
 
         Using conn = New OleDbConnection(txtSQLConnectionString.Text)
             conn.Open()
 
-            Dim dt = conn.GetOleDbSchemaTable(OleDbSchemaGuid.Columns, {Nothing, Nothing, cboTable.Text, Nothing})
-            For i = 0 To dt.Rows.Count - 1
-                Dim propertyString As String = DbTypeToString(dt.Rows(i))
-                l2.Add(propertyString)
-            Next
+            If cboTable.Text.Trim.ToLower.StartsWith("select ") Then
+                Using cmd As New OleDbCommand(cboTable.Text, conn)
+                    cmd.CommandTimeout = Integer.Parse(optCommandTimeout.Text)
 
-            'Using cmd = conn.CreateCommand()
-            '    cmd.CommandText = $"SELECT * FROM [{cboTable.Text}]"
+                    Dim dt = cmd.ExecuteReader(CommandBehavior.SchemaOnly).GetSchemaTable
+                    For i = 0 To dt.Rows.Count - 1
+                        Dim propertyString As String = DbTypeToStringFromGetSchemaTable(dt.Rows(i))
+                        l2.Add(propertyString)
 
-            '    Dim dt As New DataTable
-            '    dt.Load(cmd.ExecuteReader(CommandBehavior.SchemaOnly))
+                        If propertyString.Contains("[Required]") Then
+                            l3.Add(<![CDATA[dic["_"] = "_"; // required ]]>.Value.Replace("_", dt.Rows(i)("ColumnName")))
+                        Else
+                            l3.Add(<![CDATA[dic["_"] = "_";]]>.Value.Replace("_", dt.Rows(i)("ColumnName")))
+                        End If
 
-            '    'txtSource.Text = CreateTableSchema(dt, cboTable.Text)
+                    Next
 
-            '    Dim tps = dt.Columns.OfType(Of DataColumn).ToList.Select(Function(x) x.DataType.FullName).ToList
+                    conn.Close()
+                End Using
 
-            '    For i = 0 To dt.Columns.Count - 1
-            '        Dim colName = Regex.Replace(dt.Columns(i).ColumnName.Trim().ToLower, "[^a-z0-9_]", "", RegexOptions.IgnoreCase)
-            '        Dim tp = dt.Columns(i).DataType.FullName.ToLower
+                tblName = Regex.Match(cboTable.Text, " from \[(.*?)\]", RegexOptions.IgnoreCase).Groups(1).Value.Trim
+                If String.IsNullOrWhiteSpace(tblName) Then tblName = Regex.Match(cboTable.Text, " from (.*?) ", RegexOptions.IgnoreCase).Groups(1).Value.Trim
+                If String.IsNullOrWhiteSpace(tblName) Then tblName = Regex.Match(cboTable.Text, " from (.*?)$", RegexOptions.IgnoreCase).Groups(1).Value.Trim
+                l3.Add("")
+                l3.Add(<![CDATA[var res = DB.InsertParam("_", dic, true);]]>.Value.Replace("_", tblName))
 
-            '        Select Case True
-            '            Case tp.Contains("int"), tp.Contains("long")
-            '                l2.Add("   public int name { get; set; }".Replace("name", colName))
+            Else
 
-            '            Case tp.Contains("boolean")
-            '                l2.Add("   public bool name { get; set; }".Replace("name", colName))
+                Dim dt = conn.GetOleDbSchemaTable(OleDbSchemaGuid.Columns, {Nothing, Nothing, cboTable.Text, Nothing})
+                For i = 0 To dt.Rows.Count - 1
+                    Dim propertyString As String = DbTypeToString(dt.Rows(i))
+                    l2.Add(propertyString)
 
-            '            Case tp.Contains("double"), tp.Contains("decimal"), tp.Contains("single")
-            '                l2.Add("   public decimal name { get; set; }".Replace("name", colName))
+                    If propertyString.Contains("[Required]") Then
+                        l3.Add(<![CDATA[dic["_"] = "_"; // required]]>.Value.Replace("_", dt.Rows(i)("COLUMN_NAME")))
+                    Else
+                        l3.Add(<![CDATA[dic["_"] = "_";]]>.Value.Replace("_", dt.Rows(i)("COLUMN_NAME")))
+                    End If
 
-            '            Case tp.Contains("date"), tp.Contains("datetime")
-            '                l2.Add("   public DateTime? name { get; set; }".Replace("name", colName))
+                Next
+                l3.Add("")
+                l3.Add(<![CDATA[var res = DB.InsertParam("_", dic, true);]]>.Value.Replace("_", cboTable.Text))
 
-            '            Case tp.Contains("byte")
-            '                l2.Add("   public byte[]? name { get; set; }".Replace("name", colName))
-
-            '            Case Else
-            '                If dt.Columns(i).AllowDBNull = False Then l2.Add("   [Required]")
-            '                If dt.Columns(i).MaxLength > 0 Then l2.Add($"   [MaxLength({dt.Columns(i).MaxLength})]")
-            '                l2.Add("   public string name { get; set; }".Replace("name", colName))
-
-            '        End Select
-
-            '    Next
-
-            'End Using
+            End If
 
         End Using
 
+        l3.Add("if (DB.LastError != null) { throw DB.LastError; }")
 
         txtSource.Text = <![CDATA[
 public class PositionModel
 {
 // replace
 }
-]]>.Value.Replace("// replace", String.Join(vbCrLf, l2)).Replace("PositionModel", Regex.Replace(StrConv(cboTable.Text, VbStrConv.ProperCase), "[^a-z0-9_]", "", RegexOptions.IgnoreCase))
+]]>.Value.Replace("// replace", String.Join(vbCrLf, l2)).Replace("PositionModel", Regex.Replace(StrConv(tblName, VbStrConv.ProperCase), "[^a-z0-9_]", "", RegexOptions.IgnoreCase))
 
+        txtDest.Text = String.Join(vbCrLf, l3)
 
     End Sub
 
@@ -6578,7 +6583,7 @@ public class PositionModel
         ' Extract column information from the DataRow
         Dim columnName As String = Regex.Replace(row("COLUMN_NAME").ToString().ToLower, "[^a-z0-9_]", "", RegexOptions.IgnoreCase)
         Dim dataType As Integer = Convert.ToInt32(row("DATA_TYPE"))
-        Dim isNullable As Boolean = row("IS_NULLABLE").ToString() = "YES"
+        Dim isNullable As Boolean = CBool(row("IS_NULLABLE"))
         Dim maxLength As Integer = If(row("CHARACTER_MAXIMUM_LENGTH") Is DBNull.Value, 0, Convert.ToInt32(row("CHARACTER_MAXIMUM_LENGTH")))
 
         ' Map OleDbType to C# data type
@@ -6633,9 +6638,9 @@ public class PositionModel
         ' Map OleDbType to C# data type
         Dim csType As String = GetCsNetTypeFromSchema(dataType)
         Dim annotations As String = ""
-        'If csType = "string" And optAnnotation.Checked Then
-        '    annotations = GetAnnotations(isNullable, maxLength)
-        'End If
+        If csType = "string" And optAnnotation.Checked Then
+            annotations = GetAnnotations(isNullable, maxLength)
+        End If
         ' Build the property string in C# syntax
         Dim propertyString As String = $"{annotations}   public {csType} {columnName} {{ get; set; }}"
 
@@ -6769,6 +6774,23 @@ public class PositionModel
         Return String.Join(vbCrLf, l3)
     End Function
 
+    Private Sub JSControllerObjectLiteralToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles JSControllerObjectLiteralToolStripMenuItem.Click
 
+    End Sub
 
+    Private Sub btnEditor_Click(sender As Object, e As EventArgs) Handles btnEditor.Click
+        Using frm = New frmSQLEditor
+            frm.txtEditor.Text = cboTable.Text
+            frm.ShowDialog()
+            cboTable.Text = frm.txtEditor.Text
+        End Using
+    End Sub
+
+    Private Sub ToolStripButton9_Click(sender As Object, e As EventArgs) Handles ToolStripButton9.Click
+        Using frm = New frmSQLEditor
+            frm.txtEditor.Text = txtSQLConnectionString.Text
+            frm.ShowDialog()
+            txtSQLConnectionString.Text = frm.txtEditor.Text
+        End Using
+    End Sub
 End Class
