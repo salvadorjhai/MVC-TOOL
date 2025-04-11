@@ -6774,10 +6774,6 @@ public class PositionModel
         Return String.Join(vbCrLf, l3)
     End Function
 
-    Private Sub JSControllerObjectLiteralToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles JSControllerObjectLiteralToolStripMenuItem.Click
-
-    End Sub
-
     Private Sub btnEditor_Click(sender As Object, e As EventArgs) Handles btnEditor.Click
         Using frm = New frmSQLEditor
             frm.txtEditor.Text = cboTable.Text
@@ -6792,5 +6788,96 @@ public class PositionModel
             frm.ShowDialog()
             txtSQLConnectionString.Text = frm.txtEditor.Text
         End Using
+    End Sub
+
+    Private Sub JSControllerObjectLiteralToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles JSControllerObjectLiteralToolStripMenuItem.Click
+        Dim js = <![CDATA[
+var model = {
+    init: function() {
+        this.data = null;
+        this.initListener();
+    },
+    initListener: function() {
+        // all event listener should be here        
+    },
+    onAddItem: function(){
+        // verify if allowed
+        // show dialog
+        this.showAddDialog();
+    },
+    onEditItem: function(id) {
+        // verify if allowed
+        // get data (ajax)
+        // set response to data
+        // fill view data
+        // show dialog
+        this.showEditDialog();
+    },
+    onDeleteItem: function(id) {
+        // verify if allowed
+    },
+    onSaveItem: function() {
+        // verify if allowed
+        // check if clean
+        // validate
+        // save
+    },
+    showAddDialog: function() {
+
+    },
+    showEditDialog: function() {
+
+    },
+    closeDialog: function() {
+        this.data = null;
+    },
+    onFillData: function(js) {
+        // fill form with data        
+    },
+
+
+}
+
+var table = {
+
+    init: function() {
+        // initialize datatable
+    },
+    loadData: function() {
+        // query by ajax
+    },
+    setData: function(js) {
+        // reload datatable
+    }
+
+}
+        ]]>.Value
+
+        txtDest.Text = js.Trim
+    End Sub
+
+    Private Sub ModalPopupBS46xToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ModalPopupBS46xToolStripMenuItem.Click
+
+        If txtSource.Text.Contains("public class") = False Then
+            txtDest.Text = "You forgot your Model ..."
+            Return
+        End If
+
+        Dim modelName = txtSource.Lines.Where(Function(x) x.Contains("public class ")).FirstOrDefault.Trim.Split(" ").LastOrDefault
+        Dim props = txtSource.Lines.Where(Function(x) x.Contains("public ") And x.Contains(" class ") = False).ToList
+        modelName = Regex.Replace(modelName, "model", "", RegexOptions.IgnoreCase).Trim
+
+        Dim dialogId = $"{StrConv(modelName.ToLower, VbStrConv.ProperCase)}Modal"
+        Dim tableId = $"{StrConv(modelName.ToLower, VbStrConv.ProperCase)}Table"
+        Dim formId = $"{StrConv(modelName.ToLower, VbStrConv.ProperCase)}Form"
+
+        Dim js = <![CDATA[
+
+
+
+
+        ]]>.Value
+
+
     End Sub
 End Class

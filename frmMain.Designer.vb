@@ -83,17 +83,18 @@ Partial Class frmMain
         Me.ToolStrip2 = New System.Windows.Forms.ToolStrip()
         Me.ToolStripLabel1 = New System.Windows.Forms.ToolStripLabel()
         Me.txtSQLConnectionString = New System.Windows.Forms.ToolStripTextBox()
+        Me.ToolStripButton9 = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripButton6 = New System.Windows.Forms.ToolStripButton()
         Me.btnConnect = New System.Windows.Forms.ToolStripButton()
         Me.cboTable = New System.Windows.Forms.ToolStripComboBox()
+        Me.btnEditor = New System.Windows.Forms.ToolStripButton()
         Me.btnGenerateFromTable = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripButton8 = New System.Windows.Forms.ToolStripDropDownButton()
         Me.optAnnotation = New System.Windows.Forms.ToolStripMenuItem()
+        Me.optCommandTimeout = New System.Windows.Forms.ToolStripTextBox()
         Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripButton7 = New System.Windows.Forms.ToolStripButton()
-        Me.optCommandTimeout = New System.Windows.Forms.ToolStripTextBox()
-        Me.btnEditor = New System.Windows.Forms.ToolStripButton()
-        Me.ToolStripButton9 = New System.Windows.Forms.ToolStripButton()
+        Me.ModalPopupBS46xToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -192,7 +193,7 @@ Partial Class frmMain
         '
         'ToolStripButton3
         '
-        Me.ToolStripButton3.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DefaultToolStripMenuItem, Me.ModalPopupToolStripMenuItem, Me.ModalPopup2TupleToolStripMenuItem, Me.ToolStripSeparator4, Me.BlankModalToolStripMenuItem, Me.HtmlTagHelpersOnlyToolStripMenuItem, Me.Select2ViewBagToolStripMenuItem, Me.ToolStripSeparator5, Me.ModalPopupcjTemplateToolStripMenuItem, Me.ToolStripMenuItem1, Me.UseChoicesJSToolStripMenuItem, Me.ToolStripMenuItem2, Me.ToolStripSeparator8, Me.InFormDynamicTableToolStripMenuItem, Me.TabsGeneratorToolStripMenuItem, Me.ToolStripSeparator7, Me.DynamicMultiInputToolStripMenuItem, Me.LoremImpsumToolStripMenuItem, Me.ToolStripSeparator9, Me.DatasetDummyToolStripMenuItem, Me.AccordionToolStripMenuItem, Me.ToolStripSeparator11, Me.JSControllerObjectLiteralToolStripMenuItem})
+        Me.ToolStripButton3.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DefaultToolStripMenuItem, Me.ModalPopupToolStripMenuItem, Me.ModalPopup2TupleToolStripMenuItem, Me.ToolStripSeparator4, Me.BlankModalToolStripMenuItem, Me.HtmlTagHelpersOnlyToolStripMenuItem, Me.Select2ViewBagToolStripMenuItem, Me.ToolStripSeparator5, Me.UseChoicesJSToolStripMenuItem, Me.ModalPopupcjTemplateToolStripMenuItem, Me.ToolStripMenuItem1, Me.ToolStripMenuItem2, Me.ModalPopupBS46xToolStripMenuItem, Me.ToolStripSeparator8, Me.InFormDynamicTableToolStripMenuItem, Me.TabsGeneratorToolStripMenuItem, Me.ToolStripSeparator7, Me.DynamicMultiInputToolStripMenuItem, Me.LoremImpsumToolStripMenuItem, Me.ToolStripSeparator9, Me.DatasetDummyToolStripMenuItem, Me.AccordionToolStripMenuItem, Me.ToolStripSeparator11, Me.JSControllerObjectLiteralToolStripMenuItem})
         Me.ToolStripButton3.Image = CType(resources.GetObject("ToolStripButton3.Image"), System.Drawing.Image)
         Me.ToolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripButton3.Name = "ToolStripButton3"
@@ -268,6 +269,7 @@ Partial Class frmMain
         '
         'ToolStripMenuItem2
         '
+        Me.ToolStripMenuItem2.Font = New System.Drawing.Font("Segoe UI", 9.0!)
         Me.ToolStripMenuItem2.Name = "ToolStripMenuItem2"
         Me.ToolStripMenuItem2.Size = New System.Drawing.Size(257, 22)
         Me.ToolStripMenuItem2.Text = "Modal Popup (dropdown select)"
@@ -397,7 +399,7 @@ Partial Class frmMain
         '
         Me.txtSource.BackColor = System.Drawing.SystemColors.Window
         Me.txtSource.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.txtSource.Font = New System.Drawing.Font("Courier New", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.txtSource.Font = New System.Drawing.Font("Consolas", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.txtSource.Location = New System.Drawing.Point(0, 0)
         Me.txtSource.Name = "txtSource"
         Me.txtSource.Size = New System.Drawing.Size(292, 554)
@@ -451,7 +453,7 @@ Partial Class frmMain
         '
         Me.txtDest.BorderStyle = System.Windows.Forms.BorderStyle.None
         Me.txtDest.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.txtDest.Font = New System.Drawing.Font("Courier New", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.txtDest.Font = New System.Drawing.Font("Consolas", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.txtDest.Location = New System.Drawing.Point(3, 3)
         Me.txtDest.Name = "txtDest"
         Me.txtDest.Size = New System.Drawing.Size(818, 519)
@@ -475,7 +477,7 @@ Partial Class frmMain
         Me.txtDest2.BackColor = System.Drawing.SystemColors.Window
         Me.txtDest2.BorderStyle = System.Windows.Forms.BorderStyle.None
         Me.txtDest2.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.txtDest2.Font = New System.Drawing.Font("Courier New", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.txtDest2.Font = New System.Drawing.Font("Consolas", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.txtDest2.Location = New System.Drawing.Point(3, 3)
         Me.txtDest2.Name = "txtDest2"
         Me.txtDest2.ReadOnly = True
@@ -523,6 +525,14 @@ Partial Class frmMain
         Me.txtSQLConnectionString.Text = "Provider=MSOLEDBSQL;Password=sa;Persist Security Info=True;User ID=sa;Initial Cat" &
     "alog=ebs;Data Source=DESKTOP-ABGBBCK"
         '
+        'ToolStripButton9
+        '
+        Me.ToolStripButton9.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripButton9.Image = CType(resources.GetObject("ToolStripButton9.Image"), System.Drawing.Image)
+        Me.ToolStripButton9.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripButton9.Name = "ToolStripButton9"
+        Me.ToolStripButton9.Size = New System.Drawing.Size(23, 22)
+        '
         'ToolStripButton6
         '
         Me.ToolStripButton6.Image = CType(resources.GetObject("ToolStripButton6.Image"), System.Drawing.Image)
@@ -544,6 +554,14 @@ Partial Class frmMain
         '
         Me.cboTable.Name = "cboTable"
         Me.cboTable.Size = New System.Drawing.Size(200, 25)
+        '
+        'btnEditor
+        '
+        Me.btnEditor.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.btnEditor.Image = CType(resources.GetObject("btnEditor.Image"), System.Drawing.Image)
+        Me.btnEditor.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.btnEditor.Name = "btnEditor"
+        Me.btnEditor.Size = New System.Drawing.Size(23, 22)
         '
         'btnGenerateFromTable
         '
@@ -573,6 +591,13 @@ Partial Class frmMain
         Me.optAnnotation.Size = New System.Drawing.Size(210, 22)
         Me.optAnnotation.Text = "Generate with Annotation"
         '
+        'optCommandTimeout
+        '
+        Me.optCommandTimeout.Font = New System.Drawing.Font("Segoe UI", 9.0!)
+        Me.optCommandTimeout.Name = "optCommandTimeout"
+        Me.optCommandTimeout.Size = New System.Drawing.Size(100, 23)
+        Me.optCommandTimeout.Text = "25"
+        '
         'ToolStripSeparator10
         '
         Me.ToolStripSeparator10.Name = "ToolStripSeparator10"
@@ -586,28 +611,11 @@ Partial Class frmMain
         Me.ToolStripButton7.Size = New System.Drawing.Size(64, 22)
         Me.ToolStripButton7.Text = "INSERT"
         '
-        'optCommandTimeout
+        'ModalPopupBS46xToolStripMenuItem
         '
-        Me.optCommandTimeout.Font = New System.Drawing.Font("Segoe UI", 9.0!)
-        Me.optCommandTimeout.Name = "optCommandTimeout"
-        Me.optCommandTimeout.Size = New System.Drawing.Size(100, 23)
-        Me.optCommandTimeout.Text = "25"
-        '
-        'btnEditor
-        '
-        Me.btnEditor.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.btnEditor.Image = CType(resources.GetObject("btnEditor.Image"), System.Drawing.Image)
-        Me.btnEditor.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.btnEditor.Name = "btnEditor"
-        Me.btnEditor.Size = New System.Drawing.Size(23, 22)
-        '
-        'ToolStripButton9
-        '
-        Me.ToolStripButton9.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.ToolStripButton9.Image = CType(resources.GetObject("ToolStripButton9.Image"), System.Drawing.Image)
-        Me.ToolStripButton9.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.ToolStripButton9.Name = "ToolStripButton9"
-        Me.ToolStripButton9.Size = New System.Drawing.Size(23, 22)
+        Me.ModalPopupBS46xToolStripMenuItem.Name = "ModalPopupBS46xToolStripMenuItem"
+        Me.ModalPopupBS46xToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
+        Me.ModalPopupBS46xToolStripMenuItem.Text = "Modal Popup (BS 4.6.x)"
         '
         'frmMain
         '
@@ -709,4 +717,5 @@ Partial Class frmMain
     Friend WithEvents optCommandTimeout As ToolStripTextBox
     Friend WithEvents btnEditor As ToolStripButton
     Friend WithEvents ToolStripButton9 As ToolStripButton
+    Friend WithEvents ModalPopupBS46xToolStripMenuItem As ToolStripMenuItem
 End Class
