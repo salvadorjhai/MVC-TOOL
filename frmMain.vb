@@ -903,132 +903,6 @@ Public Class frmMain
 
     End Sub
 
-    Private Sub ToolStripButton4_Click(sender As Object, e As EventArgs) Handles ToolStripButton4.Click
-
-        If txtSource.Text.Contains("public class") = False Then
-            txtDest.Text = "You forgot your Model ..."
-            Return
-        End If
-
-        Dim modelName = txtSource.Lines.Where(Function(x) x.Contains("public class ")).FirstOrDefault.Trim.Split(" ").LastOrDefault
-        Dim props = txtSource.Lines.Where(Function(x) x.Contains("public ") And x.Contains(" class ") = False).ToList
-
-        Dim l1 As New List(Of String)
-        Dim l2 As New List(Of String)
-
-        'l1.Add(<![CDATA[ @using LIBCORE.Models; ]]>.Value)
-        'l1.Add(<![CDATA[ @model MeterBrandModel ]]>.Value.Replace("MeterBrandModel", modelName))
-
-        l1.Add(<![CDATA[  
-@section css {
-    <!-- section rendered css -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.css" />
-    <link rel="stylesheet" href="https://cdn.datatables.net/searchbuilder/1.7.1/css/searchBuilder.dataTables.css" />
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.0.2/css/buttons.dataTables.css" />
-    <link rel="stylesheet" href="https://cdn.datatables.net/datetime/1.5.2/css/dataTables.dateTime.min.css" />
-}
-]]>.Value)
-
-        Dim lh As New List(Of String)
-        Dim lr As New List(Of String)
-        Dim dp As New List(Of String)
-
-        For i = 0 To props.Count - 1
-
-            Dim v = props(i).Trim
-            If String.IsNullOrWhiteSpace(v) Then Continue For
-            Dim ch = v.Split(" ")
-
-            Dim ddt = ch(1).Trim
-            Dim field = ch(2).Trim
-
-            lh.Add(<![CDATA[ <th>METER BRAND</th> ]]>.Value.Replace("METER BRAND", field.ToUpper))
-
-            'lr.Add(<![CDATA[ <td>@item.brand (<i class="bi bi-pencil-square"></i> edit) </td> ]]>.Value.Replace("brand", field.ToLower))
-            lr.Add(<![CDATA[ <td>@item.brand</td> ]]>.Value.Replace("brand", field.ToLower))
-
-            dp.Add(<![CDATA[ $('#brand').val(js['brand']); ]]>.Value.Replace("brand", field))
-
-        Next
-
-        l1.Add(<![CDATA[
-<table id="mytable" class="table table-striped table-hover table-bordered">
-    <thead class="bg-secondary text-white">
-        <tr><TH_HEADER></tr>
-    </thead>
-    <tbody>
-        @if (ViewBag.Brands != null)
-        {
-            @foreach (MeterBrandModel item in ViewBag.Brands)
-            {
-                <tr class="editBtn" data-id="@item.id" data-js="@Json.Serialize(item).ToString()" data-bs-toggle="modal" data-bs-target="#mymodal">
-                    <TD_DATA>
-                </tr>
-            }
-        }
-    </tbody>
-</table>
-]]>.Value.Replace("mytable", $"{modelName}Table").Replace("ViewBag.Brands", $"ViewBag.{modelName}").Replace("MeterBrandModel", modelName).Replace("mymodal", $"{modelName}Modal").
-    Replace("<TH_HEADER>", String.Join(vbCrLf, lh)).
-    Replace("<TD_DATA>", String.Join(vbCrLf, lr)))
-
-
-        l1.Add(<![CDATA[
-@section Scripts{
-    <!-- section rendered script -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
-
-    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
-    <script src="https://cdn.datatables.net/searchbuilder/1.7.1/js/dataTables.searchBuilder.js"></script>
-    <script src="https://cdn.datatables.net/searchbuilder/1.7.1/js/searchBuilder.dataTables.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.2/js/dataTables.buttons.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.dataTables.js"></script>
-    <script src="https://cdn.datatables.net/datetime/1.5.2/js/dataTables.dateTime.min.js"></script>
-
-    <script>
-        $(document).ready(function () {
-            
-            // initialize datatable
-            $('#mytable').DataTable({
-                // ... other DataTable options
-                stateSave: true,
-                // Event handler for row hover
-                rowCallback: function (row, data, index) {
-                    $(row).hover(function () {
-                        $(this).css('cursor', 'pointer');
-                    }, function () {
-                        $(this).css('cursor', 'default');
-                    });
-                }
-
-            });
-
-            // on edit clicked
-            $('#mytable').on('click', '.editBtn', function () {
-                var js = $(this).data('js');
-                $('#MeterBrandModelFormBody').attr('data-js', JSON.stringify(js));
-                $('#MeterBrandModelForm')[0].reset();
-                // generated content
-                <EDIT_VAL>
-            });
-
-        });
-    </script>
-}
-
-]]>.Value.Replace("mytable", $"{modelName}Table").Replace("MeterBrandModelFormBody", $"{modelName}FormBody").Replace("<EDIT_VAL>", String.Join(vbCrLf, dp)))
-
-        l1.Add("")
-
-        txtDest.Text = String.Join(vbCrLf, l1)
-
-    End Sub
-
-    Private Sub ToolStripButton5_Click(sender As Object, e As EventArgs) Handles ToolStripButton5.Click
-
-    End Sub
-
     Private Sub DataAccessBuilderToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles DataAccessBuilderToolStripMenuItem.Click
 
 
@@ -2649,7 +2523,73 @@ public class TownModelFull : TownModel
 
     Private Sub Select2AjaxToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles Select2AjaxToolStripMenuItem.Click
 
+        If txtSource.Text.Contains("public class") = False Then
+            txtDest.Text = "You forgot your Model ..."
+            Return
+        End If
+
+        Dim modelName = txtSource.Lines.Where(Function(x) x.Contains("public class ")).FirstOrDefault.Trim.Split(" ").LastOrDefault
+        Dim props = txtSource.Lines.Where(Function(x) x.Contains("public ") And x.Contains(" class ") = False).ToList
+        modelName = Regex.Replace(modelName, "model", "", RegexOptions.IgnoreCase).Trim
+
+        Dim dialogId = $"cbo{StrConv(modelName.ToLower, VbStrConv.ProperCase)}"
+        Dim cols As New List(Of String)
+
+        For i = 0 To props.Take(2).Count - 1
+            Dim line = props(i).Trim
+            If String.IsNullOrWhiteSpace(line) Then Continue For
+            Dim arr = line.Split(" ")
+            Dim type = arr(1).Trim.ToLower
+            Dim fieldname = arr(2).Trim
+
+            cols.Add(fieldname)
+        Next
+
+
+        txtDest2.Text = <![CDATA[
+            let comsumerid = createDropdownSelect($(`select[name=comsumerid]`), "/{controller}/{action}/", "idField", "displayField");
+
+            ShowSwalLoader()
+
+            $.when(
+                comsumerid.init()
+            ).done(()=>{
+                CloseSwalLoader()
+            })
+
+        ]]>.Value.Trim.Replace("comsumerid", dialogId).Replace("idField", cols(0)).Replace("displayField", cols(1))
+
+
+
         Dim l1 As New List(Of String)
+        l1.Add(<![CDATA[ 
+function cboBankCodes(ele) {
+    var ele = typeof (ele) == 'string' ? $(ele) : ele
+    return $.ajax({
+        url: "/{controller}/{action}/",
+        type: "GET",
+        contentType: "application/json;charset=UTF-8",
+        dataType: "json",
+        complete: function (jqXHR, textStatus) {
+
+        },
+        success: function (response, textStatus, jqXHR) {
+            ele.empty()
+            if (response != null && response.length > 0) {
+                response.forEach((e) => {
+                    var disp = `${e.name.trim()}}`
+                    var opt = new Option(e.code.trim(), e.code.trim());
+                    ele.append(opt);
+                })
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+
+        }
+    });
+} 
+]]>.Value.Trim)
+
         l1.Add(<![CDATA[ 
             function loadAjaxEmployeeCboList() {
                 $('#employeeid').empty();
@@ -6831,6 +6771,10 @@ var model = {
     closeDialog: function() {
         this.data = null;
     },
+    isClean: function(){
+        // method to check if form is clean or not
+        return true;
+    },
     onFillData: function(js) {
         // fill form with data        
     },
@@ -6871,6 +6815,147 @@ var table = {
         Dim tableId = $"{StrConv(modelName.ToLower, VbStrConv.ProperCase)}Table"
         Dim formId = $"{StrConv(modelName.ToLower, VbStrConv.ProperCase)}Form"
 
+        Dim haveDateMask As Boolean = False
+        Dim haveSelect2 As Boolean = False
+
+        Dim formGen As New List(Of String)
+        Dim scriptGen As New List(Of String)
+
+        formGen.Add(<![CDATA[]]>.Value)
+
+        ' generate table
+        For i = 0 To props.Count - 1
+            Dim line = props(i).Trim
+            If String.IsNullOrWhiteSpace(line) Then Continue For
+            Dim arr = line.Split(" ")
+            Dim type = arr(1).Trim.ToLower
+            Dim fieldname = arr(2).Trim
+
+            Select Case True
+                Case type = "string" And Not type.Contains("[]")
+                    formGen.Add(<![CDATA[
+                    <div class="form-group">
+                        <label>consumerid</label>
+                        <input type="text" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid">
+                    </div>
+                    ]]>.Value.Replace("consumerid", fieldname))
+
+                Case type = "bool", type = "int" And (fieldname.StartsWith("is") Or fieldname.EndsWith("flag") Or fieldname.Contains("enable") Or fieldname.Contains("disable"))
+                    formGen.Add(<![CDATA[
+                    <div class="form-group">
+                        <label>consumerid</label>
+                        <div class="custom-control custom-checkbox">
+                            <input class="custom-control-input" type="checkbox" id="chkconsumerid" name="consumerid">
+                            <label for="chkconsumerid" class="custom-control-label">consumerid</label>
+                        </div>
+                    </div>
+                    ]]>.Value.Replace("consumerid", fieldname))
+
+                Case type.Contains("int"), type.Contains("decimal"), type.Contains("double"), type.Contains("list"),
+                     type.Contains("[]") And Not type.Contains("byte")
+
+                    If type.Contains("list") Or type.Contains("[]") Then
+                        ' dropdown
+                        formGen.Add(<![CDATA[
+                        <div class="form-group">
+                            <label>consumerid</label>
+                            <select class="form-control select2" style="width: 100%;" name="consumerid" id="cboconsumerid">
+                            </select>
+                        </div>
+                        ]]>.Value.Replace("consumerid", fieldname))
+
+                        scriptGen.Add(<![CDATA[
+                        $(`#cboconsumerid`).select2({
+                            placeholder: {
+                                id: '-1',               // the value of the option
+                                text: 'Select option'
+                            },
+                            allowClear: true,
+                            // tags: true,              // for text drop down (non id field)
+                            // parent: $(`.modal`)      // 
+                        })
+                        ]]>.Value.Replace("consumerid", fieldname))
+                        haveSelect2 = True
+                    Else
+                        ' normal
+                        formGen.Add(<![CDATA[
+                        <div class="form-group">
+                            <label>consumerid</label>
+                            <input type="number" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid">
+                        </div>
+                        ]]>.Value.Replace("consumerid", fieldname))
+                    End If
+
+                Case type.StartsWith("date")
+
+                    formGen.Add(<![CDATA[
+                        <div class="form-group">
+                            <label>consumerid</label>
+                            <div class="input-group date" id="dtconsumerid" data-target-input="nearest">
+                                <input type="text" class="form-control datetimepicker-input" data-target="#dtconsumerid" placeholder="MM/DD/YYYY" id="txtconsumerid" name="consumerid" data-inputmask-alias="datetime" data-inputmask-inputformat="mm/dd/yyyy" data-mask />
+                                <div class="input-group-append" data-target="#dtconsumerid" data-toggle="datetimepicker">
+                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    ]]>.Value.Replace("consumerid", fieldname))
+
+                    scriptGen.Add(<![CDATA[
+                        $('#dtconsumerid').datetimepicker({
+                            defaultDate: new Date(),
+                            format: 'MM/DD/YYYY',
+                        });
+                        ]]>.Value.Replace("consumerid", fieldname))
+
+                Case type.StartsWith("byte[]")
+
+            End Select
+
+            Debug.Print("")
+        Next
+
+        If haveDateMask Then
+            scriptGen.Add(<![CDATA[
+                        $('[data-mask]').inputmask()
+                        ]]>.Value)
+        End If
+
+        If haveSelect2 Then
+            scriptGen.Add(<![CDATA[
+                        $(document).on('select2:open', (e) => {
+                            document.querySelector('.select2-search__field').focus();
+                        });
+                        ]]>.Value)
+        End If
+
+        Dim source = <![CDATA[
+
+<form autocomplete="off" id="formId">
+    <div class="modal fade" id="modalId" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <i class="fas fa-file-signature"></i> Add or Edit Form
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    // content
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default"> <i class="fas fa-thumbs-down"></i> Close</button>
+                    <button type="button" class="btn btn-success"> <i class="fas fa-thumbs-up"></i> Save</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+</form>
+
+        ]]>.Value.Replace("formId", formId).Replace("modalId", dialogId).Replace("// content", String.Join(vbCrLf, formGen.Select(Function(x) x.Trim)).Trim)
+
         Dim js = <![CDATA[
 
 
@@ -6878,6 +6963,345 @@ var table = {
 
         ]]>.Value
 
+
+        txtDest.Text = source 'String.Join(vbCrLf, formGen.Select(Function(x) x.Trim)).Trim
+        txtDest2.Text = String.Join(vbCrLf, scriptGen.Select(Function(x) x.Trim)).Trim
+
+    End Sub
+
+    Private Sub UseChoicesJSToolStripMenuItem_CheckedChanged(sender As Object, e As EventArgs) Handles UseChoicesJSToolStripMenuItem.CheckedChanged
+        UseChoicesJSToolStripMenuItem.Image = IIf(UseChoicesJSToolStripMenuItem.Checked, My.Resources.check_box, My.Resources.check_box_uncheck)
+    End Sub
+
+    Private Sub ToolStripButton4_ButtonClick(sender As Object, e As EventArgs) Handles ToolStripButton4.ButtonClick
+
+        If txtSource.Text.Contains("public class") = False Then
+            txtDest.Text = "You forgot your Model ..."
+            Return
+        End If
+
+        Dim modelName = txtSource.Lines.Where(Function(x) x.Contains("public class ")).FirstOrDefault.Trim.Split(" ").LastOrDefault
+        Dim props = txtSource.Lines.Where(Function(x) x.Contains("public ") And x.Contains(" class ") = False).ToList
+
+        Dim l1 As New List(Of String)
+        Dim l2 As New List(Of String)
+
+        'l1.Add(<![CDATA[ @using LIBCORE.Models; ]]>.Value)
+        'l1.Add(<![CDATA[ @model MeterBrandModel ]]>.Value.Replace("MeterBrandModel", modelName))
+
+        l1.Add(<![CDATA[  
+@section css {
+    <!-- section rendered css -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/searchbuilder/1.7.1/css/searchBuilder.dataTables.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.0.2/css/buttons.dataTables.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/datetime/1.5.2/css/dataTables.dateTime.min.css" />
+}
+]]>.Value)
+
+        Dim lh As New List(Of String)
+        Dim lr As New List(Of String)
+        Dim dp As New List(Of String)
+
+        For i = 0 To props.Count - 1
+
+            Dim v = props(i).Trim
+            If String.IsNullOrWhiteSpace(v) Then Continue For
+            Dim ch = v.Split(" ")
+
+            Dim ddt = ch(1).Trim
+            Dim field = ch(2).Trim
+
+            lh.Add(<![CDATA[ <th>METER BRAND</th> ]]>.Value.Replace("METER BRAND", field.ToUpper))
+
+            'lr.Add(<![CDATA[ <td>@item.brand (<i class="bi bi-pencil-square"></i> edit) </td> ]]>.Value.Replace("brand", field.ToLower))
+            lr.Add(<![CDATA[ <td>@item.brand</td> ]]>.Value.Replace("brand", field.ToLower))
+
+            dp.Add(<![CDATA[ $('#brand').val(js['brand']); ]]>.Value.Replace("brand", field))
+
+        Next
+
+        l1.Add(<![CDATA[
+<table id="mytable" class="table table-striped table-hover table-bordered">
+    <thead class="bg-secondary text-white">
+        <tr><TH_HEADER></tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.Brands != null)
+        {
+            @foreach (MeterBrandModel item in ViewBag.Brands)
+            {
+                <tr class="editBtn" data-id="@item.id" data-js="@Json.Serialize(item).ToString()" data-bs-toggle="modal" data-bs-target="#mymodal">
+                    <TD_DATA>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+]]>.Value.Replace("mytable", $"{modelName}Table").Replace("ViewBag.Brands", $"ViewBag.{modelName}").Replace("MeterBrandModel", modelName).Replace("mymodal", $"{modelName}Modal").
+    Replace("<TH_HEADER>", String.Join(vbCrLf, lh)).
+    Replace("<TD_DATA>", String.Join(vbCrLf, lr)))
+
+
+        l1.Add(<![CDATA[
+@section Scripts{
+    <!-- section rendered script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/searchbuilder/1.7.1/js/dataTables.searchBuilder.js"></script>
+    <script src="https://cdn.datatables.net/searchbuilder/1.7.1/js/searchBuilder.dataTables.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.2/js/dataTables.buttons.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.dataTables.js"></script>
+    <script src="https://cdn.datatables.net/datetime/1.5.2/js/dataTables.dateTime.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            
+            // initialize datatable
+            $('#mytable').DataTable({
+                // ... other DataTable options
+                stateSave: true,
+                // Event handler for row hover
+                rowCallback: function (row, data, index) {
+                    $(row).hover(function () {
+                        $(this).css('cursor', 'pointer');
+                    }, function () {
+                        $(this).css('cursor', 'default');
+                    });
+                }
+
+            });
+
+            // on edit clicked
+            $('#mytable').on('click', '.editBtn', function () {
+                var js = $(this).data('js');
+                $('#MeterBrandModelFormBody').attr('data-js', JSON.stringify(js));
+                $('#MeterBrandModelForm')[0].reset();
+                // generated content
+                <EDIT_VAL>
+            });
+
+        });
+    </script>
+}
+
+]]>.Value.Replace("mytable", $"{modelName}Table").Replace("MeterBrandModelFormBody", $"{modelName}FormBody").Replace("<EDIT_VAL>", String.Join(vbCrLf, dp)))
+
+        l1.Add("")
+
+        txtDest.Text = String.Join(vbCrLf, l1)
+
+    End Sub
+
+    Private Sub DatatablesBootstrap4ToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles DatatablesBootstrap4ToolStripMenuItem.Click
+
+
+        If txtSource.Text.Contains("public class") = False Then
+            txtDest.Text = "You forgot your Model ..."
+            Return
+        End If
+
+        Dim modelName = txtSource.Lines.Where(Function(x) x.Contains("public class ")).FirstOrDefault.Trim.Split(" ").LastOrDefault
+        Dim props = txtSource.Lines.Where(Function(x) x.Contains("public ") And x.Contains(" class ") = False).ToList
+        modelName = Regex.Replace(modelName, "model", "", RegexOptions.IgnoreCase).Trim
+
+        Dim dialogId = $"{StrConv(modelName.ToLower, VbStrConv.ProperCase)}Modal"
+        Dim tableId = $"{StrConv(modelName.ToLower, VbStrConv.ProperCase)}Table"
+        Dim formId = $"{StrConv(modelName.ToLower, VbStrConv.ProperCase)}Form"
+
+        Dim css = <![CDATA[
+@section css {
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/Content/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+}
+
+]]>.Value.Trim
+
+        Dim js = <![CDATA[
+@section scripts {
+    <!-- DataTables -->
+    <script src="~/Content/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/Content/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/Content/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/Content/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <!-- DataTables Plugins -->
+    <script src="~/Content/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/Content/plugins/jszip/jszip.min.js"></script>
+    <script src="~/Content/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/Content/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+}
+]]>.Value.Trim
+
+        Dim tableHeaders As New List(Of String)
+        Dim datatableColumn As New List(Of String)
+
+        ' generate table
+        For i = 0 To props.Count - 1
+            Dim line = props(i).Trim
+            If String.IsNullOrWhiteSpace(line) Then Continue For
+            Dim arr = line.Split(" ")
+            Dim type = arr(1).Trim.ToLower
+            Dim fieldname = arr(2).Trim
+
+            tableHeaders.Add($"<th>{StrConv(fieldname, VbStrConv.ProperCase)}</th>")
+
+            datatableColumn.Add(<![CDATA[{ data: "column", autoWidth: true, searchable: true, orderable: true, },]]>.Value.Replace("column", fieldname))
+
+            Debug.Print("")
+        Next
+
+        Dim tableGen As New List(Of String)
+
+        Dim html1 = <![CDATA[
+<div class="table-responsive" style="min-height: 65vh;">
+    <table class="table table-hover table-sm" id="tableId" style="width:100%">
+        <thead>
+            <tr class="">
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+            <tr>
+                <th></th>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+]]>.Value.Replace("tableId", tableId).Replace("<th></th>", String.Join(vbCrLf, tableHeaders))
+
+        Dim html3 = <![CDATA[]]>.Value
+
+        Dim html2 = <![CDATA[
+
+function createFunctionName(tableId) {
+    let el = typeof (tableId) == 'string' ? $(`#${tableId}`) : tableId
+    var table = {
+        tableId: tableId,
+        init: function() {
+            this.data = null;
+            this.url = null;
+            this.table = el;
+
+            // initialize datatable
+            this.table.DataTable().destroy();
+            this.datatable = this.table.DataTable({
+                initComplete: function (settings, json) {
+            
+                },
+                drawCallback: function (settings) {
+            
+                },
+                rowCallback: function (row, data, index) {
+                    $(row).hover(function () {
+                        $(this).css('cursor', 'pointer');
+                    }, function () {
+                        $(this).css('cursor', 'default');
+                    });
+                },
+                stateSave: false,
+                responsive: true,
+                autoWidth: true,
+                ordering: true,
+                order: [[1, "desc"]], // index based
+                paging: true,
+                pageLength: 5,
+                lengthChange: true,
+                lengthMenu: [
+                    [5, 10, 30, 50, -1],
+                    [" 5", 10, 30, 50, "All"]
+                ],
+                // data: , name: , orderable: , autoWidth: , width: , className: 'text-center' , "visible":false
+                columns: [
+                    // column_list
+                ],
+                columnDefs: [
+             
+                ],
+                buttons: [
+                    {
+                        extend: 'copy',
+                        className: 'btn btn-secondary btn-sm buttons-html5 copy-button', // Custom class for Copy button
+                        text: '<i class="fas fa-copy"></i> Copy' // Custom text and icon
+                    },
+                    {
+                        extend: 'csv',
+                        className: 'btn btn-secondary btn-sm csv-button', // Custom class for CSV button
+                        text: '<i class="fas fa-file-csv"></i> CSV'
+                    },
+                    {
+                        extend: 'excel',
+                        className: 'btn btn-secondary btn-sm excel-button', // Custom class for Excel button
+                        text: '<i class="fas fa-file-excel"></i> Excel'
+                    },
+                    {
+                        extend: 'pdf',
+                        className: 'btn btn-secondary btn-sm pdf-button', // Custom class for PDF button
+                        text: '<i class="fas fa-file-pdf"></i> PDF'
+                    },
+                    {
+                        extend: 'print',
+                        className: 'btn btn-secondary btn-sm print-button', // Custom class for Print button
+                        text: '<i class="fas fa-print"></i> Print'
+                    },
+                    {
+                        extend: 'colvis',
+                        className: 'btn btn-secondary btn-sm colvis-button', // Custom class for Column Visibility button
+                        text: '<i class="fas fa-eye"></i> Column Visibility'
+                    }
+                ]
+            })
+            
+            this.datatable.buttons().container().appendTo(`#${tableId}_wrapper .col-md-6:eq(0)`);            
+            this.datatable.clear();
+            this.datatable.draw();
+        },
+        loadData: function(url, onInitCallback, onCompleteCallback) {
+            this.data = null;
+            this.url = url;
+            if (typeof (onInitCallback) == 'function') { onInitCallback() }
+            return $.ajax({
+                url: url,
+                type: "GET",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                complete: function (jqXHR, textStatus) {
+                    if (typeof (onCompleteCallback) == 'function') { onCompleteCallback(jqXHR, textStatus) }
+                },
+                success: function (response, textStatus, jqXHR) {
+                    if (response != null && response.length > 0) {
+                        this.data = response;
+                        this.setData(this.data)
+                    }
+                }.bind(this),
+                error: function (jqXHR, textStatus, errorThrown) {
+
+                }
+            });
+
+        },
+        setData: function(data) {
+            this.datatable.clear(); 
+            this.datatable.rows.add(data); 
+            this.datatable.draw(); 
+        },
+    }
+    return table;
+}
+
+]]>.Value.Replace("createFunctionName", $"create{tableId}").Replace("// column_list", String.Join(vbCrLf, datatableColumn)).Trim
+
+        txtDest.Text = html1
+        txtDest2.Text = html2
 
     End Sub
 End Class

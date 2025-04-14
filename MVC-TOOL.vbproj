@@ -199,6 +199,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\check_box_uncheck.png" />
+    <None Include="Resources\check_box.png" />
     <Content Include="Shlyapnikova-Application-Pencil.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
