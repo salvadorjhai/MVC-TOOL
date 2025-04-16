@@ -6800,11 +6800,10 @@ var table = {
         txtDest.Text = js.Trim
     End Sub
 
-    Private Sub ModalPopupBS46xToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ModalPopupBS46xToolStripMenuItem.Click
-
+    Function NewPageData()
         If txtSource.Text.Contains("public class") = False Then
             txtDest.Text = "You forgot your Model ..."
-            Return
+            Return Nothing
         End If
 
         Dim modelName = txtSource.Lines.Where(Function(x) x.Contains("public class ")).FirstOrDefault.Trim.Split(" ").LastOrDefault
@@ -6814,6 +6813,20 @@ var table = {
         Dim dialogId = $"{StrConv(modelName.ToLower, VbStrConv.ProperCase)}Modal"
         Dim tableId = $"{StrConv(modelName.ToLower, VbStrConv.ProperCase)}Table"
         Dim formId = $"{StrConv(modelName.ToLower, VbStrConv.ProperCase)}Form"
+
+        Return {modelName, props, dialogId, tableId, formId}.ToList
+    End Function
+
+    Private Sub ModalPopupBS46xToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ModalPopupBS46xToolStripMenuItem.Click
+
+        Dim ds = NewPageData()
+        If IsNothing(ds) Then Return
+
+        Dim modelName = ds(0)
+        Dim props = ds(1)
+        Dim dialogId = ds(2)
+        Dim tableId = ds(3)
+        Dim formId = ds(4)
 
         Dim haveDateMask As Boolean = False
         Dim haveSelect2 As Boolean = False
@@ -6943,8 +6956,8 @@ var table = {
                     // content
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-default"> <i class="fas fa-thumbs-down"></i> Close</button>
-                    <button type="button" class="btn btn-success"> <i class="fas fa-thumbs-up"></i> Save</button>
+                    <button type="button" class="btn btn-default" data-action="close"> <i class="fas fa-thumbs-down"></i> Close</button>
+                    <button type="button" class="btn btn-success" data-action="save"> <i class="fas fa-thumbs-up"></i> Save</button>
                 </div>
             </div>
             <!-- /.modal-content -->
@@ -7303,5 +7316,259 @@ function createFunctionName(tableId) {
         txtDest.Text = html1
         txtDest2.Text = html2
 
+    End Sub
+
+    Private Sub JSPageFunctionsToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles JSPageFunctionsToolStripMenuItem.Click
+
+        Dim ds = NewPageData()
+        If IsNothing(ds) Then Return
+
+        Dim modelName = ds(0)
+        Dim props = ds(1)
+        Dim dialogId = ds(2)
+        Dim tableId = ds(3)
+        Dim formId = ds(4)
+
+
+        txtDest.Text = <![CDATA[
+function pagescript() {
+    /*
+    * form functions
+    */
+    let table = {}
+
+    function init() {
+        // listiner , initializer
+
+        $(document).on("click", "[data-action=add]", function (e) {
+            onAddClick()
+        })
+        $(document).on("click", "[data-action=edit]", function (e) {
+            onEditClick()
+        })
+        $(document).on("click", "[data-action=delete]", function (e) {
+            onDeleteClick()
+        })
+        $(document).on("click", "[data-action=close]", function (e) {
+            hideDialog()
+        })
+        $(document).on("click", "[data-action=save]", function (e) {
+            onSaveClick()
+        })
+        $(document).on("dblclick", "#trx_table", function (e) {
+            console.log("double click")
+        })
+
+    }
+
+    function onAddClick() {
+        // button clicked
+        // verify if allowed
+        // show dialog
+        console.log("add")
+    }
+
+    function onEditClick(id) {
+        // button clicked
+        // verify if allowed
+        // load id
+        // show dialog
+        console.log("edit")
+    }
+
+    function onDeleteClick(id) {
+        // button clicked
+        // verify if allowed
+        // verify id
+        // confirm dialog
+        console.log("delete")
+    }
+
+    function onSaveClick() {
+        // button clicked
+        // validate data
+        // save data
+        console.log("save")
+    }
+
+    function onResetClick() {
+        // button clicked
+        // reset data
+    }
+
+    function showDialog() {
+
+    }
+
+    function hideDialog() {
+        console.log("hide")
+    }
+
+    function fillData(data) {
+        // fill form data    
+    }
+
+    function isDirty() {
+        // compare data to form content
+        return false;
+    }
+
+    function isValid() {
+        return false;
+    }
+
+    /*
+     * Table Functions
+     */
+
+    function initTable() {
+        // datatable initializer
+        console.log("initTable")
+
+        // other table functions
+        initSingleRowSelect(table, (data) => {
+            $(`[data-action=edit]`)[0].disabled = data.length == 0
+            $(`[data-action=delete]`)[0].disabled = data.length == 0
+        })
+
+        // load table data
+        getTableData()
+
+    }
+
+    function getTableData(q) {
+        ShowSwalLoader();
+
+        return $.ajax({
+            url: "/{controller}/{action}/",
+            type: "GET",
+            contentType: "application/json;charset=UTF-8",
+            dataType: "json",
+            complete: function (jqXHR, textStatus) {
+                if (textStatus != "error") {
+                    setTimeout(() => {
+                        CloseSwalLoader();
+                    }, 800);
+                }
+            },
+            success: function (response, textStatus, jqXHR) {
+                if (response != null && response.length > 0) {
+                    setTableData(response)
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                swal("Error!", "Something went wrong with the request...", "error");
+                return;
+            }
+        });
+    }
+
+    function setTableData(data) {
+        table.clear();
+        table.rows.add(data);
+        table.draw();
+    }
+
+    init()
+    initTable()
+}
+
+        ]]>.Value.Trim
+    End Sub
+
+    Private Sub JSObjectLiteralToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles JSObjectLiteralToolStripMenuItem.Click
+        txtDest.Text = <![CDATA[
+function pagescript() {
+    let pg = {
+
+        /*
+         * form functions
+         */
+
+        init: function() {
+            // listiner , initializer
+            this.initTable()
+        },
+    
+        onAddClick: function() {
+            // button clicked
+            // verify if allowed
+            // show dialog
+        },
+    
+        onEditClick: function(id) {
+            // button clicked
+            // verify if allowed
+            // load id
+            // show dialog
+        },
+    
+        onDeleteClick: function(id) {
+            // button clicked
+            // verify if allowed
+            // verify id
+            // confirm dialog
+        },
+    
+        onSaveClick: function() {
+            // button clicked
+            // validate data
+            // save data
+        },
+    
+        onResetClick: function() {
+            // button clicked
+            // reset data
+        },
+    
+        showDialog: function() {
+    
+        },
+    
+        hideDialog: function() {
+    
+        },
+    
+        fillData: function(data) {
+            // fill form data    
+        },
+    
+        isDirty: function() {
+            // compare data to form content
+            return false;
+        },
+    
+        isValid: function() {
+            return false;
+        },
+    
+        /*
+         * Table Functions
+         */
+    
+        initTable: function() {
+            // datatable initializer
+            console.log("initTable")
+            this.getTableData()
+        },
+
+        getTableData: function(q) {
+            // ajax call
+            console.log("getTableData")
+            this.setTableData()
+        },
+    
+        setTableData: function(data) {
+            console.log("setTableData")            
+        },
+    }
+    
+    return pg;
+}
+
+let app = pagescript()
+app.init()
+
+        ]]>.Value.Trim
     End Sub
 End Class

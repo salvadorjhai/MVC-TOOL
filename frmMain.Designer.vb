@@ -70,6 +70,8 @@ Partial Class frmMain
         Me.Select2AjaxToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.BsSuggestToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
+        Me.ToolStripButton4 = New System.Windows.Forms.ToolStripSplitButton()
+        Me.DatatablesBootstrap4ToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.txtSource = New System.Windows.Forms.RichTextBox()
         Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
         Me.TabControl1 = New System.Windows.Forms.TabControl()
@@ -94,8 +96,8 @@ Partial Class frmMain
         Me.optCommandTimeout = New System.Windows.Forms.ToolStripTextBox()
         Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripButton7 = New System.Windows.Forms.ToolStripButton()
-        Me.ToolStripButton4 = New System.Windows.Forms.ToolStripSplitButton()
-        Me.DatatablesBootstrap4ToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.JSPageFunctionsToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.JSObjectLiteralToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -194,7 +196,7 @@ Partial Class frmMain
         '
         'ToolStripButton3
         '
-        Me.ToolStripButton3.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DefaultToolStripMenuItem, Me.ModalPopupToolStripMenuItem, Me.ModalPopup2TupleToolStripMenuItem, Me.ToolStripSeparator4, Me.BlankModalToolStripMenuItem, Me.HtmlTagHelpersOnlyToolStripMenuItem, Me.Select2ViewBagToolStripMenuItem, Me.ToolStripSeparator5, Me.UseChoicesJSToolStripMenuItem, Me.ModalPopupcjTemplateToolStripMenuItem, Me.ToolStripMenuItem1, Me.ToolStripMenuItem2, Me.ModalPopupBS46xToolStripMenuItem, Me.ToolStripSeparator8, Me.InFormDynamicTableToolStripMenuItem, Me.TabsGeneratorToolStripMenuItem, Me.ToolStripSeparator7, Me.DynamicMultiInputToolStripMenuItem, Me.LoremImpsumToolStripMenuItem, Me.ToolStripSeparator9, Me.DatasetDummyToolStripMenuItem, Me.AccordionToolStripMenuItem, Me.ToolStripSeparator11, Me.JSControllerObjectLiteralToolStripMenuItem})
+        Me.ToolStripButton3.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DefaultToolStripMenuItem, Me.ModalPopupToolStripMenuItem, Me.ModalPopup2TupleToolStripMenuItem, Me.ToolStripSeparator4, Me.BlankModalToolStripMenuItem, Me.HtmlTagHelpersOnlyToolStripMenuItem, Me.Select2ViewBagToolStripMenuItem, Me.ToolStripSeparator5, Me.UseChoicesJSToolStripMenuItem, Me.ModalPopupcjTemplateToolStripMenuItem, Me.ToolStripMenuItem1, Me.ToolStripMenuItem2, Me.ModalPopupBS46xToolStripMenuItem, Me.ToolStripSeparator8, Me.InFormDynamicTableToolStripMenuItem, Me.TabsGeneratorToolStripMenuItem, Me.ToolStripSeparator7, Me.DynamicMultiInputToolStripMenuItem, Me.LoremImpsumToolStripMenuItem, Me.ToolStripSeparator9, Me.DatasetDummyToolStripMenuItem, Me.AccordionToolStripMenuItem, Me.ToolStripSeparator11, Me.JSControllerObjectLiteralToolStripMenuItem, Me.JSObjectLiteralToolStripMenuItem, Me.JSPageFunctionsToolStripMenuItem})
         Me.ToolStripButton3.Image = CType(resources.GetObject("ToolStripButton3.Image"), System.Drawing.Image)
         Me.ToolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripButton3.Name = "ToolStripButton3"
@@ -394,6 +396,21 @@ Partial Class frmMain
         '
         Me.ToolStripSeparator2.Name = "ToolStripSeparator2"
         Me.ToolStripSeparator2.Size = New System.Drawing.Size(6, 25)
+        '
+        'ToolStripButton4
+        '
+        Me.ToolStripButton4.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DatatablesBootstrap4ToolStripMenuItem})
+        Me.ToolStripButton4.Image = CType(resources.GetObject("ToolStripButton4.Image"), System.Drawing.Image)
+        Me.ToolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripButton4.Name = "ToolStripButton4"
+        Me.ToolStripButton4.Size = New System.Drawing.Size(129, 22)
+        Me.ToolStripButton4.Text = "Datatable Builder"
+        '
+        'DatatablesBootstrap4ToolStripMenuItem
+        '
+        Me.DatatablesBootstrap4ToolStripMenuItem.Name = "DatatablesBootstrap4ToolStripMenuItem"
+        Me.DatatablesBootstrap4ToolStripMenuItem.Size = New System.Drawing.Size(200, 22)
+        Me.DatatablesBootstrap4ToolStripMenuItem.Text = "Datatables (Bootstrap 4)"
         '
         'txtSource
         '
@@ -610,20 +627,17 @@ Partial Class frmMain
         Me.ToolStripButton7.Size = New System.Drawing.Size(64, 22)
         Me.ToolStripButton7.Text = "INSERT"
         '
-        'ToolStripButton4
+        'JSPageFunctionsToolStripMenuItem
         '
-        Me.ToolStripButton4.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DatatablesBootstrap4ToolStripMenuItem})
-        Me.ToolStripButton4.Image = CType(resources.GetObject("ToolStripButton4.Image"), System.Drawing.Image)
-        Me.ToolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.ToolStripButton4.Name = "ToolStripButton4"
-        Me.ToolStripButton4.Size = New System.Drawing.Size(129, 22)
-        Me.ToolStripButton4.Text = "Datatable Builder"
+        Me.JSPageFunctionsToolStripMenuItem.Name = "JSPageFunctionsToolStripMenuItem"
+        Me.JSPageFunctionsToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
+        Me.JSPageFunctionsToolStripMenuItem.Text = "JS - Page Function Pattern"
         '
-        'DatatablesBootstrap4ToolStripMenuItem
+        'JSObjectLiteralToolStripMenuItem
         '
-        Me.DatatablesBootstrap4ToolStripMenuItem.Name = "DatatablesBootstrap4ToolStripMenuItem"
-        Me.DatatablesBootstrap4ToolStripMenuItem.Size = New System.Drawing.Size(200, 22)
-        Me.DatatablesBootstrap4ToolStripMenuItem.Text = "Datatables (Bootstrap 4)"
+        Me.JSObjectLiteralToolStripMenuItem.Name = "JSObjectLiteralToolStripMenuItem"
+        Me.JSObjectLiteralToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
+        Me.JSObjectLiteralToolStripMenuItem.Text = "JS - Object Literal Pattern"
         '
         'frmMain
         '
@@ -727,4 +741,6 @@ Partial Class frmMain
     Friend WithEvents ModalPopupBS46xToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ToolStripButton4 As ToolStripSplitButton
     Friend WithEvents DatatablesBootstrap4ToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents JSPageFunctionsToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents JSObjectLiteralToolStripMenuItem As ToolStripMenuItem
 End Class
