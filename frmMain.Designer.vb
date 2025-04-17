@@ -62,6 +62,8 @@ Partial Class frmMain
         Me.AccordionToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator11 = New System.Windows.Forms.ToolStripSeparator()
         Me.JSControllerObjectLiteralToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.JSObjectLiteralToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.JSPageFunctionsToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripButton2 = New System.Windows.Forms.ToolStripSplitButton()
         Me.GETToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.FormPOSTToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -84,7 +86,6 @@ Partial Class frmMain
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
         Me.ToolStrip2 = New System.Windows.Forms.ToolStrip()
         Me.ToolStripLabel1 = New System.Windows.Forms.ToolStripLabel()
-        Me.txtSQLConnectionString = New System.Windows.Forms.ToolStripTextBox()
         Me.ToolStripButton9 = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripButton6 = New System.Windows.Forms.ToolStripButton()
         Me.btnConnect = New System.Windows.Forms.ToolStripButton()
@@ -96,8 +97,7 @@ Partial Class frmMain
         Me.optCommandTimeout = New System.Windows.Forms.ToolStripTextBox()
         Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripButton7 = New System.Windows.Forms.ToolStripButton()
-        Me.JSPageFunctionsToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.JSObjectLiteralToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.txtSQLConnectionString = New System.Windows.Forms.ToolStripComboBox()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -346,6 +346,18 @@ Partial Class frmMain
         Me.JSControllerObjectLiteralToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
         Me.JSControllerObjectLiteralToolStripMenuItem.Text = "JS - Controller (Object Literal)"
         '
+        'JSObjectLiteralToolStripMenuItem
+        '
+        Me.JSObjectLiteralToolStripMenuItem.Name = "JSObjectLiteralToolStripMenuItem"
+        Me.JSObjectLiteralToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
+        Me.JSObjectLiteralToolStripMenuItem.Text = "JS - Object Literal Pattern"
+        '
+        'JSPageFunctionsToolStripMenuItem
+        '
+        Me.JSPageFunctionsToolStripMenuItem.Name = "JSPageFunctionsToolStripMenuItem"
+        Me.JSPageFunctionsToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
+        Me.JSPageFunctionsToolStripMenuItem.Text = "JS - Page Function Pattern"
+        '
         'ToolStripButton2
         '
         Me.ToolStripButton2.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.GETToolStripMenuItem, Me.FormPOSTToolStripMenuItem, Me.FormPOSTJSToolStripMenuItem, Me.DatatableGETToolStripMenuItem, Me.Select2AjaxToolStripMenuItem, Me.BsSuggestToolStripMenuItem})
@@ -359,37 +371,37 @@ Partial Class frmMain
         'GETToolStripMenuItem
         '
         Me.GETToolStripMenuItem.Name = "GETToolStripMenuItem"
-        Me.GETToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
+        Me.GETToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
         Me.GETToolStripMenuItem.Text = "GET"
         '
         'FormPOSTToolStripMenuItem
         '
         Me.FormPOSTToolStripMenuItem.Name = "FormPOSTToolStripMenuItem"
-        Me.FormPOSTToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
+        Me.FormPOSTToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
         Me.FormPOSTToolStripMenuItem.Text = "Form POST"
         '
         'FormPOSTJSToolStripMenuItem
         '
         Me.FormPOSTJSToolStripMenuItem.Name = "FormPOSTJSToolStripMenuItem"
-        Me.FormPOSTJSToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
+        Me.FormPOSTJSToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
         Me.FormPOSTJSToolStripMenuItem.Text = "Form POST (JS)"
         '
         'DatatableGETToolStripMenuItem
         '
         Me.DatatableGETToolStripMenuItem.Name = "DatatableGETToolStripMenuItem"
-        Me.DatatableGETToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
+        Me.DatatableGETToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
         Me.DatatableGETToolStripMenuItem.Text = "Datatable GET"
         '
         'Select2AjaxToolStripMenuItem
         '
         Me.Select2AjaxToolStripMenuItem.Name = "Select2AjaxToolStripMenuItem"
-        Me.Select2AjaxToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
+        Me.Select2AjaxToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
         Me.Select2AjaxToolStripMenuItem.Text = "Select2 Ajax"
         '
         'BsSuggestToolStripMenuItem
         '
         Me.BsSuggestToolStripMenuItem.Name = "BsSuggestToolStripMenuItem"
-        Me.BsSuggestToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
+        Me.BsSuggestToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
         Me.BsSuggestToolStripMenuItem.Text = "bsSuggest"
         '
         'ToolStripSeparator2
@@ -530,16 +542,8 @@ Partial Class frmMain
         'ToolStripLabel1
         '
         Me.ToolStripLabel1.Name = "ToolStripLabel1"
-        Me.ToolStripLabel1.Size = New System.Drawing.Size(106, 22)
-        Me.ToolStripLabel1.Text = "Connection String:"
-        '
-        'txtSQLConnectionString
-        '
-        Me.txtSQLConnectionString.Font = New System.Drawing.Font("Segoe UI", 9.0!)
-        Me.txtSQLConnectionString.Name = "txtSQLConnectionString"
-        Me.txtSQLConnectionString.Size = New System.Drawing.Size(250, 25)
-        Me.txtSQLConnectionString.Text = "Provider=MSOLEDBSQL;Password=sa;Persist Security Info=True;User ID=sa;Initial Cat" &
-    "alog=ebs;Data Source=DESKTOP-ABGBBCK"
+        Me.ToolStripLabel1.Size = New System.Drawing.Size(72, 22)
+        Me.ToolStripLabel1.Text = "Connection:"
         '
         'ToolStripButton9
         '
@@ -548,6 +552,7 @@ Partial Class frmMain
         Me.ToolStripButton9.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripButton9.Name = "ToolStripButton9"
         Me.ToolStripButton9.Size = New System.Drawing.Size(23, 22)
+        Me.ToolStripButton9.ToolTipText = "Edit connection string"
         '
         'ToolStripButton6
         '
@@ -556,6 +561,7 @@ Partial Class frmMain
         Me.ToolStripButton6.Name = "ToolStripButton6"
         Me.ToolStripButton6.Size = New System.Drawing.Size(54, 22)
         Me.ToolStripButton6.Text = "Build"
+        Me.ToolStripButton6.ToolTipText = "Build connection string"
         '
         'btnConnect
         '
@@ -570,6 +576,7 @@ Partial Class frmMain
         '
         Me.cboTable.Name = "cboTable"
         Me.cboTable.Size = New System.Drawing.Size(200, 25)
+        Me.cboTable.ToolTipText = "Select Table/Views"
         '
         'btnEditor
         '
@@ -578,6 +585,7 @@ Partial Class frmMain
         Me.btnEditor.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.btnEditor.Name = "btnEditor"
         Me.btnEditor.Size = New System.Drawing.Size(23, 22)
+        Me.btnEditor.ToolTipText = "Edit script"
         '
         'btnGenerateFromTable
         '
@@ -624,20 +632,15 @@ Partial Class frmMain
         Me.ToolStripButton7.Image = CType(resources.GetObject("ToolStripButton7.Image"), System.Drawing.Image)
         Me.ToolStripButton7.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripButton7.Name = "ToolStripButton7"
-        Me.ToolStripButton7.Size = New System.Drawing.Size(64, 22)
+        Me.ToolStripButton7.Size = New System.Drawing.Size(63, 22)
         Me.ToolStripButton7.Text = "INSERT"
         '
-        'JSPageFunctionsToolStripMenuItem
+        'txtSQLConnectionString
         '
-        Me.JSPageFunctionsToolStripMenuItem.Name = "JSPageFunctionsToolStripMenuItem"
-        Me.JSPageFunctionsToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
-        Me.JSPageFunctionsToolStripMenuItem.Text = "JS - Page Function Pattern"
-        '
-        'JSObjectLiteralToolStripMenuItem
-        '
-        Me.JSObjectLiteralToolStripMenuItem.Name = "JSObjectLiteralToolStripMenuItem"
-        Me.JSObjectLiteralToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
-        Me.JSObjectLiteralToolStripMenuItem.Text = "JS - Object Literal Pattern"
+        Me.txtSQLConnectionString.Name = "txtSQLConnectionString"
+        Me.txtSQLConnectionString.Size = New System.Drawing.Size(500, 25)
+        Me.txtSQLConnectionString.Text = "Provider=MSOLEDBSQL;Password=sa;Persist Security Info=True;User ID=sa;Initial Cat" &
+    "alog=ebs;Data Source=DESKTOP-ABGBBCK"
         '
         'frmMain
         '
@@ -719,7 +722,6 @@ Partial Class frmMain
     Friend WithEvents ToolStrip2 As ToolStrip
     Friend WithEvents UseChoicesJSToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ToolStripLabel1 As ToolStripLabel
-    Friend WithEvents txtSQLConnectionString As ToolStripTextBox
     Friend WithEvents ToolStripButton6 As ToolStripButton
     Friend WithEvents ToolStripSeparator10 As ToolStripSeparator
     Friend WithEvents ToolStripButton7 As ToolStripButton
@@ -743,4 +745,5 @@ Partial Class frmMain
     Friend WithEvents DatatablesBootstrap4ToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents JSPageFunctionsToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents JSObjectLiteralToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents txtSQLConnectionString As ToolStripComboBox
 End Class

@@ -1,11 +1,11 @@
-﻿Imports System.ComponentModel
-Imports System.Data.OleDb
-Imports System.Reflection
-Imports System.Security.Cryptography
-Imports System.Text
+﻿Imports System.Data.OleDb
 Imports System.Text.RegularExpressions
+Imports System.IO
 
 Public Class frmMain
+
+    Dim connHistory As New HashSet(Of String)
+
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath)
         Me.CenterToScreen()
@@ -15,6 +15,10 @@ Public Class frmMain
             Catch ex As Exception
             End Try
         End If
+        If File.Exists(".\connhistory") Then
+            connHistory = New HashSet(Of String)(File.ReadAllLines(".\connhistory"))
+        End If
+        txtSQLConnectionString.Items.AddRange(connHistory.ToArray)
     End Sub
 
     Private Sub DefaultToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles DefaultToolStripMenuItem.Click
@@ -6382,11 +6386,36 @@ Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}
     End Sub
 
     Private Sub ToolStripButton6_Click(sender As Object, e As EventArgs) Handles ToolStripButton6.Click
-        Using frmSQL = New frmSQL
-            If frmSQL.ShowDialog = DialogResult.OK Then
-                txtSQLConnectionString.Text = frmSQL.connectionString
-            End If
-        End Using
+        ' Create an empty .udl file
+        Dim udlFile As String = Path.Combine(Path.GetTempPath(), "temp.udl")
+        File.WriteAllText(udlFile, "")
+
+        ' Open the .udl file using default system handler (this opens the Data Link UI)
+        Dim proc As Process = Process.Start(New ProcessStartInfo(udlFile) With {.WindowStyle = ProcessWindowStyle.Normal})
+        proc.WaitForExit()
+
+        'Console.WriteLine("Waiting for user to close the Data Link dialog...")
+
+        '' Poll until the file write time changes (indicating the user saved something)
+        'While File.GetLastWriteTime(udlFile) = lastWriteTime
+        '    Thread.Sleep(500)
+        'End While
+
+        '' Small delay to allow writing to complete
+        'Thread.Sleep(500)
+
+        ' Read the connection string (last line in the UDL file)
+        Dim cnn = File.ReadAllLines(udlFile).LastOrDefault()
+
+        File.Delete(udlFile)
+
+        If String.IsNullOrWhiteSpace(cnn) = False Then txtSQLConnectionString.Text = cnn
+
+        'Using frmSQL = New frmSQL
+        '    If frmSQL.ShowDialog = DialogResult.OK Then
+        '        txtSQLConnectionString.Text = frmSQL.connectionString
+        '    End If
+        'End Using
     End Sub
 
     Private Sub ToolStripButton7_Click(sender As Object, e As EventArgs) Handles ToolStripButton7.Click
@@ -6437,19 +6466,34 @@ Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}
     End Sub
 
     Private Sub btnConnect_Click(sender As Object, e As EventArgs) Handles btnConnect.Click
-        Using conn = New OleDbConnection(txtSQLConnectionString.Text)
-            conn.Open()
+        Me.UseWaitCursor = True
+        Application.DoEvents()
+        Try
+            Using conn = New OleDbConnection(txtSQLConnectionString.Text)
+                conn.Open()
 
-            Dim tbls = conn.GetSchema("Tables")
-            cboTable.Items.Clear()
-            cboTable.Items.AddRange(tbls.Rows.OfType(Of DataRow).Where(Function(x) x("TABLE_TYPE").ToString = "TABLE").Select(Function(x) x("TABLE_NAME").ToString).ToArray)
+                Dim tbls = conn.GetSchema("Tables")
+                cboTable.Items.Clear()
+                cboTable.Items.AddRange(tbls.Rows.OfType(Of DataRow).Where(Function(x) x("TABLE_TYPE").ToString = "TABLE").Select(Function(x) x("TABLE_NAME").ToString).ToArray)
+                cboTable.Items.Add("--------------------")
+                cboTable.Items.AddRange(tbls.Rows.OfType(Of DataRow).Where(Function(x) x("TABLE_TYPE").ToString = "VIEW").Select(Function(x) x("TABLE_NAME").ToString).ToArray)
 
-        End Using
+            End Using
+
+            If connHistory.Add(txtSQLConnectionString.Text) Then
+                File.WriteAllLines(".\connhistory", connHistory)
+            End If
+        Catch ex As Exception
+            MsgBox(ex.Message, vbExclamation)
+        End Try
+        Application.DoEvents()
+        Me.UseWaitCursor = False
     End Sub
 
     Private Sub btnGenerateFromTable_Click(sender As Object, e As EventArgs) Handles btnGenerateFromTable.Click
 
         If String.IsNullOrWhiteSpace(cboTable.Text) Then Return
+        If cboTable.Text.StartsWith("----") Then Return
 
         Dim tblName = cboTable.Text
         Dim l2 As New List(Of String)
@@ -6541,7 +6585,7 @@ public class PositionModel
     Function GetCsNetType(dataType As Integer) As String
         ' Map OleDbType to C# data type
         Select Case dataType
-            Case CInt(OleDbType.Char), CInt(OleDbType.VarWChar), CInt(OleDbType.LongVarWChar)
+            Case CInt(OleDbType.Char), CInt(OleDbType.WChar), CInt(OleDbType.VarWChar), CInt(OleDbType.LongVarWChar)
                 Return "string"
             Case CInt(OleDbType.Integer), CInt(OleDbType.UnsignedTinyInt), CInt(OleDbType.UnsignedInt), CInt(OleDbType.SmallInt), CInt(OleDbType.UnsignedSmallInt)
                 Return "int"
