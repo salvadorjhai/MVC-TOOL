@@ -19,6 +19,8 @@ Public Class frmMain
             connHistory = New HashSet(Of String)(File.ReadAllLines(".\connhistory"))
         End If
         txtSQLConnectionString.Items.AddRange(connHistory.ToArray)
+
+        CheckForIllegalCrossThreadCalls = False
     End Sub
 
     Private Sub DefaultToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles DefaultToolStripMenuItem.Click
@@ -6465,29 +6467,33 @@ Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}
 
     End Sub
 
-    Private Sub btnConnect_Click(sender As Object, e As EventArgs) Handles btnConnect.Click
-        Me.UseWaitCursor = True
-        Application.DoEvents()
-        Try
-            Using conn = New OleDbConnection(txtSQLConnectionString.Text)
-                conn.Open()
+    Private Async Sub btnConnect_Click(sender As Object, e As EventArgs) Handles btnConnect.Click
+        Await Task.Run(Sub()
+                           Me.UseWaitCursor = True
+                           ToolStrip1.Enabled = False
+                           ToolStrip2.Enabled = False
+                           Try
+                               Using conn = New OleDbConnection(txtSQLConnectionString.Text)
+                                   conn.Open()
 
-                Dim tbls = conn.GetSchema("Tables")
-                cboTable.Items.Clear()
-                cboTable.Items.AddRange(tbls.Rows.OfType(Of DataRow).Where(Function(x) x("TABLE_TYPE").ToString = "TABLE").Select(Function(x) x("TABLE_NAME").ToString).ToArray)
-                cboTable.Items.Add("--------------------")
-                cboTable.Items.AddRange(tbls.Rows.OfType(Of DataRow).Where(Function(x) x("TABLE_TYPE").ToString = "VIEW").Select(Function(x) x("TABLE_NAME").ToString).ToArray)
+                                   Dim tbls = conn.GetSchema("Tables")
+                                   cboTable.Items.Clear()
+                                   cboTable.Items.AddRange(tbls.Rows.OfType(Of DataRow).Where(Function(x) x("TABLE_TYPE").ToString = "TABLE").Select(Function(x) x("TABLE_NAME").ToString).ToArray)
+                                   cboTable.Items.Add("--------------------")
+                                   cboTable.Items.AddRange(tbls.Rows.OfType(Of DataRow).Where(Function(x) x("TABLE_TYPE").ToString = "VIEW").Select(Function(x) x("TABLE_NAME").ToString).ToArray)
 
-            End Using
+                               End Using
 
-            If connHistory.Add(txtSQLConnectionString.Text) Then
-                File.WriteAllLines(".\connhistory", connHistory)
-            End If
-        Catch ex As Exception
-            MsgBox(ex.Message, vbExclamation)
-        End Try
-        Application.DoEvents()
-        Me.UseWaitCursor = False
+                               If connHistory.Add(txtSQLConnectionString.Text) Then
+                                   File.WriteAllLines(".\connhistory", connHistory)
+                               End If
+                           Catch ex As Exception
+                               MsgBox(ex.Message, vbExclamation)
+                           End Try
+                           ToolStrip1.Enabled = True
+                           ToolStrip2.Enabled = True
+                           Me.UseWaitCursor = False
+                       End Sub)
     End Sub
 
     Private Sub btnGenerateFromTable_Click(sender As Object, e As EventArgs) Handles btnGenerateFromTable.Click
