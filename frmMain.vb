@@ -5,6 +5,7 @@ Imports System.IO
 Public Class frmMain
 
     Dim connHistory As New HashSet(Of String)
+    Dim connpath As String = ""
 
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath)
@@ -15,8 +16,10 @@ Public Class frmMain
             Catch ex As Exception
             End Try
         End If
-        If File.Exists(".\connhistory") Then
-            connHistory = New HashSet(Of String)(File.ReadAllLines(".\connhistory"))
+
+        connpath = Path.Combine(Application.StartupPath, "connhistory")
+        If File.Exists(connpath) Then
+            connHistory = New HashSet(Of String)(File.ReadAllLines(connpath))
         End If
         txtSQLConnectionString.Items.AddRange(connHistory.ToArray)
 
@@ -6485,7 +6488,7 @@ Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}
                                End Using
 
                                If connHistory.Add(txtSQLConnectionString.Text) Then
-                                   File.WriteAllLines(".\connhistory", connHistory)
+                                   File.WriteAllLines(connpath, connHistory)
                                End If
                            Catch ex As Exception
                                MsgBox(ex.Message, vbExclamation)
