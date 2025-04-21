@@ -2560,7 +2560,7 @@ public class TownModelFull : TownModel
 
             $.when(
                 ShowSwalLoader()
-                comsumerid.init()
+                cbocomsumerid.init()
             ).done(()=>{
                 CloseSwalLoader()
             })
