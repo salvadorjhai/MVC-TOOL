@@ -1,6 +1,7 @@
 ﻿Imports System.Data.OleDb
 Imports System.Text.RegularExpressions
 Imports System.IO
+Imports System.Linq
 
 Public Class frmMain
 
@@ -2532,16 +2533,15 @@ public class TownModelFull : TownModel
 
     Private Sub Select2AjaxToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles Select2AjaxToolStripMenuItem.Click
 
-        If txtSource.Text.Contains("public class") = False Then
-            txtDest.Text = "You forgot your Model ..."
-            Return
-        End If
+        Dim ds = NewPageData()
+        If IsNothing(ds) Then Return
 
-        Dim modelName = txtSource.Lines.Where(Function(x) x.Contains("public class ")).FirstOrDefault.Trim.Split(" ").LastOrDefault
-        Dim props = txtSource.Lines.Where(Function(x) x.Contains("public ") And x.Contains(" class ") = False).ToList
-        modelName = Regex.Replace(modelName, "model", "", RegexOptions.IgnoreCase).Trim
+        Dim modelName = ds(0)
+        Dim props As List(Of String) = ds(1)
+        Dim dialogId = ds(2)
+        Dim tableId = ds(3)
+        Dim formId = ds(4)
 
-        Dim dialogId = $"cbo{StrConv(modelName.ToLower, VbStrConv.ProperCase)}"
         Dim cols As New List(Of String)
 
         For i = 0 To props.Take(2).Count - 1
@@ -2556,21 +2556,22 @@ public class TownModelFull : TownModel
 
 
         txtDest2.Text = <![CDATA[
-            let comsumerid = createDropdownSelect($(`select[name=comsumerid]`), "/{controller}/{action}/", "idField", "displayField");
-
-            ShowSwalLoader()
+            let cbocomsumerid = createDropdownSelect($(`select[name=comsumerid]`), "/{controller}/{action}/", "idField", "displayField");
 
             $.when(
+                ShowSwalLoader()
                 comsumerid.init()
             ).done(()=>{
                 CloseSwalLoader()
             })
 
-        ]]>.Value.Trim.Replace("comsumerid", dialogId).Replace("idField", cols(0)).Replace("displayField", cols(1))
+        ]]>.Value.Trim.Replace("comsumerid", modelName).Replace("idField", cols(0)).Replace("displayField", cols(1))
 
 
 
         Dim l1 As New List(Of String)
+        l1.Add("** you can use this code below or use the code on the script tab")
+        l1.Add("")
         l1.Add(<![CDATA[ 
 function cboBankCodes(ele) {
     var ele = typeof (ele) == 'string' ? $(ele) : ele
@@ -2597,7 +2598,9 @@ function cboBankCodes(ele) {
         }
     });
 } 
-]]>.Value.Trim)
+]]>.Value.Trim.Replace("BankCodes", modelName))
+
+        l1.Add("")
 
         l1.Add(<![CDATA[ 
             function loadAjaxEmployeeCboList() {
@@ -6876,7 +6879,7 @@ var table = {
         If IsNothing(ds) Then Return
 
         Dim modelName = ds(0)
-        Dim props = ds(1)
+        Dim props As List(Of String) = ds(1)
         Dim dialogId = ds(2)
         Dim tableId = ds(3)
         Dim formId = ds(4)
@@ -7219,7 +7222,7 @@ var table = {
 
             tableHeaders.Add($"<th>{StrConv(fieldname, VbStrConv.ProperCase)}</th>")
 
-            datatableColumn.Add(<![CDATA[{ data: "column", autoWidth: true, searchable: true, orderable: true, },]]>.Value.Replace("column", fieldname))
+            datatableColumn.Add(<![CDATA[{ data: "column", title: "column", autoWidth: true, searchable: true, orderable: true, },]]>.Value.Replace("column", fieldname))
 
             Debug.Print("")
         Next

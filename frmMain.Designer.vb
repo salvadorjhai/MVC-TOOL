@@ -86,6 +86,7 @@ Partial Class frmMain
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
         Me.ToolStrip2 = New System.Windows.Forms.ToolStrip()
         Me.ToolStripLabel1 = New System.Windows.Forms.ToolStripLabel()
+        Me.txtSQLConnectionString = New System.Windows.Forms.ToolStripComboBox()
         Me.ToolStripButton9 = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripButton6 = New System.Windows.Forms.ToolStripButton()
         Me.btnConnect = New System.Windows.Forms.ToolStripButton()
@@ -97,7 +98,6 @@ Partial Class frmMain
         Me.optCommandTimeout = New System.Windows.Forms.ToolStripTextBox()
         Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripButton7 = New System.Windows.Forms.ToolStripButton()
-        Me.txtSQLConnectionString = New System.Windows.Forms.ToolStripComboBox()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -280,6 +280,7 @@ Partial Class frmMain
         '
         'ModalPopupBS46xToolStripMenuItem
         '
+        Me.ModalPopupBS46xToolStripMenuItem.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold)
         Me.ModalPopupBS46xToolStripMenuItem.Name = "ModalPopupBS46xToolStripMenuItem"
         Me.ModalPopupBS46xToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
         Me.ModalPopupBS46xToolStripMenuItem.Text = "Modal Popup (BS 4.6.x)"
@@ -354,6 +355,7 @@ Partial Class frmMain
         '
         'JSPageFunctionsToolStripMenuItem
         '
+        Me.JSPageFunctionsToolStripMenuItem.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold)
         Me.JSPageFunctionsToolStripMenuItem.Name = "JSPageFunctionsToolStripMenuItem"
         Me.JSPageFunctionsToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
         Me.JSPageFunctionsToolStripMenuItem.Text = "JS - Page Function Pattern"
@@ -371,37 +373,38 @@ Partial Class frmMain
         'GETToolStripMenuItem
         '
         Me.GETToolStripMenuItem.Name = "GETToolStripMenuItem"
-        Me.GETToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.GETToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.GETToolStripMenuItem.Text = "GET"
         '
         'FormPOSTToolStripMenuItem
         '
         Me.FormPOSTToolStripMenuItem.Name = "FormPOSTToolStripMenuItem"
-        Me.FormPOSTToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.FormPOSTToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.FormPOSTToolStripMenuItem.Text = "Form POST"
         '
         'FormPOSTJSToolStripMenuItem
         '
         Me.FormPOSTJSToolStripMenuItem.Name = "FormPOSTJSToolStripMenuItem"
-        Me.FormPOSTJSToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.FormPOSTJSToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.FormPOSTJSToolStripMenuItem.Text = "Form POST (JS)"
         '
         'DatatableGETToolStripMenuItem
         '
         Me.DatatableGETToolStripMenuItem.Name = "DatatableGETToolStripMenuItem"
-        Me.DatatableGETToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.DatatableGETToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.DatatableGETToolStripMenuItem.Text = "Datatable GET"
         '
         'Select2AjaxToolStripMenuItem
         '
+        Me.Select2AjaxToolStripMenuItem.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold)
         Me.Select2AjaxToolStripMenuItem.Name = "Select2AjaxToolStripMenuItem"
-        Me.Select2AjaxToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.Select2AjaxToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.Select2AjaxToolStripMenuItem.Text = "Select2 Ajax"
         '
         'BsSuggestToolStripMenuItem
         '
         Me.BsSuggestToolStripMenuItem.Name = "BsSuggestToolStripMenuItem"
-        Me.BsSuggestToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.BsSuggestToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.BsSuggestToolStripMenuItem.Text = "bsSuggest"
         '
         'ToolStripSeparator2
@@ -420,8 +423,9 @@ Partial Class frmMain
         '
         'DatatablesBootstrap4ToolStripMenuItem
         '
+        Me.DatatablesBootstrap4ToolStripMenuItem.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold)
         Me.DatatablesBootstrap4ToolStripMenuItem.Name = "DatatablesBootstrap4ToolStripMenuItem"
-        Me.DatatablesBootstrap4ToolStripMenuItem.Size = New System.Drawing.Size(200, 22)
+        Me.DatatablesBootstrap4ToolStripMenuItem.Size = New System.Drawing.Size(209, 22)
         Me.DatatablesBootstrap4ToolStripMenuItem.Text = "Datatables (Bootstrap 4)"
         '
         'txtSource
@@ -545,6 +549,13 @@ Partial Class frmMain
         Me.ToolStripLabel1.Size = New System.Drawing.Size(72, 22)
         Me.ToolStripLabel1.Text = "Connection:"
         '
+        'txtSQLConnectionString
+        '
+        Me.txtSQLConnectionString.Name = "txtSQLConnectionString"
+        Me.txtSQLConnectionString.Size = New System.Drawing.Size(500, 25)
+        Me.txtSQLConnectionString.Text = "Provider=MSOLEDBSQL;Password=sa;Persist Security Info=True;User ID=sa;Initial Cat" &
+    "alog=ebs;Data Source=DESKTOP-ABGBBCK"
+        '
         'ToolStripButton9
         '
         Me.ToolStripButton9.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
@@ -632,15 +643,8 @@ Partial Class frmMain
         Me.ToolStripButton7.Image = CType(resources.GetObject("ToolStripButton7.Image"), System.Drawing.Image)
         Me.ToolStripButton7.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripButton7.Name = "ToolStripButton7"
-        Me.ToolStripButton7.Size = New System.Drawing.Size(63, 22)
+        Me.ToolStripButton7.Size = New System.Drawing.Size(64, 22)
         Me.ToolStripButton7.Text = "INSERT"
-        '
-        'txtSQLConnectionString
-        '
-        Me.txtSQLConnectionString.Name = "txtSQLConnectionString"
-        Me.txtSQLConnectionString.Size = New System.Drawing.Size(500, 25)
-        Me.txtSQLConnectionString.Text = "Provider=MSOLEDBSQL;Password=sa;Persist Security Info=True;User ID=sa;Initial Cat" &
-    "alog=ebs;Data Source=DESKTOP-ABGBBCK"
         '
         'frmMain
         '
