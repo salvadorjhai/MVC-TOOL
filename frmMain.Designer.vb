@@ -96,6 +96,7 @@ Partial Class frmMain
         Me.ToolStripButton8 = New System.Windows.Forms.ToolStripDropDownButton()
         Me.optAnnotation = New System.Windows.Forms.ToolStripMenuItem()
         Me.optCommandTimeout = New System.Windows.Forms.ToolStripTextBox()
+        Me.optGenerateByHTMLHelper = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripButton7 = New System.Windows.Forms.ToolStripButton()
         Me.ToolStrip1.SuspendLayout()
@@ -373,38 +374,38 @@ Partial Class frmMain
         'GETToolStripMenuItem
         '
         Me.GETToolStripMenuItem.Name = "GETToolStripMenuItem"
-        Me.GETToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.GETToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
         Me.GETToolStripMenuItem.Text = "GET"
         '
         'FormPOSTToolStripMenuItem
         '
         Me.FormPOSTToolStripMenuItem.Name = "FormPOSTToolStripMenuItem"
-        Me.FormPOSTToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.FormPOSTToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
         Me.FormPOSTToolStripMenuItem.Text = "Form POST"
         '
         'FormPOSTJSToolStripMenuItem
         '
         Me.FormPOSTJSToolStripMenuItem.Name = "FormPOSTJSToolStripMenuItem"
-        Me.FormPOSTJSToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.FormPOSTJSToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
         Me.FormPOSTJSToolStripMenuItem.Text = "Form POST (JS)"
         '
         'DatatableGETToolStripMenuItem
         '
         Me.DatatableGETToolStripMenuItem.Name = "DatatableGETToolStripMenuItem"
-        Me.DatatableGETToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.DatatableGETToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
         Me.DatatableGETToolStripMenuItem.Text = "Datatable GET"
         '
         'Select2AjaxToolStripMenuItem
         '
         Me.Select2AjaxToolStripMenuItem.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold)
         Me.Select2AjaxToolStripMenuItem.Name = "Select2AjaxToolStripMenuItem"
-        Me.Select2AjaxToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.Select2AjaxToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
         Me.Select2AjaxToolStripMenuItem.Text = "Select2 Ajax"
         '
         'BsSuggestToolStripMenuItem
         '
         Me.BsSuggestToolStripMenuItem.Name = "BsSuggestToolStripMenuItem"
-        Me.BsSuggestToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.BsSuggestToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
         Me.BsSuggestToolStripMenuItem.Text = "bsSuggest"
         '
         'ToolStripSeparator2
@@ -610,7 +611,7 @@ Partial Class frmMain
         'ToolStripButton8
         '
         Me.ToolStripButton8.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.ToolStripButton8.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.optAnnotation, Me.optCommandTimeout})
+        Me.ToolStripButton8.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.optAnnotation, Me.optGenerateByHTMLHelper, Me.optCommandTimeout})
         Me.ToolStripButton8.Image = CType(resources.GetObject("ToolStripButton8.Image"), System.Drawing.Image)
         Me.ToolStripButton8.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripButton8.Name = "ToolStripButton8"
@@ -622,16 +623,27 @@ Partial Class frmMain
         Me.optAnnotation.Checked = True
         Me.optAnnotation.CheckOnClick = True
         Me.optAnnotation.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.optAnnotation.Image = Global.MVC_TOOL.My.Resources.Resources.check_box
         Me.optAnnotation.Name = "optAnnotation"
-        Me.optAnnotation.Size = New System.Drawing.Size(210, 22)
+        Me.optAnnotation.Size = New System.Drawing.Size(221, 22)
         Me.optAnnotation.Text = "Generate with Annotation"
         '
         'optCommandTimeout
         '
+        Me.optCommandTimeout.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.optCommandTimeout.Font = New System.Drawing.Font("Segoe UI", 9.0!)
         Me.optCommandTimeout.Name = "optCommandTimeout"
-        Me.optCommandTimeout.Size = New System.Drawing.Size(100, 23)
+        Me.optCommandTimeout.Size = New System.Drawing.Size(50, 23)
         Me.optCommandTimeout.Text = "25"
+        Me.optCommandTimeout.TextBoxTextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        '
+        'optGenerateByHTMLHelper
+        '
+        Me.optGenerateByHTMLHelper.CheckOnClick = True
+        Me.optGenerateByHTMLHelper.Image = Global.MVC_TOOL.My.Resources.Resources.check_box_uncheck
+        Me.optGenerateByHTMLHelper.Name = "optGenerateByHTMLHelper"
+        Me.optGenerateByHTMLHelper.Size = New System.Drawing.Size(221, 22)
+        Me.optGenerateByHTMLHelper.Text = "Generate with HTML Helper"
         '
         'ToolStripSeparator10
         '
@@ -750,4 +762,5 @@ Partial Class frmMain
     Friend WithEvents JSPageFunctionsToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents JSObjectLiteralToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents txtSQLConnectionString As ToolStripComboBox
+    Friend WithEvents optGenerateByHTMLHelper As ToolStripMenuItem
 End Class

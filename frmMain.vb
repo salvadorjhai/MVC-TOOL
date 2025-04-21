@@ -2555,24 +2555,48 @@ public class TownModelFull : TownModel
         Next
 
 
-        txtDest2.Text = <![CDATA[
-            let cbocomsumerid = createDropdownSelect($(`select[name=comsumerid]`), "/{controller}/{action}/", "idField", "displayField");
+        txtDest.Text = <![CDATA[
+<div class="form-group">
+    <label>consumerid</label>
+    <select class="form-control select2" style="width: 100%;" name="consumerid" id="cboconsumerid">
+    </select>
+</div>
+        ]]>.Value.Trim.Replace("consumerid", modelName).Replace("idField", cols(0)).Replace("displayField", cols(1))
+
+        Dim l1 As New List(Of String)
+        l1.Add("** you can use this code if you have the createDropdownSelect function")
+        l1.Add(<![CDATA[
+            // select
+            $(document).on('select2:open', `#cboconsumerid`, function (e) {
+                document.querySelector('.select2-search__field').focus();
+            });
+
+            $(`#cboconsumerid`).select2({
+                placeholder: {
+                    id: '-1',               // the value of the option
+                    text: 'Select option'
+                },
+                allowClear: true,
+                // tags: true,              // for text drop down (non id field)
+                // parent: $(`.modal`)      // 
+            })
+
+            let cboconsumerid = createDropdownSelect($(`select[name=consumerid]`), "/{controller}/{action}/", "idField", "displayField");
 
             $.when(
-                ShowSwalLoader()
-                cbocomsumerid.init()
+                ShowSwalLoader(),
+                cboconsumerid.init()
             ).done(()=>{
                 CloseSwalLoader()
             })
 
-        ]]>.Value.Trim.Replace("comsumerid", modelName).Replace("idField", cols(0)).Replace("displayField", cols(1))
+        ]]>.Value.Trim.Replace("consumerid", modelName).Replace("idField", cols(0)).Replace("displayField", cols(1)))
 
-
-
-        Dim l1 As New List(Of String)
-        l1.Add("** you can use this code below or use the code on the script tab")
         l1.Add("")
-        l1.Add(<![CDATA[ 
+        l1.Add("** or this one for more customization")
+        l1.Add("")
+
+        l1.Add(<![CDATA[                
 function cboBankCodes(ele) {
     var ele = typeof (ele) == 'string' ? $(ele) : ele
     return $.ajax({
@@ -2627,7 +2651,7 @@ function cboBankCodes(ele) {
             }        
 ]]>.Value.Trim)
 
-        txtDest.Text = String.Join(vbCrLf, l1)
+        txtDest2.Text = String.Join(vbCrLf, l1)
 
     End Sub
 
@@ -6888,9 +6912,13 @@ var table = {
         Dim haveSelect2 As Boolean = False
 
         Dim formGen As New List(Of String)
+        Dim formGen2 As New List(Of String) ' mvc
         Dim scriptGen As New List(Of String)
+        Dim scriptFillData As New List(Of String)
 
         formGen.Add(<![CDATA[]]>.Value)
+
+        formGen2.Add(<![CDATA[ @Html.ValidationSummary(false, "", new { @class = "text-danger" }) ]]>.Value)
 
         ' generate table
         For i = 0 To props.Count - 1
@@ -6903,6 +6931,13 @@ var table = {
             Select Case True
                 Case type = "string" And Not type.Contains("[]")
                     formGen.Add(<![CDATA[
+                    <div class="form-group">
+                        <label>consumerid</label>
+                        <input type="text" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid">
+                    </div>
+                    ]]>.Value.Replace("consumerid", fieldname))
+
+                    formGen2.Add(<![CDATA[
                     <div class="form-group">
                         <label>consumerid</label>
                         <input type="text" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid">
@@ -6923,7 +6958,7 @@ var table = {
                 Case type.Contains("int"), type.Contains("decimal"), type.Contains("double"), type.Contains("list"),
                      type.Contains("[]") And Not type.Contains("byte")
 
-                    If type.Contains("list") Or type.Contains("[]") Then
+                    If type.Contains("list") Or type.Contains("[]") Or (fieldname.EndsWith("id") And fieldname <> "id") Then
                         ' dropdown
                         formGen.Add(<![CDATA[
                         <div class="form-group">
@@ -6933,17 +6968,18 @@ var table = {
                         </div>
                         ]]>.Value.Replace("consumerid", fieldname))
 
-                        scriptGen.Add(<![CDATA[
-                        $(`#cboconsumerid`).select2({
-                            placeholder: {
-                                id: '-1',               // the value of the option
-                                text: 'Select option'
-                            },
-                            allowClear: true,
-                            // tags: true,              // for text drop down (non id field)
-                            // parent: $(`.modal`)      // 
-                        })
-                        ]]>.Value.Replace("consumerid", fieldname))
+                        'scriptGen.Add(<![CDATA[
+                        '$(`#cboconsumerid`).select2({
+                        '    placeholder: {
+                        '        id: '-1',               // the value of the option
+                        '        text: 'Select option'
+                        '    },
+                        '    allowClear: true,
+                        '    // tags: true,              // for text drop down (non id field)
+                        '    // parent: $(`.modal`)      // 
+                        '})
+                        ']]>.Value.Replace("consumerid", fieldname))
+
                         haveSelect2 = True
                     Else
                         ' normal
@@ -6991,9 +7027,20 @@ var table = {
 
         If haveSelect2 Then
             scriptGen.Add(<![CDATA[
-                        $(document).on('select2:open', (e) => {
+                        // select
+                        $(document).on('select2:open', function (e) {
                             document.querySelector('.select2-search__field').focus();
                         });
+
+                        $(`select.select2`).select2({
+                            placeholder: {
+                                id: '-1',
+                                text: 'Select option'
+                            },
+                            allowClear: true,
+                            // tags: true,              // for text drop down (non id field)
+                            parent: $(`.modal`)
+                        })
                         ]]>.Value)
         End If
 
@@ -7007,13 +7054,16 @@ var table = {
                     <h4 class="modal-title">
                         <i class="fas fa-file-signature"></i> Add or Edit Form
                     </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
                 </div>
                 <div class="modal-body">
                     // content
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-default" data-action="close"> <i class="fas fa-thumbs-down"></i> Close</button>
-                    <button type="button" class="btn btn-success" data-action="save"> <i class="fas fa-thumbs-up"></i> Save</button>
+                    <button type="button" class="btn btn-default text-primary" data-action="close"> <i class="fas fa-times"></i> Close</button>
+                    <button type="button" class="btn btn-primary" data-action="save"> <i class="fas fa-save"></i> Save</button>
                 </div>
             </div>
             <!-- /.modal-content -->
@@ -7040,6 +7090,14 @@ var table = {
 
     Private Sub UseChoicesJSToolStripMenuItem_CheckedChanged(sender As Object, e As EventArgs) Handles UseChoicesJSToolStripMenuItem.CheckedChanged
         UseChoicesJSToolStripMenuItem.Image = IIf(UseChoicesJSToolStripMenuItem.Checked, My.Resources.check_box, My.Resources.check_box_uncheck)
+    End Sub
+
+    Private Sub optAnnotation_Click(sender As Object, e As EventArgs) Handles optAnnotation.Click
+        optAnnotation.Image = IIf(optAnnotation.Checked, My.Resources.check_box, My.Resources.check_box_uncheck)
+    End Sub
+
+    Private Sub optGenerateByHTMLHelper_Click(sender As Object, e As EventArgs) Handles optGenerateByHTMLHelper.Click
+        optGenerateByHTMLHelper.Image = IIf(optGenerateByHTMLHelper.Checked, My.Resources.check_box, My.Resources.check_box_uncheck)
     End Sub
 
     Private Sub ToolStripButton4_ButtonClick(sender As Object, e As EventArgs) Handles ToolStripButton4.ButtonClick
@@ -7392,10 +7450,11 @@ function pagescript() {
     * form functions
     */
     let table = {}
+    let seldata = {}
 
     function init() {
         // listiner , initializer
-
+        // crud
         $(document).on("click", "[data-action=add]", function (e) {
             onAddClick()
         })
@@ -7405,31 +7464,63 @@ function pagescript() {
         $(document).on("click", "[data-action=delete]", function (e) {
             onDeleteClick()
         })
+        // dialog
         $(document).on("click", "[data-action=close]", function (e) {
             hideDialog()
         })
         $(document).on("click", "[data-action=save]", function (e) {
             onSaveClick()
         })
-        $(document).on("dblclick", "#trx_table", function (e) {
-            console.log("double click")
-        })
 
+        $(document).on("dblclick", "#trx_table", function (e) {
+            
+        })
+        // modal
+        $(document).on('shown.bs.modal', `.modal`, function (e) {
+            $(`form:has(.modal) input:visible`)[0].focus()
+        });
+        $(document).on('hidden.bs.modal', `.modal`, function (e) {
+                                   
+        });
+
+        // select
+        $(document).on('select2:open', function (e) {
+            document.querySelector('.select2-search__field').focus();
+        });
+
+        $(`select.select2`).select2({
+            placeholder: {
+                id: '-1',
+                text: 'Select option'
+            },
+            allowClear: true,
+            // tags: true,              // for text drop down (non id field)
+            parent: $(`.modal`)
+        })
+    }
+
+    function onItemClick(data) {
+        seldata = data[0]
     }
 
     function onAddClick() {
+        onResetClick()
         // button clicked
         // verify if allowed
         // show dialog
-        console.log("add")
+        $(`.modal h4`).html(`<i class="fas fa-file-signature"></i> Add New`)
+        showDialog()
     }
 
     function onEditClick(id) {
+        onResetClick()
         // button clicked
         // verify if allowed
         // load id
         // show dialog
-        console.log("edit")
+        $(`.modal h4`).html(`<i class="fas fa-file-signature"></i> Edit Details`)
+        fillData(seldata)
+        showDialog()
     }
 
     function onDeleteClick(id) {
@@ -7448,20 +7539,54 @@ function pagescript() {
     }
 
     function onResetClick() {
-        // button clicked
-        // reset data
+        $(`form:has(.modal)`)[0].reset()
+        $('form:has(.modal)').validate().resetForm();
+        $(`form:has(.modal) select.select2`).each((i, e) => {
+            $(e).val(null).trigger('change')
+        })
     }
 
     function showDialog() {
-
+        $(`.modal`).modal('show')
     }
 
     function hideDialog() {
-        console.log("hide")
+        $(`.modal`).modal('hide')
     }
 
     function fillData(data) {
-        // fill form data    
+        $(`form:has(.modal) input, form:has(.modal) select`).each((i, e) => {
+            const $el = $(e);
+            const tag = e.localName;
+            const type = (e.type || '').toLowerCase();
+            const name = e.name || '';
+
+            var v = getValue(data, e.name)
+            if (!v) return; // skip if no value found
+
+            if (tag === 'input') {
+                if (type === 'text') {
+                    $el.val(v.trim?.() || '');
+
+                } else if (type === 'number') {           
+                    $el.val(Number(v));
+
+                } else if (type === 'radio') {
+                    $(`input[name="${name}"][value="${v}"]`).prop('checked', true);
+
+                } else if (type === 'checkbox') {
+                    $el.prop('checked', !!v);
+
+                } else if (e.type.includes('date')) {
+                    $el.val(v.trim?.() || '');
+                }
+            } else if (tag === 'select') {
+                $el.val(v.trim?.() || '-1').trigger('change');
+
+            } else {
+
+            }
+        })    
     }
 
     function isDirty() {
@@ -7485,27 +7610,18 @@ function pagescript() {
         initSingleRowSelect(table, (data) => {
             $(`[data-action=edit]`)[0].disabled = data.length == 0
             $(`[data-action=delete]`)[0].disabled = data.length == 0
+            if (data?.length > 0 || 0) { onItemClick(data) }
         })
-
-        // load table data
-        getTableData()
-
     }
 
     function getTableData(q) {
-        ShowSwalLoader();
-
         return $.ajax({
             url: "/{controller}/{action}/",
             type: "GET",
             contentType: "application/json;charset=UTF-8",
             dataType: "json",
             complete: function (jqXHR, textStatus) {
-                if (textStatus != "error") {
-                    setTimeout(() => {
-                        CloseSwalLoader();
-                    }, 800);
-                }
+
             },
             success: function (response, textStatus, jqXHR) {
                 if (response != null && response.length > 0) {
@@ -7527,6 +7643,20 @@ function pagescript() {
 
     init()
     initTable()
+
+    // ajax loader
+    $.when(
+        ShowSwalLoader(),
+        // table
+        getTableData(),
+        // sample dropdown
+        // cboRevenueCenters($(`#revcenterid`))
+    ).done(() => {
+        setTimeout(() => {
+            CloseSwalLoader();
+        }, 800);
+    })
+
 }
 
         ]]>.Value.Trim
@@ -7627,4 +7757,5 @@ app.init()
 
         ]]>.Value.Trim
     End Sub
+
 End Class
