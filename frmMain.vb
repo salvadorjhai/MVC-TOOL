@@ -6516,6 +6516,7 @@ Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}
 
                                If connHistory.Add(txtSQLConnectionString.Text) Then
                                    File.WriteAllLines(connpath, connHistory)
+                                   txtSQLConnectionString.Items.Add(txtSQLConnectionString.Text)
                                End If
                            Catch ex As Exception
                                MsgBox(ex.Message, vbExclamation)
@@ -6918,7 +6919,12 @@ var table = {
 
         formGen.Add(<![CDATA[]]>.Value)
 
-        formGen2.Add(<![CDATA[ @Html.ValidationSummary(false, "", new { @class = "text-danger" }) ]]>.Value)
+        formGen2.Add(<![CDATA[ 
+            <div class="mb-2">
+            @Html.ValidationSummary(false, "", new { @class = "text-danger" }) 
+            <div class="alert alert-danger" id="ajaxResponseError" style="display:none;" hidden></div>
+            </div> 
+        ]]>.Value)
 
         ' generate table
         For i = 0 To props.Count - 1
@@ -6930,19 +6936,49 @@ var table = {
 
             Select Case True
                 Case type = "string" And Not type.Contains("[]")
-                    formGen.Add(<![CDATA[
-                    <div class="form-group">
-                        <label>consumerid</label>
-                        <input type="text" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid">
-                    </div>
-                    ]]>.Value.Replace("consumerid", fieldname))
+
+                    Dim l0 As New List(Of String)
+
+                    Select Case fieldname.ToLower
+                        Case "email"
+                            formGen.Add(<![CDATA[
+                                <div class="form-group">
+                                    <label>consumerid</label>
+                                    <input type="email" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid">
+                                </div>
+                                ]]>.Value.Replace("consumerid", fieldname))
+
+                            l0.Add(<![CDATA[  @Html.TextBoxFor(m => m.consumerid, new { @type = "email", @class = "form-control", @placeholder = Html.DisplayNameFor(m => m.consumerid) }) ]]>.Value)
+
+                        Case "pass", "password", "pwd", "syspassword"
+                            formGen.Add(<![CDATA[
+                                <div class="form-group">
+                                    <label>consumerid</label>
+                                    <input type="password" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid">
+                                </div>
+                                ]]>.Value.Replace("consumerid", fieldname))
+
+                            l0.Add(<![CDATA[  @Html.TextBoxFor(m => m.consumerid, new { @type = "password", @class = "form-control", @placeholder = Html.DisplayNameFor(m => m.consumerid) }) ]]>.Value)
+
+                        Case Else
+                            formGen.Add(<![CDATA[
+                                <div class="form-group">
+                                    <label>consumerid</label>
+                                    <input type="text" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid">
+                                </div>
+                                ]]>.Value.Replace("consumerid", fieldname))
+
+                            l0.Add(<![CDATA[  @Html.TextBoxFor(m => m.consumerid, new { @type = "text", @class = "form-control", @placeholder = Html.DisplayNameFor(m => m.consumerid) }) ]]>.Value)
+
+                    End Select
 
                     formGen2.Add(<![CDATA[
                     <div class="form-group">
-                        <label>consumerid</label>
-                        <input type="text" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid">
+                        @Html.LabelFor(m => m.consumerid, new { @class = "form-label" })
+                        <input>
+                        @Html.ValidationMessageFor(m => m.consumerid, "", new { @class = "text-danger" })
                     </div>
-                    ]]>.Value.Replace("consumerid", fieldname))
+                    ]]>.Value.Replace("<input>", String.Join("", l0)).Replace("consumerid", fieldname))
 
                 Case type = "bool", type = "int" And (fieldname.StartsWith("is") Or fieldname.EndsWith("flag") Or fieldname.Contains("enable") Or fieldname.Contains("disable"))
                     formGen.Add(<![CDATA[
@@ -6955,16 +6991,38 @@ var table = {
                     </div>
                     ]]>.Value.Replace("consumerid", fieldname))
 
+                    formGen2.Add(<![CDATA[
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.consumerid, new { @class = "form-label" })
+                        <div class="custom-control custom-checkbox">
+                            @Html.TextBoxFor(m => m.consumerid, new { @type="checkbox", @class = "custom-control-input" })                            
+                            @Html.LabelFor(m => m.consumerid, new { @class = "custom-control-label" })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.consumerid, "", new { @class = "text-danger" })
+                    </div>
+                    ]]>.Value.Replace("consumerid", fieldname))
+
                 Case type.Contains("int"), type.Contains("decimal"), type.Contains("double"), type.Contains("list"),
                      type.Contains("[]") And Not type.Contains("byte")
 
-                    If type.Contains("list") Or type.Contains("[]") Or (fieldname.EndsWith("id") And fieldname <> "id") Then
+                    If (fieldname.ToLower.EndsWith("id") And fieldname.ToLower <> "id") Or fieldname.ToLower.EndsWith("code") Or
+                        fieldname.ToLower.EndsWith("type") Or fieldname.ToLower.EndsWith("types") Or
+                        fieldname.ToLower.EndsWith("status") Or type.Contains("[]") Or type.Contains("list") Then
+
                         ' dropdown
                         formGen.Add(<![CDATA[
                         <div class="form-group">
                             <label>consumerid</label>
                             <select class="form-control select2" style="width: 100%;" name="consumerid" id="cboconsumerid">
                             </select>
+                        </div>
+                        ]]>.Value.Replace("consumerid", fieldname))
+
+                        formGen2.Add(<![CDATA[
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.consumerid, new { @class = "form-label" })
+                            @Html.DropDownListFor(m => m.consumerid, new SelectList(new List<string>()), new { @class = "form-control select2", @placeholder = "select option", @style="width: 100%;" })
+                            @Html.ValidationMessageFor(m => m.consumerid, "", new { @class = "text-danger" })
                         </div>
                         ]]>.Value.Replace("consumerid", fieldname))
 
@@ -6989,6 +7047,15 @@ var table = {
                             <input type="number" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid">
                         </div>
                         ]]>.Value.Replace("consumerid", fieldname))
+
+                        formGen2.Add(<![CDATA[
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.consumerid, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.consumerid, new { @type = "number", @class = "form-control", @placeholder = Html.DisplayNameFor(m => m.consumerid) })
+                            @Html.ValidationMessageFor(m => m.consumerid, "", new { @class = "text-danger" })
+                        </div>
+                        ]]>.Value.Replace("consumerid", fieldname))
+
                     End If
 
                 Case type.StartsWith("date")
@@ -7002,6 +7069,19 @@ var table = {
                                     <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                 </div>
                             </div>
+                        </div>
+                    ]]>.Value.Replace("consumerid", fieldname))
+
+                    formGen2.Add(<![CDATA[
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.consumerid, new { @class = "form-label" })
+                            <div class="input-group date" id="dtconsumerid" data-target-input="nearest">
+                                @Html.TextBoxFor(m => m.consumerid, new { @type = "text", @class = "form-control datetimepicker-input", @data_target="#dtconsumerid", @data_inputmask_alias="datetime", @data_inputmask_inputformat="mm/dd/yyyy", @placeholder = "MM/DD/YYYY", @data_mask = "" })
+                                <div class="input-group-append" data-target="#dtconsumerid" data-toggle="datetimepicker">
+                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                </div>
+                            </div>
+                            @Html.ValidationMessageFor(m => m.consumerid, "", new { @class = "text-danger" })
                         </div>
                     ]]>.Value.Replace("consumerid", fieldname))
 
@@ -7027,18 +7107,18 @@ var table = {
 
         If haveSelect2 Then
             scriptGen.Add(<![CDATA[
-                        // select
+                        // focus when opened
                         $(document).on('select2:open', function (e) {
                             document.querySelector('.select2-search__field').focus();
                         });
-
+                        // initialize select2
                         $(`select.select2`).select2({
                             placeholder: {
                                 id: '-1',
                                 text: 'Select option'
                             },
                             allowClear: true,
-                            // tags: true,              // for text drop down (non id field)
+                            // tags: true,              // for custom input
                             parent: $(`.modal`)
                         })
                         ]]>.Value)
@@ -7073,13 +7153,16 @@ var table = {
     <!-- /.modal -->
 </form>
 
-        ]]>.Value.Replace("formId", formId).Replace("modalId", dialogId).Replace("// content", String.Join(vbCrLf, formGen.Select(Function(x) x.Trim)).Trim)
+        ]]>.Value.Replace("formId", formId).Replace("modalId", dialogId)
+
+        If optGenerateByHTMLHelper.Checked Then
+            source = source.Replace("// content", String.Join(vbCrLf, formGen2.Select(Function(x) x.Trim))).Trim
+        Else
+            source = source.Replace("// content", String.Join(vbCrLf, formGen.Select(Function(x) x.Trim))).Trim
+        End If
 
         Dim js = <![CDATA[
-
-
-
-
+             
         ]]>.Value
 
 
