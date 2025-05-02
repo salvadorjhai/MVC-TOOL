@@ -6419,7 +6419,7 @@ Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}
 
     Private Sub ToolStripButton6_Click(sender As Object, e As EventArgs) Handles ToolStripButton6.Click
         ' Create an empty .udl file
-        Dim udlFile As String = Path.Combine(Path.GetTempPath(), "temp.udl")
+        Dim udlFile As String = ".\temp.udl"
         File.WriteAllText(udlFile, "")
 
         ' Open the .udl file using default system handler (this opens the Data Link UI)
@@ -6537,10 +6537,22 @@ Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}
         Dim l3 As New List(Of String)
         l3.Add("var dic = new Dictionary<string, object>();")
 
+        'Using cn = New OleDbConnection(txtSQLConnectionString.Text)
+        '    cn.Open()
+        '    Using cmd = cn.CreateCommand()
+        '        cmd.CommandText = cboTable.Text
+        '        Using reader = cmd.ExecuteReader
+        '            Dim dt2 = New DataTable()
+        '            dt2.Load(reader)
+        '            Debug.Print("")
+        '        End Using
+        '    End Using
+        'End Using
+
         Using conn = New OleDbConnection(txtSQLConnectionString.Text)
             conn.Open()
 
-            If cboTable.Text.Trim.ToLower.StartsWith("select ") Then
+            If cboTable.Text.Trim.ToLower.Contains("select ") Then
                 Using cmd As New OleDbCommand(cboTable.Text, conn)
                     cmd.CommandTimeout = Integer.Parse(optCommandTimeout.Text)
 
@@ -7686,10 +7698,15 @@ function pagescript() {
      */
 
     function initTable() {
-        // datatable initializer
-        console.log("initTable")
+        $('#trx_table').DataTable().destroy();
+        table = $("#trx_table").DataTable({
+            // todo: init datatable
+        })
 
-        // other table functions
+        table.buttons().container().appendTo('#trx_button_wrapper');
+        table.clear(); // Clear existing data
+        table.draw(); // Redraw the table
+
         initSingleRowSelect(table, (data) => {
             $(`[data-action=edit]`)[0].disabled = data.length == 0
             $(`[data-action=delete]`)[0].disabled = data.length == 0
