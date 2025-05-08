@@ -6535,6 +6535,7 @@ Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}
         Dim tblName = cboTable.Text
         Dim l2 As New List(Of String)
         Dim l3 As New List(Of String)
+        l3.Add("var data = JRaw.Parse(Request.PostBody());")
         l3.Add("var dic = new Dictionary<string, object>();")
 
         'Using cn = New OleDbConnection(txtSQLConnectionString.Text)
@@ -6962,15 +6963,35 @@ var table = {
 
                             l0.Add(<![CDATA[  @Html.TextBoxFor(m => m.consumerid, new { @type = "email", @class = "form-control", @placeholder = Html.DisplayNameFor(m => m.consumerid) }) ]]>.Value)
 
-                        Case "pass", "password", "pwd", "syspassword"
+                        Case "pass", "password", "pwd", "syspassword", "loginpwd"
                             formGen.Add(<![CDATA[
                                 <div class="form-group">
                                     <label>consumerid</label>
-                                    <input type="password" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid">
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid">
+                                        <span class="input-group-append">
+                                            <button type="button" class="btn btn-sm btn-default btn-flat" data-action="showpassword"> <i class="fas fa-eye"></i> </button>
+                                        </span>
+                                    </div>
                                 </div>
                                 ]]>.Value.Replace("consumerid", fieldname))
 
                             l0.Add(<![CDATA[  @Html.TextBoxFor(m => m.consumerid, new { @type = "password", @class = "form-control", @placeholder = Html.DisplayNameFor(m => m.consumerid) }) ]]>.Value)
+
+                            formGen2.Add(<![CDATA[
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.consumerid, new { @class = "form-label" })
+                                    <div class="input-group">
+                                        <input>
+                                        <span class="input-group-append">
+                                            <button type="button" class="btn btn-sm btn-default btn-flat" data-action="showpassword"> <i class="fas fa-eye"></i> </button>
+                                        </span>
+                                    </div>
+                                    @Html.ValidationMessageFor(m => m.consumerid, "", new { @class = "text-danger" })
+                                </div>
+                                ]]>.Value.Replace("<input>", String.Join("", l0)).Replace("consumerid", fieldname))
+
+                            Continue For
 
                         Case Else
                             formGen.Add(<![CDATA[
@@ -7574,8 +7595,8 @@ function pagescript() {
         $(document).on('shown.bs.modal', `.modal`, function (e) {
             $(`form:has(.modal) input:visible`)[0].focus()
         });
-        $(document).on('hidden.bs.modal', `.modal`, function (e) {
-                                   
+        $(document).on('hide.bs.modal', `.modal`, function (e) {
+            onResetClick()
         });
 
         // select
@@ -7627,13 +7648,51 @@ function pagescript() {
     }
 
     function onSaveClick() {
-        // button clicked
-        // validate data
-        // save data
-        console.log("save")
+        if (!isValid()) { return; }
+
+        var model = {
+
+        }
+
+        // compare data
+        var exists = $(`form:has(.modal)`).data('data')
+        if (exists != null) {
+            if (model.loginpwd.length == 0) { model.loginpwd = exists.loginpwd }
+            if (isShallowEqual(model, exists)) {
+                hideDialog()
+                return;
+            }
+        }
+
+        ShowSwalLoader()
+
+        return $.ajax({
+            url: exists == null ? `/{controller}/insert` : `/{controller}/{update}`,
+            type: "POST",
+            data: JSON.stringify(model),
+            contentType: "application/json;charset=UTF-8",
+            dataType: "json",
+            complete: function (jqXHR, textStatus) {
+                if (textStatus != 'error') {
+                    setTimeout(() => {
+                        CloseSwalLoader();
+                    }, 800);
+                }
+            },
+            success: function (response, textStatus, jqXHR) {
+                getTableData()
+                hideDialog()
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                swal("Error!", "Something went wrong with the request...", "error");
+                return;
+            }
+        });
+
     }
 
     function onResetClick() {
+        $(`form:has(.modal)`).data('data', null)
         $(`form:has(.modal)`)[0].reset()
         $('form:has(.modal)').validate().resetForm();
         $(`form:has(.modal) select.select2`).each((i, e) => {
@@ -7650,6 +7709,7 @@ function pagescript() {
     }
 
     function fillData(data) {
+        $(`form:has(.modal)`).data('data', data)
         $(`form:has(.modal) input, form:has(.modal) select`).each((i, e) => {
             const $el = $(e);
             const tag = e.localName;
@@ -7708,8 +7768,8 @@ function pagescript() {
         table.draw(); // Redraw the table
 
         initSingleRowSelect(table, (data) => {
-            $(`[data-action=edit]`)[0].disabled = data.length == 0
-            $(`[data-action=delete]`)[0].disabled = data.length == 0
+            if ($(`[data-action=edit]`).length > 0) $(`[data-action=edit]`)[0].disabled = data.length == 0
+            if ($(`[data-action=edit]`).length > 0) $(`[data-action=delete]`)[0].disabled = data.length == 0
             if (data?.length > 0 || 0) { onItemClick(data) }
         })
     }
