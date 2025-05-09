@@ -7657,7 +7657,6 @@ function pagescript() {
         // compare data
         var exists = $(`form:has(.modal)`).data('data')
         if (exists != null) {
-            if (model.loginpwd.length == 0) { model.loginpwd = exists.loginpwd }
             if (isShallowEqual(model, exists)) {
                 hideDialog()
                 return;
@@ -7680,6 +7679,7 @@ function pagescript() {
                 }
             },
             success: function (response, textStatus, jqXHR) {
+                toastr.success('Changes was saved successfuly', null, { timeOut: 1300 })
                 getTableData()
                 hideDialog()
             },
@@ -7750,7 +7750,62 @@ function pagescript() {
     }
 
     function isValid() {
-        return false;
+        return $(`form:has(.modal)`).valid()
+    }
+
+    function validator() {
+        var form = $(`form:has(.modal)`)
+        form.validate({
+            ignore: `:hidden, .ignore`,
+            errorElement: 'div', // or 'span' or any tag you want
+            errorClass: 'invalid-feedback', // Bootstrap-compatible
+            highlight: function (element) {
+                $(element).addClass('is-invalid');
+                if ($(element).hasClass('select2-hidden-accessible')) {
+                    $(element).next('.select2').find('.select2-selection').addClass('is-invalid');
+                }
+            },
+            unhighlight: function (element) {
+                $(element).removeClass('is-invalid');
+                if ($(element).hasClass('select2-hidden-accessible')) {
+                    $(element).next('.select2').find('.select2-selection').removeClass('is-invalid');
+                }
+            },
+            errorPlacement: function (error, element) {
+                if (element.closest('.input-group').length) {
+                    error.insertAfter(element.closest('.input-group')); // for inputs with icons
+
+                } else if (element.is(':checkbox') || element.is(':radio')) {
+                    error.appendTo(element.closest('.form-check, .form-group'));
+
+                } else if (element.hasClass('select2-hidden-accessible')) {
+                    error.insertAfter(element.next('.select2')); // place after select2 container
+
+                } else {
+                    error.insertAfter(element); // default
+
+                }
+            }
+        });
+
+        // additional rules
+        form.find(`input[name=workstationid]`).rules('add', {
+            required: true,
+            minlength: 3,
+            messages: {
+                required: "workstationid is required",
+                minlength: "Minimum 3 characters required",
+            }
+        });
+
+        // Remove error state when a selection is made
+        form.find(`select.select2`).on('select2:select select2:clear change', function () {
+            if ($(this).valid()) {
+                $(this).removeClass('is-invalid');
+                $(this).next('.select2').find('.select2-selection').removeClass('is-invalid');
+            }
+        });
+
     }
 
     /*
