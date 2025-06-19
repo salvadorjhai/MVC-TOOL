@@ -6553,7 +6553,7 @@ Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}
         Using conn = New OleDbConnection(txtSQLConnectionString.Text)
             conn.Open()
 
-            If cboTable.Text.Trim.ToLower.Contains("select ") Then
+            If cboTable.Text.Trim.ToLower.Contains("select ") Or cboTable.Text.Trim.ToLower.StartsWith("exec ") Then
                 Using cmd As New OleDbCommand(cboTable.Text, conn)
                     cmd.CommandTimeout = Integer.Parse(optCommandTimeout.Text)
 
@@ -6576,6 +6576,7 @@ Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}
                 tblName = Regex.Match(cboTable.Text, " from \[(.*?)\]", RegexOptions.IgnoreCase).Groups(1).Value.Trim
                 If String.IsNullOrWhiteSpace(tblName) Then tblName = Regex.Match(cboTable.Text, " from (.*?) ", RegexOptions.IgnoreCase).Groups(1).Value.Trim
                 If String.IsNullOrWhiteSpace(tblName) Then tblName = Regex.Match(cboTable.Text, " from (.*?)$", RegexOptions.IgnoreCase).Groups(1).Value.Trim
+                If String.IsNullOrWhiteSpace(tblName) Then tblName = Regex.Match(cboTable.Text, "exec (.*?) ", RegexOptions.IgnoreCase).Groups(1).Value.Trim
                 l3.Add("")
                 l3.Add(<![CDATA[var res = DB.InsertParam("_", dic, true);]]>.Value.Replace("_", tblName))
 
@@ -6671,12 +6672,19 @@ public class PositionModel
 
         ' Map OleDbType to C# data type
         Dim csType As String = GetCsNetTypeFromSchema(dataType)
-        Dim annotations As String = ""
-        If csType = "string" And optAnnotation.Checked Then
-            annotations = GetAnnotations(isNullable, maxLength)
+        Dim annotations As New List(Of String)
+
+        Dim propername As String = ConvertToPropertyName(columnName)
+        If propername <> columnName Then
+            annotations.Add($"   [JsonProperty(""{columnName}"")]" & vbCrLf)
         End If
+
+        If csType = "string" And optAnnotation.Checked Then
+            annotations.Add(GetAnnotations(isNullable, maxLength))
+        End If
+
         ' Build the property string in C# syntax
-        Dim propertyString As String = $"{annotations}   public {csType} {columnName} {{ get; set; }}"
+        Dim propertyString As String = $"{String.Join("", annotations)}   public {csType} {propername} {{ get; set; }}"
 
         Return propertyString
     End Function
@@ -6720,6 +6728,59 @@ public class PositionModel
         End If
 
         Return annotations
+    End Function
+
+    Dim specialk = New HashSet(Of String)(StringComparer.OrdinalIgnoreCase) From {
+        "class", "public", "private", "function", "property", "end", "if", "then", "else", "module", "return", "string", "integer", "boolean"
+    }
+
+    Public Function ConvertToPropertyName(input As String) As String
+        If String.IsNullOrWhiteSpace(input) Then Return "Invalid_usr"
+
+        ' Step 1: Extract leading number or range
+        Dim numberPart As String = ""
+        Dim numberMatch = Regex.Match(input, "^\s*(\d+(\s*-\s*\d+)?)")
+        If numberMatch.Success Then
+            numberPart = numberMatch.Value.Trim().Replace(" ", "").Replace("-", "_")
+            input = input.Substring(numberMatch.Length).Trim()
+        End If
+
+        ' Step 2: Replace special characters contextually
+        input = Regex.Replace(input, "(^|\s)#", "${1}No_")
+        input = Regex.Replace(input, "#", "_No_")
+
+        input = Regex.Replace(input, "(^|\s)\$", "${1}Amt_")
+        input = Regex.Replace(input, "\$", "_Amt_")
+
+        input = Regex.Replace(input, "(^|\s)@", "${1}at_")
+        input = Regex.Replace(input, "@", "_at_")
+
+        input = Regex.Replace(input, "(^|\s)\.", "${1}dot_")
+        input = Regex.Replace(input, "\.", "_dot_")
+
+        ' Step 3: Normalize whitespace and dashes to underscores
+        input = Regex.Replace(input, "[\s\-]+", "_")
+
+        ' Step 4: Remove any leftover non-alphanumeric characters
+        input = Regex.Replace(input, "[^\w]", "")
+
+        ' Step 5: Append number part at the end
+        Dim result = input
+        If Not String.IsNullOrEmpty(numberPart) Then
+            result &= "_" & numberPart
+        End If
+
+        ' Step 6: Append _usr if result is a VB keyword
+        If specialk.Contains(result.ToLower()) Then
+            result &= "_usr"
+        End If
+
+        ' Step 7: Ensure it doesn't start with a digit
+        If Regex.IsMatch(result, "^\d") Then
+            result = "_" & result
+        End If
+
+        Return result
     End Function
 
 
