@@ -6619,8 +6619,33 @@ public class PositionModel
         l3.Add("")
         l3.Add("---------------------------- or ---------------------------- ")
         l3.Add("")
-        l3.Add(generateInsertAndReturn(tblName, l4))
-        l3.Add(generateUpdateAndReturn(tblName, l4))
+
+        Dim qq = $"
+
+BEGIN TRY
+    BEGIN TRANSACTION
+
+    {generateInsertAndReturn(tblName, l4)}
+
+    {generateUpdateAndReturn(tblName, l4)}
+
+    COMMIT TRANSACTION
+END TRY
+BEGIN CATCH
+    -- If error, rollback transaction
+    IF @@TRANCOUNT > 0
+        ROLLBACK TRANSACTION
+
+    -- Optional: capture and display error details
+    DECLARE @ErrMsg NVARCHAR(4000), @ErrSeverity INT
+    SELECT 
+        @ErrMsg = ERROR_MESSAGE(),
+        @ErrSeverity = ERROR_SEVERITY()
+
+    RAISERROR(@ErrMsg, @ErrSeverity, 1)
+END CATCH
+"
+        l3.Add(qq)
 
         txtDest.Text = String.Join(vbCrLf, l3)
 
@@ -6647,7 +6672,7 @@ public class PositionModel
         query.Add($"INSERT INTO [{tableName}] ")
         query.Add($"({String.Join(", ", col1)}) ")
         query.Add($"OUTPUT inserted.* ")
-        query.Add($"VALUES ({String.Join(", ", col2)}); ")
+        query.Add($"VALUES ({String.Join(", ", col2)}) ")
         query.Add($"")
 
         Return String.Join(vbCrLf, query)
@@ -6674,7 +6699,7 @@ public class PositionModel
         query.Add($"UPDATE [{tableName}]")
         query.Add($"SET {String.Join($", {vbCrLf}  ", col1)} ")
         query.Add($"OUTPUT inserted.*")
-        query.Add($"WHERE id = @ID_HERE ;")
+        query.Add($"WHERE id = @ID_HERE ")
         query.Add($"")
 
         Return String.Join(vbCrLf, query)
