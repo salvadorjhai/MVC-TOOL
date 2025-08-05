@@ -6623,6 +6623,7 @@ public class PositionModel
         Dim qq = $"
 
 BEGIN TRY
+    SET NOCOUNT ON
     BEGIN TRANSACTION
 
     {generateInsertAndReturn(tblName, l4)}
@@ -6666,12 +6667,12 @@ END CATCH
                                                                  End If
                                                              End Function).ToList
 
-        query.Add($"-- sample insert -- ")
+        query.Add($"-- insert -- ")
         query.Add($"")
 
         query.Add($"INSERT INTO [{tableName}] ")
         query.Add($"({String.Join(", ", col1)}) ")
-        query.Add($"OUTPUT inserted.* ")
+        query.Add($"-- OUTPUT inserted.* ")
         query.Add($"VALUES ({String.Join(", ", col2)}) ")
         query.Add($"")
 
@@ -6693,12 +6694,12 @@ END CATCH
                                                                  End If
                                                              End Function).ToList
 
-        query.Add($"-- sample update -- ")
+        query.Add($"-- update -- ")
         query.Add($"")
 
         query.Add($"UPDATE [{tableName}]")
         query.Add($"SET {String.Join($", {vbCrLf}  ", col1)} ")
-        query.Add($"OUTPUT inserted.*")
+        query.Add($"-- OUTPUT inserted.*")
         query.Add($"WHERE id = @ID_HERE ")
         query.Add($"")
 
