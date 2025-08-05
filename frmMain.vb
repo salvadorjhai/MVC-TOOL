@@ -6535,6 +6535,8 @@ Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}
         Dim tblName = cboTable.Text
         Dim l2 As New List(Of String)
         Dim l3 As New List(Of String)
+        Dim l4 As New Dictionary(Of String, Object)
+
         l3.Add("var data = JRaw.Parse(Request.PostBody());")
         l3.Add("var dic = new Dictionary<string, object>();")
 
@@ -6568,6 +6570,8 @@ Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}
                             l3.Add(<![CDATA[dic["_"] = "_";]]>.Value.Replace("_", dt.Rows(i)("ColumnName")))
                         End If
 
+                        l4.Add(dt.Rows(i)("ColumnName"), "")
+
                     Next
 
                     conn.Close()
@@ -6593,6 +6597,8 @@ Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}
                         l3.Add(<![CDATA[dic["_"] = "_";]]>.Value.Replace("_", dt.Rows(i)("COLUMN_NAME")))
                     End If
 
+                    l4.Add(dt.Rows(i)("COLUMN_NAME"), "")
+
                 Next
                 l3.Add("")
                 l3.Add(<![CDATA[var res = DB.InsertParam("_", dic, true);]]>.Value.Replace("_", cboTable.Text))
@@ -6610,9 +6616,69 @@ public class PositionModel
 }
 ]]>.Value.Replace("// replace", String.Join(vbCrLf, l2)).Replace("PositionModel", Regex.Replace(StrConv(tblName, VbStrConv.ProperCase), "[^a-z0-9_]", "", RegexOptions.IgnoreCase))
 
+        l3.Add("")
+        l3.Add("---------------------------- or ---------------------------- ")
+        l3.Add("")
+        l3.Add(generateInsertAndReturn(tblName, l4))
+        l3.Add(generateUpdateAndReturn(tblName, l4))
+
         txtDest.Text = String.Join(vbCrLf, l3)
 
     End Sub
+
+    Function generateInsertAndReturn(tableName As String, columnData As Dictionary(Of String, Object))
+
+        Dim query As New List(Of String)
+
+        'without @
+        Dim col1 As List(Of String) = columnData.Keys.Select(Function(x) $"[{IIf(x.StartsWith("@"), x.Substring(1), x).ToString()}]").ToList
+        'with @
+        Dim col2 As List(Of String) = columnData.Keys.Select(Function(x)
+                                                                 If optGenerateNamedParam.Checked Then
+                                                                     Return IIf(x.StartsWith("@"), x, $"@{x}").ToString()
+                                                                 Else
+                                                                     Return "?"
+                                                                 End If
+                                                             End Function).ToList
+
+        query.Add($"-- sample insert -- ")
+        query.Add($"")
+
+        query.Add($"INSERT INTO [{tableName}] ")
+        query.Add($"({String.Join(", ", col1)}) ")
+        query.Add($"OUTPUT inserted.* ")
+        query.Add($"VALUES ({String.Join(", ", col2)}); ")
+        query.Add($"")
+
+        Return String.Join(vbCrLf, query)
+    End Function
+
+    Function generateUpdateAndReturn(tableName As String, columnData As Dictionary(Of String, Object))
+
+        Dim query As New List(Of String)
+
+        '[key]=@key
+        Dim col1 As List(Of String) = columnData.Keys.Select(Function(x)
+                                                                 If optGenerateNamedParam.Checked Then
+                                                                     Dim k = IIf(x.StartsWith("@"), x.Substring(1), x).ToString()
+                                                                     Return $"[{k}]=@{k}"
+                                                                 Else
+                                                                     Dim k = IIf(x.StartsWith("@"), x.Substring(1), x).ToString()
+                                                                     Return $"[{k}]=?"
+                                                                 End If
+                                                             End Function).ToList
+
+        query.Add($"-- sample update -- ")
+        query.Add($"")
+
+        query.Add($"UPDATE [{tableName}]")
+        query.Add($"SET {String.Join($", {vbCrLf}  ", col1)} ")
+        query.Add($"OUTPUT inserted.*")
+        query.Add($"WHERE id = @ID_HERE ;")
+        query.Add($"")
+
+        Return String.Join(vbCrLf, query)
+    End Function
 
     Function DbTypeToString(row As DataRow) As String
         ' Extract column information from the DataRow
@@ -7275,6 +7341,10 @@ var table = {
 
     Private Sub optGenerateByHTMLHelper_Click(sender As Object, e As EventArgs) Handles optGenerateByHTMLHelper.Click
         optGenerateByHTMLHelper.Image = IIf(optGenerateByHTMLHelper.Checked, My.Resources.check_box, My.Resources.check_box_uncheck)
+    End Sub
+
+    Private Sub optGenerateNamedParam_Click(sender As Object, e As EventArgs) Handles optGenerateNamedParam.Click
+        optGenerateNamedParam.Image = IIf(optGenerateNamedParam.Checked, My.Resources.check_box, My.Resources.check_box_uncheck)
     End Sub
 
     Private Sub ToolStripButton4_ButtonClick(sender As Object, e As EventArgs) Handles ToolStripButton4.ButtonClick
