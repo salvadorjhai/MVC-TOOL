@@ -6570,7 +6570,18 @@ Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}
                             l3.Add(<![CDATA[dic["_"] = "_";]]>.Value.Replace("_", dt.Rows(i)("ColumnName")))
                         End If
 
-                        l4.Add(dt.Rows(i)("ColumnName"), "")
+                        Dim colname = dt.Rows(i)("ColumnName")
+                        Dim colid = 2
+                        Dim unik = colname
+                        Do While True
+                            If l4.ContainsKey(unik) Then
+                                unik = colname & colid
+                                colid += 1
+                                Continue Do
+                            End If
+                            l4.Add(unik, "")
+                            Exit Do
+                        Loop
 
                     Next
 
@@ -6597,7 +6608,18 @@ Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}
                         l3.Add(<![CDATA[dic["_"] = "_";]]>.Value.Replace("_", dt.Rows(i)("COLUMN_NAME")))
                     End If
 
-                    l4.Add(dt.Rows(i)("COLUMN_NAME"), "")
+                    Dim colname = dt.Rows(i)("COLUMN_NAME")
+                    Dim colid = 2
+                    Dim unik = colname
+                    Do While True
+                        If l4.ContainsKey(unik) Then
+                            unik = colname & colid
+                            colid += 1
+                            Continue Do
+                        End If
+                        l4.Add(unik, "")
+                        Exit Do
+                    Loop
 
                 Next
                 l3.Add("")
