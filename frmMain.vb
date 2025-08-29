@@ -4777,6 +4777,7 @@ function cboBankCodes(ele) {
                     type: "GET",
                     contentType: "application/json;charset=UTF-8",
                     dataType: "json",
+                    complete: function (jqXHR, textStatus) { },
                     success: function (response, textStatus, jqXHR) {
                         console.log(response);
                     },
@@ -6648,12 +6649,15 @@ BEGIN TRY
     SET NOCOUNT ON
     BEGIN TRANSACTION
 
-    {generateInsertAndReturn(tblName, l4)}
+   -- insert -- 
+{generateInsertAndReturn(tblName, l4)}
 
-    {generateUpdateAndReturn(tblName, l4)}
-
+   -- update -- 
+{generateUpdateAndReturn(tblName, l4)}
     COMMIT TRANSACTION
+
 END TRY
+
 BEGIN CATCH
     -- If error, rollback transaction
     IF @@TRANCOUNT > 0
@@ -6689,13 +6693,13 @@ END CATCH
                                                                  End If
                                                              End Function).ToList
 
-        query.Add($"-- insert -- ")
-        query.Add($"")
+        'query.Add($"-- insert -- ")
+        'query.Add($"")
 
-        query.Add($"INSERT INTO [{tableName}] ")
-        query.Add($"({String.Join(", ", col1)}) ")
-        query.Add($"-- OUTPUT inserted.* ")
-        query.Add($"VALUES ({String.Join(", ", col2)}) ")
+        query.Add($"   INSERT INTO dbo.[{tableName}] ")
+        query.Add($"    ({String.Join(", ", col1)}) ")
+        query.Add($"    -- OUTPUT inserted.* ")
+        query.Add($"    VALUES ({String.Join(", ", col2)}) ")
         query.Add($"")
 
         Return String.Join(vbCrLf, query)
@@ -6716,13 +6720,13 @@ END CATCH
                                                                  End If
                                                              End Function).ToList
 
-        query.Add($"-- update -- ")
-        query.Add($"")
+        'query.Add($"-- update -- ")
+        'query.Add($"")
 
-        query.Add($"UPDATE [{tableName}]")
-        query.Add($"SET {String.Join($", {vbCrLf}  ", col1)} ")
-        query.Add($"-- OUTPUT inserted.*")
-        query.Add($"WHERE id = @ID_HERE ")
+        query.Add($"   UPDATE dbo.[{tableName}]")
+        query.Add($"    SET {String.Join($", {vbCrLf}  ", col1)} ")
+        query.Add($"    -- OUTPUT inserted.*")
+        query.Add($"   WHERE id = @ID_HERE ")
         query.Add($"")
 
         Return String.Join(vbCrLf, query)
@@ -6745,6 +6749,50 @@ END CATCH
         Dim propertyString As String = $"{annotations}   public {csType} {columnName} {{ get; set; }}"
 
         Return propertyString
+    End Function
+
+    Function DbTypeToDeclaredString(row As DataRow) As String
+        ' Extract column information from the DataRow
+        Dim columnName As String = Regex.Replace(row("COLUMN_NAME").ToString().ToLower, "[^a-z0-9_]", "", RegexOptions.IgnoreCase)
+        Dim dataType As Integer = Convert.ToInt32(row("DATA_TYPE"))
+        Dim isNullable As Boolean = CBool(row("IS_NULLABLE"))
+        Dim maxLength As Integer = If(row("CHARACTER_MAXIMUM_LENGTH") Is DBNull.Value, 0, Convert.ToInt32(row("CHARACTER_MAXIMUM_LENGTH")))
+
+        Dim csType As String = GetCsNetType(dataType)
+        Select Case csType
+            Case "int", "long"
+                Return $"@{columnName} int = NULL".Trim
+            Case "decimal"
+                Return $"@{columnName} decimal(19,4) = NULL".Trim
+            Case "bool"
+                Return $"@{columnName} bit = NULL".Trim
+            Case "DateTime?"
+                Return $"@{columnName} datetime = NULL".Trim
+            Case Else
+                Return $"@{columnName} nvarchar({maxLength}) = NULL".Trim
+        End Select
+    End Function
+
+    Function DbTypeToDeclaredStringOle(row As DataRow) As String
+        Dim columnName As String = row("ColumnName").ToString()
+        Dim dataType As Type = CType(row("DataType"), Type)
+        Dim isNullable As Boolean = CBool(row("AllowDBNull"))
+        Dim maxLength As Integer = CInt(row("ColumnSize"))
+
+        ' Map OleDbType to C# data type
+        Dim csType As String = GetCsNetTypeFromSchema(dataType)
+        Select Case csType
+            Case "int", "long"
+                Return $"@{columnName} int = NULL".Trim
+            Case "decimal"
+                Return $"@{columnName} decimal(19,4) = NULL".Trim
+            Case "bool"
+                Return $"@{columnName} bit = NULL".Trim
+            Case "DateTime?"
+                Return $"@{columnName} datetime = NULL".Trim
+            Case Else
+                Return $"@{columnName} nvarchar({maxLength}) = NULL".Trim
+        End Select
     End Function
 
     Function GetCsNetType(dataType As Integer) As String
@@ -7829,9 +7877,7 @@ function pagescript() {
     function onSaveClick() {
         if (!isValid()) { return; }
 
-        var model = {
-
-        }
+        var model = Object.assign({}, seldata, toJSON($(`form:has(.modal)`)[0]))
 
         // compare data
         var exists = $(`form:has(.modal)`).data('data')
@@ -8152,4 +8198,190 @@ app.init()
         ]]>.Value.Trim
     End Sub
 
+    Private Sub btnGenerateProc_Click(sender As Object, e As EventArgs) Handles btnGenerateProc.Click
+
+        If String.IsNullOrWhiteSpace(cboTable.Text) Then Return
+        If cboTable.Text.StartsWith("----") Then Return
+
+        Dim tblName = cboTable.Text
+        Dim l2 As New List(Of String)
+        Dim l3 As New List(Of String)
+        Dim l4 As New Dictionary(Of String, Object)
+        Dim params As New List(Of String)
+
+        l3.Add("var data = JRaw.Parse(Request.PostBody());")
+        l3.Add("var dic = new Dictionary<string, object>();")
+
+        'Using cn = New OleDbConnection(txtSQLConnectionString.Text)
+        '    cn.Open()
+        '    Using cmd = cn.CreateCommand()
+        '        cmd.CommandText = cboTable.Text
+        '        Using reader = cmd.ExecuteReader
+        '            Dim dt2 = New DataTable()
+        '            dt2.Load(reader)
+        '            Debug.Print("")
+        '        End Using
+        '    End Using
+        'End Using
+
+        Using conn = New OleDbConnection(txtSQLConnectionString.Text)
+            conn.Open()
+
+            If cboTable.Text.Trim.ToLower.Contains("select ") Or cboTable.Text.Trim.ToLower.StartsWith("exec ") Then
+                Using cmd As New OleDbCommand(cboTable.Text, conn)
+                    cmd.CommandTimeout = Integer.Parse(optCommandTimeout.Text)
+
+                    Dim dt = cmd.ExecuteReader(CommandBehavior.SchemaOnly).GetSchemaTable
+                    params.Clear()
+                    For i = 0 To dt.Rows.Count - 1
+                        params.Add(DbTypeToDeclaredStringOle(dt.Rows(i)))
+                    Next
+                    For i = 0 To dt.Rows.Count - 1
+                        Dim propertyString As String = DbTypeToStringFromGetSchemaTable(dt.Rows(i))
+                        l2.Add(propertyString)
+
+                        If propertyString.Contains("[Required]") Then
+                            l3.Add(<![CDATA[dic["_"] = "_"; // required ]]>.Value.Replace("_", dt.Rows(i)("ColumnName")))
+                        Else
+                            l3.Add(<![CDATA[dic["_"] = "_";]]>.Value.Replace("_", dt.Rows(i)("ColumnName")))
+                        End If
+
+                        Dim colname = dt.Rows(i)("ColumnName")
+                        Dim colid = 2
+                        Dim unik = colname
+                        Do While True
+                            If l4.ContainsKey(unik) Then
+                                unik = colname & colid
+                                colid += 1
+                                Continue Do
+                            End If
+                            l4.Add(unik, "")
+                            Exit Do
+                        Loop
+
+                    Next
+
+                    conn.Close()
+                End Using
+
+                tblName = Regex.Match(cboTable.Text, " from \[(.*?)\]", RegexOptions.IgnoreCase).Groups(1).Value.Trim
+                If String.IsNullOrWhiteSpace(tblName) Then tblName = Regex.Match(cboTable.Text, " from (.*?) ", RegexOptions.IgnoreCase).Groups(1).Value.Trim
+                If String.IsNullOrWhiteSpace(tblName) Then tblName = Regex.Match(cboTable.Text, " from (.*?)$", RegexOptions.IgnoreCase).Groups(1).Value.Trim
+                If String.IsNullOrWhiteSpace(tblName) Then tblName = Regex.Match(cboTable.Text, "exec (.*?) ", RegexOptions.IgnoreCase).Groups(1).Value.Trim
+                l3.Add("")
+                l3.Add(<![CDATA[var res = DB.InsertParam("_", dic, true);]]>.Value.Replace("_", tblName))
+
+            Else
+
+                Dim dt = conn.GetOleDbSchemaTable(OleDbSchemaGuid.Columns, {Nothing, Nothing, cboTable.Text, Nothing})
+                params.Clear()
+                For i = 0 To dt.Rows.Count - 1
+                    params.Add(DbTypeToDeclaredString(dt.Rows(i)))
+                Next
+                For i = 0 To dt.Rows.Count - 1
+                    Dim propertyString As String = DbTypeToString(dt.Rows(i))
+                    l2.Add(propertyString)
+
+                    If propertyString.Contains("[Required]") Then
+                        l3.Add(<![CDATA[dic["_"] = "_"; // required]]>.Value.Replace("_", dt.Rows(i)("COLUMN_NAME")))
+                    Else
+                        l3.Add(<![CDATA[dic["_"] = "_";]]>.Value.Replace("_", dt.Rows(i)("COLUMN_NAME")))
+                    End If
+
+                    Dim colname = dt.Rows(i)("COLUMN_NAME")
+                    Dim colid = 2
+                    Dim unik = colname
+                    Do While True
+                        If l4.ContainsKey(unik) Then
+                            unik = colname & colid
+                            colid += 1
+                            Continue Do
+                        End If
+                        l4.Add(unik, "")
+                        Exit Do
+                    Loop
+
+                Next
+                l3.Add("")
+                l3.Add(<![CDATA[var res = DB.InsertParam("_", dic, true);]]>.Value.Replace("_", cboTable.Text))
+
+            End If
+
+        End Using
+
+        l3.Add("if (DB.LastError != null) { throw DB.LastError; }")
+
+        txtSource.Text = <![CDATA[
+public class PositionModel
+{
+// replace
+}
+]]>.Value.Replace("// replace", String.Join(vbCrLf, l2)).Replace("PositionModel", Regex.Replace(StrConv(tblName, VbStrConv.ProperCase), "[^a-z0-9_]", "", RegexOptions.IgnoreCase))
+
+        l3.Add("")
+        l3.Add("---------------------------- or ---------------------------- ")
+        l3.Add("")
+
+        Dim qq = $"
+-- =============================================
+-- Created by: jhai
+-- Created date: {DateTime.Now}
+-- Description: crud operation
+-- =============================================
+CREATE OR ALTER PROCEDURE dbo.[js_{tblName.ToLower}_crud]
+    @js_method NVARCHAR(10), -- 'new', 'get', 'list', 'update', 'delete'
+    {String.Join("," & vbCrLf & "    ", params)}
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- CREATE
+    IF @js_method = 'new'
+    BEGIN
+{generateInsertAndReturn(tblName, l4)}
+        RETURN;
+    END
+
+    -- GET BY ID
+    IF @js_method = 'get'
+    BEGIN
+        SELECT *
+        FROM dbo.[{tblName}]
+        WHERE Id = @Id
+        RETURN;
+    END
+
+    -- READ/LIST ALL
+    IF @js_method = 'list'
+    BEGIN
+        SELECT *
+        FROM dbo.[{tblName}]
+        RETURN;
+    END
+
+    -- UPDATE
+    IF @js_method = 'update'
+    BEGIN
+{generateUpdateAndReturn(tblName, l4)}
+        RETURN;
+    END
+
+    -- DELETE
+    --IF @js_method = 'delete'
+    --BEGIN
+        --DELETE FROM dbo.[{tblName}]
+        --OUTPUT deleted.*
+        --WHERE Id = @Id
+        --RETURN;
+    --END
+
+    -- INVALID ACTION
+    RAISERROR('Invalid @js_method parameter. Use new, get, list, update.', 16, 1);
+END
+"
+        l3.Add(qq)
+
+        txtDest.Text = String.Join(vbCrLf, l3)
+
+    End Sub
 End Class

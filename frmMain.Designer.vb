@@ -96,10 +96,11 @@ Partial Class frmMain
         Me.ToolStripButton8 = New System.Windows.Forms.ToolStripDropDownButton()
         Me.optAnnotation = New System.Windows.Forms.ToolStripMenuItem()
         Me.optGenerateByHTMLHelper = New System.Windows.Forms.ToolStripMenuItem()
+        Me.optGenerateNamedParam = New System.Windows.Forms.ToolStripMenuItem()
         Me.optCommandTimeout = New System.Windows.Forms.ToolStripTextBox()
         Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripButton7 = New System.Windows.Forms.ToolStripButton()
-        Me.optGenerateNamedParam = New System.Windows.Forms.ToolStripMenuItem()
+        Me.btnGenerateProc = New System.Windows.Forms.ToolStripButton()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -538,7 +539,7 @@ Partial Class frmMain
         '
         'ToolStrip2
         '
-        Me.ToolStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripLabel1, Me.txtSQLConnectionString, Me.ToolStripButton9, Me.ToolStripButton6, Me.btnConnect, Me.cboTable, Me.btnEditor, Me.btnGenerateFromTable, Me.ToolStripButton8, Me.ToolStripSeparator10, Me.ToolStripButton7})
+        Me.ToolStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripLabel1, Me.txtSQLConnectionString, Me.ToolStripButton9, Me.ToolStripButton6, Me.btnConnect, Me.cboTable, Me.btnEditor, Me.btnGenerateFromTable, Me.btnGenerateProc, Me.ToolStripButton8, Me.ToolStripSeparator10, Me.ToolStripButton7})
         Me.ToolStrip2.Location = New System.Drawing.Point(0, 25)
         Me.ToolStrip2.Name = "ToolStrip2"
         Me.ToolStrip2.Size = New System.Drawing.Size(1130, 25)
@@ -637,6 +638,16 @@ Partial Class frmMain
         Me.optGenerateByHTMLHelper.Size = New System.Drawing.Size(229, 22)
         Me.optGenerateByHTMLHelper.Text = "Generate with HTML Helper"
         '
+        'optGenerateNamedParam
+        '
+        Me.optGenerateNamedParam.Checked = True
+        Me.optGenerateNamedParam.CheckOnClick = True
+        Me.optGenerateNamedParam.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.optGenerateNamedParam.Image = Global.MVC_TOOL.My.Resources.Resources.check_box
+        Me.optGenerateNamedParam.Name = "optGenerateNamedParam"
+        Me.optGenerateNamedParam.Size = New System.Drawing.Size(229, 22)
+        Me.optGenerateNamedParam.Text = "Generate @named parameter"
+        '
         'optCommandTimeout
         '
         Me.optCommandTimeout.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
@@ -659,15 +670,14 @@ Partial Class frmMain
         Me.ToolStripButton7.Size = New System.Drawing.Size(64, 22)
         Me.ToolStripButton7.Text = "INSERT"
         '
-        'optGenerateNamedParam
+        'btnGenerateProc
         '
-        Me.optGenerateNamedParam.Checked = True
-        Me.optGenerateNamedParam.CheckOnClick = True
-        Me.optGenerateNamedParam.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.optGenerateNamedParam.Image = Global.MVC_TOOL.My.Resources.Resources.check_box
-        Me.optGenerateNamedParam.Name = "optGenerateNamedParam"
-        Me.optGenerateNamedParam.Size = New System.Drawing.Size(229, 22)
-        Me.optGenerateNamedParam.Text = "Generate @named parameter"
+        Me.btnGenerateProc.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.btnGenerateProc.Image = CType(resources.GetObject("btnGenerateProc.Image"), System.Drawing.Image)
+        Me.btnGenerateProc.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.btnGenerateProc.Name = "btnGenerateProc"
+        Me.btnGenerateProc.Size = New System.Drawing.Size(23, 22)
+        Me.btnGenerateProc.Text = "ToolStripButton10"
         '
         'frmMain
         '
@@ -775,4 +785,5 @@ Partial Class frmMain
     Friend WithEvents txtSQLConnectionString As ToolStripComboBox
     Friend WithEvents optGenerateByHTMLHelper As ToolStripMenuItem
     Friend WithEvents optGenerateNamedParam As ToolStripMenuItem
+    Friend WithEvents btnGenerateProc As ToolStripButton
 End Class
