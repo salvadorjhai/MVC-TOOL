@@ -8209,6 +8209,8 @@ app.init()
         Dim l4 As New Dictionary(Of String, Object)
         Dim params As New List(Of String)
 
+        Dim dtoList As New List(Of String)
+
         l3.Add("var data = JRaw.Parse(Request.PostBody());")
         l3.Add("var dic = new Dictionary<string, object>();")
 
@@ -8231,35 +8233,50 @@ app.init()
                 Using cmd As New OleDbCommand(cboTable.Text, conn)
                     cmd.CommandTimeout = Integer.Parse(optCommandTimeout.Text)
 
-                    Dim dt = cmd.ExecuteReader(CommandBehavior.SchemaOnly).GetSchemaTable
-                    params.Clear()
-                    For i = 0 To dt.Rows.Count - 1
-                        params.Add(DbTypeToDeclaredStringOle(dt.Rows(i)))
-                    Next
-                    For i = 0 To dt.Rows.Count - 1
-                        Dim propertyString As String = DbTypeToStringFromGetSchemaTable(dt.Rows(i))
-                        l2.Add(propertyString)
-
-                        If propertyString.Contains("[Required]") Then
-                            l3.Add(<![CDATA[dic["_"] = "_"; // required ]]>.Value.Replace("_", dt.Rows(i)("ColumnName")))
-                        Else
-                            l3.Add(<![CDATA[dic["_"] = "_";]]>.Value.Replace("_", dt.Rows(i)("ColumnName")))
-                        End If
-
-                        Dim colname = dt.Rows(i)("ColumnName")
-                        Dim colid = 2
-                        Dim unik = colname
+                    Using rdr = cmd.ExecuteReader(CommandBehavior.Default And CommandBehavior.SchemaOnly)
                         Do While True
-                            If l4.ContainsKey(unik) Then
-                                unik = colname & colid
-                                colid += 1
-                                Continue Do
-                            End If
-                            l4.Add(unik, "")
-                            Exit Do
+                            l2.Clear()
+
+                            Dim dt = rdr.GetSchemaTable
+                            params.Clear()
+                            For i = 0 To dt.Rows.Count - 1
+                                params.Add(DbTypeToDeclaredStringOle(dt.Rows(i)))
+                            Next
+                            For i = 0 To dt.Rows.Count - 1
+                                Dim propertyString As String = DbTypeToStringFromGetSchemaTable(dt.Rows(i))
+                                l2.Add(propertyString)
+
+                                If propertyString.Contains("[Required]") Then
+                                    l3.Add(<![CDATA[dic["_"] = "_"; // required ]]>.Value.Replace("_", dt.Rows(i)("ColumnName")))
+                                Else
+                                    l3.Add(<![CDATA[dic["_"] = "_";]]>.Value.Replace("_", dt.Rows(i)("ColumnName")))
+                                End If
+
+                                Dim colname = dt.Rows(i)("ColumnName")
+                                Dim colid = 2
+                                Dim unik = colname
+                                Do While True
+                                    If l4.ContainsKey(unik) Then
+                                        unik = colname & colid
+                                        colid += 1
+                                        Continue Do
+                                    End If
+                                    l4.Add(unik, "")
+                                    Exit Do
+                                Loop
+                            Next
+
+                            dtoList.Add(<![CDATA[
+public class PositionModel
+{
+// replace
+}
+]]>.Value.Replace("// replace", String.Join(vbCrLf, l2)).Replace("PositionModel", Regex.Replace(StrConv(tblName, VbStrConv.ProperCase), "[^a-z0-9_]", "", RegexOptions.IgnoreCase)))
+
+                            If rdr.NextResult() = False Then Exit Do
                         Loop
 
-                    Next
+                    End Using
 
                     conn.Close()
                 End Using
@@ -8311,12 +8328,7 @@ app.init()
 
         l3.Add("if (DB.LastError != null) { throw DB.LastError; }")
 
-        txtSource.Text = <![CDATA[
-public class PositionModel
-{
-// replace
-}
-]]>.Value.Replace("// replace", String.Join(vbCrLf, l2)).Replace("PositionModel", Regex.Replace(StrConv(tblName, VbStrConv.ProperCase), "[^a-z0-9_]", "", RegexOptions.IgnoreCase))
+        txtSource.Text = String.Join(vbCrLf, dtoList)
 
         l3.Add("")
         l3.Add("---------------------------- or ---------------------------- ")
