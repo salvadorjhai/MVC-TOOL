@@ -8319,6 +8319,14 @@ public class PositionModel
                     Loop
 
                 Next
+
+                dtoList.Add(<![CDATA[
+public class PositionModel
+{
+// replace
+}
+]]>.Value.Replace("// replace", String.Join(vbCrLf, l2)).Replace("PositionModel", Regex.Replace(StrConv(tblName, VbStrConv.ProperCase), "[^a-z0-9_]", "", RegexOptions.IgnoreCase)))
+
                 l3.Add("")
                 l3.Add(<![CDATA[var res = DB.InsertParam("_", dic, true);]]>.Value.Replace("_", cboTable.Text))
 
