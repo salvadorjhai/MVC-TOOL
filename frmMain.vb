@@ -4782,8 +4782,8 @@ function cboBankCodes(ele) {
                         console.log(response);
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
-                        swal("Error!", errorThrown, "error");
-                        return;
+                        var msg = jqXHR?.responseJSON?.message || `Opps ! Something went wrong ... `
+                        error(msg)
                     }
                 });
 ]]>.Value
