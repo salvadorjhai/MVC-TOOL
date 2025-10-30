@@ -8404,4 +8404,78 @@ END
         txtDest.Text = String.Join(vbCrLf, l3)
 
     End Sub
+
+    Private Sub ToolStripMenuItem3_Click(sender As Object, e As EventArgs) Handles ToolStripMenuItem3.Click
+
+        If frmCreateModal.ShowDialog <> DialogResult.OK Then Return
+
+        Dim modalName = frmCreateModal.cboItem.Text
+
+        Dim l1 As New List(Of String)
+
+        l1.Add(<![CDATA[ <button id="btnCreateNew_mymodal" type="button" class="btn btn-primary mt-2 mb-2" data-bs-toggle="modal" data-bs-target="#mymodal"> CREATE NEW </button> ]]>.Value.Trim)
+        l1.Add(<![CDATA[
+<div class="modal fade" id="mymodal" role="dialog" data-focus="false" data-keyboard="false" data-backdrop="static" tabindex="-1" aria-labelledby="modaltitle" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-uppercase text-light">
+                <h5 class="modal-title">Title</h5>
+
+                <!-- js-level-update -->
+                <div class="js-level-update btn-group-sm" id="js-level-update" style="">
+                    <div class="btn-group btn-group-sm">
+                                
+                        <button type="button" class="btn btn-danger btn-sm" data-filter="backlevel" data-value="1" data-value-text="Prepared" data-title="Prepare" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="Return back to Prepare...">
+                        <span class="fas fa-arrow-circle-left"></span> Return to Prepare</button>
+                    
+                            <button type="button" class="btn btn-success btn-sm" data-filter="movelevel" data-value="3" data-value-text="Endorsed" data-title="Endorse" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="Update status to Endorse...">
+                            <span class="fas fa-arrow-circle-right"></span> Endorse</button>
+                    
+                        </div>
+                        <div class="btn-group btn-group-sm">
+                                
+                            <button type="button" class="btn btn-warning btn-sm" data-filter="movelevel" data-value="5" data-value-text="Cancelled" data-title="Cancel" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="Update status to Cancel...">
+                            <span class="fas fa-trash-alt"></span> Cancel</button>
+                    
+                        </div>
+                    </div>
+                </div>
+            <div class="modal-body">
+                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Nullam malesuada erat ut turpis. Suspendisse urna nibh viverra non semper suscipit posuere a pede.</p>
+                <ul>
+                <li>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</li>
+                <li>Aliquam tincidunt mauris eu risus.</li>
+                <li>Vestibulum auctor dapibus neque.</li>
+                <li>Nunc dignissim risus id metus.</li>
+                <li>Cras ornare tristique elit.</li>
+                <li>Vivamus vestibulum ntulla nec ante.</li>
+                <li>Praesent placerat risus quis eros.</li>
+                <li>Fusce pellentesque suscipit nibh.</li>
+                <li>Integer vitae libero ac risus egestas placerat.</li>
+                <li>Vestibulum commodo felis quis tortor.</li>
+                <li>Ut aliquam sollicitudin leo.</li>
+                <li>Cras iaculis ultricies nulla.</li>
+                <li>Donec quis dui at dolor tempor interdum.</li>
+                </ul>                
+            </div>
+            <div class="modal-footer d-flex justify-content-between">
+                <div class="btn-group btn-group-sm">
+                    <button type="button" class="btn btn-default btn-sm"><i class="fas fa-print"></i> PRINT</button>
+                    <button type="button" class="btn btn-default btn-sm"><i class="fas fa-share-square"></i> SHARE</button>
+                    <button type="button" class="btn btn-default btn-sm"><i class="fas fa-copy"></i> COPY</button>
+                    <button type="button" class="btn btn-default btn-sm"><i class="fas fa-plus-circle"></i> NEW</button>
+                    <button type="button" class="btn btn-default btn-sm"><i class="fas fa-edit"></i> EDIT</button>
+                </div>
+                <div class="btn-group btn-group-sm">
+                    <button type="button" class="btn btn-success"><i class="fas fa-save"></i> SAVE</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-times-circle"></i> CLOSE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+]]>.Value.Trim)
+
+        txtDest.Text = String.Join(vbCrLf, l1).Replace("mymodal", modalName).Trim
+    End Sub
 End Class

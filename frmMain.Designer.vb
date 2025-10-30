@@ -93,6 +93,7 @@ Partial Class frmMain
         Me.cboTable = New System.Windows.Forms.ToolStripComboBox()
         Me.btnEditor = New System.Windows.Forms.ToolStripButton()
         Me.btnGenerateFromTable = New System.Windows.Forms.ToolStripButton()
+        Me.btnGenerateProc = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripButton8 = New System.Windows.Forms.ToolStripDropDownButton()
         Me.optAnnotation = New System.Windows.Forms.ToolStripMenuItem()
         Me.optGenerateByHTMLHelper = New System.Windows.Forms.ToolStripMenuItem()
@@ -100,7 +101,7 @@ Partial Class frmMain
         Me.optCommandTimeout = New System.Windows.Forms.ToolStripTextBox()
         Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripButton7 = New System.Windows.Forms.ToolStripButton()
-        Me.btnGenerateProc = New System.Windows.Forms.ToolStripButton()
+        Me.ToolStripMenuItem3 = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -199,7 +200,7 @@ Partial Class frmMain
         '
         'ToolStripButton3
         '
-        Me.ToolStripButton3.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DefaultToolStripMenuItem, Me.ModalPopupToolStripMenuItem, Me.ModalPopup2TupleToolStripMenuItem, Me.ToolStripSeparator4, Me.BlankModalToolStripMenuItem, Me.HtmlTagHelpersOnlyToolStripMenuItem, Me.Select2ViewBagToolStripMenuItem, Me.ToolStripSeparator5, Me.UseChoicesJSToolStripMenuItem, Me.ModalPopupcjTemplateToolStripMenuItem, Me.ToolStripMenuItem1, Me.ToolStripMenuItem2, Me.ModalPopupBS46xToolStripMenuItem, Me.ToolStripSeparator8, Me.InFormDynamicTableToolStripMenuItem, Me.TabsGeneratorToolStripMenuItem, Me.ToolStripSeparator7, Me.DynamicMultiInputToolStripMenuItem, Me.LoremImpsumToolStripMenuItem, Me.ToolStripSeparator9, Me.DatasetDummyToolStripMenuItem, Me.AccordionToolStripMenuItem, Me.ToolStripSeparator11, Me.JSControllerObjectLiteralToolStripMenuItem, Me.JSObjectLiteralToolStripMenuItem, Me.JSPageFunctionsToolStripMenuItem})
+        Me.ToolStripButton3.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DefaultToolStripMenuItem, Me.ModalPopupToolStripMenuItem, Me.ModalPopup2TupleToolStripMenuItem, Me.ToolStripSeparator4, Me.BlankModalToolStripMenuItem, Me.ToolStripMenuItem3, Me.HtmlTagHelpersOnlyToolStripMenuItem, Me.Select2ViewBagToolStripMenuItem, Me.ToolStripSeparator5, Me.UseChoicesJSToolStripMenuItem, Me.ModalPopupcjTemplateToolStripMenuItem, Me.ToolStripMenuItem1, Me.ToolStripMenuItem2, Me.ModalPopupBS46xToolStripMenuItem, Me.ToolStripSeparator8, Me.InFormDynamicTableToolStripMenuItem, Me.TabsGeneratorToolStripMenuItem, Me.ToolStripSeparator7, Me.DynamicMultiInputToolStripMenuItem, Me.LoremImpsumToolStripMenuItem, Me.ToolStripSeparator9, Me.DatasetDummyToolStripMenuItem, Me.AccordionToolStripMenuItem, Me.ToolStripSeparator11, Me.JSControllerObjectLiteralToolStripMenuItem, Me.JSObjectLiteralToolStripMenuItem, Me.JSPageFunctionsToolStripMenuItem})
         Me.ToolStripButton3.Image = CType(resources.GetObject("ToolStripButton3.Image"), System.Drawing.Image)
         Me.ToolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripButton3.Name = "ToolStripButton3"
@@ -610,6 +611,15 @@ Partial Class frmMain
         Me.btnGenerateFromTable.Size = New System.Drawing.Size(23, 22)
         Me.btnGenerateFromTable.Text = "Generate from selected table or using SQL Query"
         '
+        'btnGenerateProc
+        '
+        Me.btnGenerateProc.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.btnGenerateProc.Image = CType(resources.GetObject("btnGenerateProc.Image"), System.Drawing.Image)
+        Me.btnGenerateProc.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.btnGenerateProc.Name = "btnGenerateProc"
+        Me.btnGenerateProc.Size = New System.Drawing.Size(23, 22)
+        Me.btnGenerateProc.Text = "ToolStripButton10"
+        '
         'ToolStripButton8
         '
         Me.ToolStripButton8.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
@@ -670,14 +680,12 @@ Partial Class frmMain
         Me.ToolStripButton7.Size = New System.Drawing.Size(64, 22)
         Me.ToolStripButton7.Text = "INSERT"
         '
-        'btnGenerateProc
+        'ToolStripMenuItem3
         '
-        Me.btnGenerateProc.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.btnGenerateProc.Image = CType(resources.GetObject("btnGenerateProc.Image"), System.Drawing.Image)
-        Me.btnGenerateProc.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.btnGenerateProc.Name = "btnGenerateProc"
-        Me.btnGenerateProc.Size = New System.Drawing.Size(23, 22)
-        Me.btnGenerateProc.Text = "ToolStripButton10"
+        Me.ToolStripMenuItem3.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold)
+        Me.ToolStripMenuItem3.Name = "ToolStripMenuItem3"
+        Me.ToolStripMenuItem3.Size = New System.Drawing.Size(257, 22)
+        Me.ToolStripMenuItem3.Text = "Blank Modal (BS 4.6.x)"
         '
         'frmMain
         '
@@ -786,4 +794,5 @@ Partial Class frmMain
     Friend WithEvents optGenerateByHTMLHelper As ToolStripMenuItem
     Friend WithEvents optGenerateNamedParam As ToolStripMenuItem
     Friend WithEvents btnGenerateProc As ToolStripButton
+    Friend WithEvents ToolStripMenuItem3 As ToolStripMenuItem
 End Class
