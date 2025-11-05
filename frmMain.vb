@@ -2,6 +2,8 @@
 Imports System.Text.RegularExpressions
 Imports System.IO
 Imports System.Linq
+Imports Newtonsoft.Json
+Imports System.Text
 
 Public Class frmMain
 
@@ -8477,5 +8479,48 @@ END
 ]]>.Value.Trim)
 
         txtDest.Text = String.Join(vbCrLf, l1).Replace("mymodal", modalName).Trim
+    End Sub
+
+    Private Sub btnExportJSON_Click(sender As Object, e As EventArgs) Handles btnExportJSON.Click
+
+        Dim fl As String = ""
+        Using dlg As New SaveFileDialog()
+            dlg.Filter = "*.json|*.json;"
+            If dlg.ShowDialog() <> DialogResult.OK Then
+                Return
+            End If
+            fl = dlg.FileName
+        End Using
+
+
+        Using conn = New OleDbConnection(txtSQLConnectionString.Text)
+            conn.Open()
+
+            Dim sql = cboTable.Text.Trim
+            If cboTable.SelectedIndex >= 0 Then
+                sql = $"SELECT top 1000 * from [{cboTable.Text.Trim}]"
+                cboTable.Text = sql
+            End If
+
+            Using cmd As New OleDbCommand(cboTable.Text, conn)
+                cmd.CommandTimeout = Integer.Parse(optCommandTimeout.Text)
+
+                Using rdr = cmd.ExecuteReader(CommandBehavior.Default)
+                    Do While True
+                        Dim dt = New DataTable
+                        dt.Load(rdr)
+
+                        Dim js = JsonConvert.SerializeObject(dt)
+                        File.WriteAllText(fl, js, New UTF8Encoding(False))
+
+                        If rdr.IsClosed OrElse rdr.NextResult() = False Then Exit Do
+                    Loop
+                End Using
+                conn.Close()
+            End Using
+        End Using
+
+        MsgBox($"Data was exported to {fl}", vbInformation)
+
     End Sub
 End Class

@@ -43,6 +43,7 @@ Partial Class frmMain
         Me.ModalPopup2TupleToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator4 = New System.Windows.Forms.ToolStripSeparator()
         Me.BlankModalToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripMenuItem3 = New System.Windows.Forms.ToolStripMenuItem()
         Me.HtmlTagHelpersOnlyToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.Select2ViewBagToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator5 = New System.Windows.Forms.ToolStripSeparator()
@@ -101,7 +102,7 @@ Partial Class frmMain
         Me.optCommandTimeout = New System.Windows.Forms.ToolStripTextBox()
         Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripButton7 = New System.Windows.Forms.ToolStripButton()
-        Me.ToolStripMenuItem3 = New System.Windows.Forms.ToolStripMenuItem()
+        Me.btnExportJSON = New System.Windows.Forms.ToolStripButton()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -237,6 +238,13 @@ Partial Class frmMain
         Me.BlankModalToolStripMenuItem.Name = "BlankModalToolStripMenuItem"
         Me.BlankModalToolStripMenuItem.Size = New System.Drawing.Size(257, 22)
         Me.BlankModalToolStripMenuItem.Text = "Blank Modal"
+        '
+        'ToolStripMenuItem3
+        '
+        Me.ToolStripMenuItem3.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold)
+        Me.ToolStripMenuItem3.Name = "ToolStripMenuItem3"
+        Me.ToolStripMenuItem3.Size = New System.Drawing.Size(257, 22)
+        Me.ToolStripMenuItem3.Text = "Blank Modal (BS 4.6.x)"
         '
         'HtmlTagHelpersOnlyToolStripMenuItem
         '
@@ -540,7 +548,7 @@ Partial Class frmMain
         '
         'ToolStrip2
         '
-        Me.ToolStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripLabel1, Me.txtSQLConnectionString, Me.ToolStripButton9, Me.ToolStripButton6, Me.btnConnect, Me.cboTable, Me.btnEditor, Me.btnGenerateFromTable, Me.btnGenerateProc, Me.ToolStripButton8, Me.ToolStripSeparator10, Me.ToolStripButton7})
+        Me.ToolStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripLabel1, Me.txtSQLConnectionString, Me.ToolStripButton9, Me.ToolStripButton6, Me.btnConnect, Me.cboTable, Me.btnEditor, Me.btnGenerateFromTable, Me.btnGenerateProc, Me.btnExportJSON, Me.ToolStripButton8, Me.ToolStripSeparator10, Me.ToolStripButton7})
         Me.ToolStrip2.Location = New System.Drawing.Point(0, 25)
         Me.ToolStrip2.Name = "ToolStrip2"
         Me.ToolStrip2.Size = New System.Drawing.Size(1130, 25)
@@ -680,12 +688,14 @@ Partial Class frmMain
         Me.ToolStripButton7.Size = New System.Drawing.Size(64, 22)
         Me.ToolStripButton7.Text = "INSERT"
         '
-        'ToolStripMenuItem3
+        'btnExportJSON
         '
-        Me.ToolStripMenuItem3.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold)
-        Me.ToolStripMenuItem3.Name = "ToolStripMenuItem3"
-        Me.ToolStripMenuItem3.Size = New System.Drawing.Size(257, 22)
-        Me.ToolStripMenuItem3.Text = "Blank Modal (BS 4.6.x)"
+        Me.btnExportJSON.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.btnExportJSON.Image = CType(resources.GetObject("btnExportJSON.Image"), System.Drawing.Image)
+        Me.btnExportJSON.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.btnExportJSON.Name = "btnExportJSON"
+        Me.btnExportJSON.Size = New System.Drawing.Size(23, 22)
+        Me.btnExportJSON.Text = "Export to JSON"
         '
         'frmMain
         '
@@ -795,4 +805,5 @@ Partial Class frmMain
     Friend WithEvents optGenerateNamedParam As ToolStripMenuItem
     Friend WithEvents btnGenerateProc As ToolStripButton
     Friend WithEvents ToolStripMenuItem3 As ToolStripMenuItem
+    Friend WithEvents btnExportJSON As ToolStripButton
 End Class
