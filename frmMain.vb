@@ -8523,4 +8523,43 @@ END
         MsgBox($"Data was exported to {fl}", vbInformation)
 
     End Sub
+
+    Private Sub GETBLOBToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles GETBLOBToolStripMenuItem.Click
+
+        Dim normalPost = <![CDATA[
+            ShowSwalLoader()
+
+            return $.ajax({
+                url: "/{controller}/{action}/",                
+                data: {
+                    dtFrom: $(`[name=datefrom]`).val(),
+                    dtTo: $(`[name=dateto]`).val(),
+                },
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                complete: function (jqXHR, textStatus) {
+                    if (textStatus != 'error') {
+                        setTimeout(() => {
+                            CloseSwalLoader();
+                        }, 500);
+                    }
+                },
+                success: function (blob, textStatus, jqXHR) {
+                    const contentType = jqXHR.getResponseHeader("Content-Type");
+                    if (contentType === "application/pdf") {
+                        const url = window.URL.createObjectURL(blob);
+                        ShowPrintPreview(url)
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    var msg = jqXHR?.responseJSON?.message || `Opps ! Something went wrong ... `
+                    error(msg)
+                }
+            });
+]]>.Value
+
+        txtDest.Text = normalPost
+
+    End Sub
 End Class
