@@ -6648,7 +6648,9 @@ public class PositionModel
         Dim qq = $"
 
 BEGIN TRY
-    SET NOCOUNT ON
+    SET NOCOUNT ON      --
+    set xact_abort on   -- use with transaction, save all or nothing
+
     BEGIN TRANSACTION
 
    -- insert -- 
@@ -6663,13 +6665,13 @@ END TRY
 BEGIN CATCH
     -- If error, rollback transaction
     IF @@TRANCOUNT > 0
-        ROLLBACK TRANSACTION
+        ROLLBACK TRANSACTION;
 
     -- Optional: capture and display error details
-    DECLARE @ErrMsg NVARCHAR(4000), @ErrSeverity INT
+    DECLARE @ErrMsg NVARCHAR(4000), @ErrSeverity INT;
     SELECT 
         @ErrMsg = ERROR_MESSAGE(),
-        @ErrSeverity = ERROR_SEVERITY()
+        @ErrSeverity = ERROR_SEVERITY();
 
     RAISERROR(@ErrMsg, @ErrSeverity, 1)
 END CATCH
@@ -8356,6 +8358,7 @@ CREATE OR ALTER PROCEDURE dbo.[js_{tblName.ToLower}_crud]
 AS
 BEGIN
     SET NOCOUNT ON;
+    set xact_abort on   -- use with transaction, save all or nothing
 
     -- CREATE
     IF @js_method = 'new'
