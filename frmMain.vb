@@ -8565,4 +8565,8 @@ END
         txtDest.Text = normalPost
 
     End Sub
+
+    Private Sub btnSQLBulkCopy_Click(sender As Object, e As EventArgs) Handles btnSQLBulkCopy.Click
+        frmSQLBulkCopy.Show()
+    End Sub
 End Class
