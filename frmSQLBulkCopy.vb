@@ -334,7 +334,7 @@ Public Class frmSQLBulkCopy
 
                 Dim t1 = Now
                 Dim newcon = ConvertToSqlConnectionString(txtDest.Text)
-                Using bulkCopy As New SqlBulkCopy(newcon)
+                Using bulkCopy As New SqlBulkCopy(newcon, SqlBulkCopyOptions.KeepIdentity)
                     bulkCopy.DestinationTableName = staging
                     bulkCopy.BatchSize = 5000
                     bulkCopy.BulkCopyTimeout = 0 ' no timeout
