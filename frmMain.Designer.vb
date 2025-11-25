@@ -25,9 +25,39 @@ Partial Class frmMain
         Me.components = New System.ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmMain))
         Me.ToolStrip1 = New System.Windows.Forms.ToolStrip()
+        Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
+        Me.ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator()
+        Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
+        Me.txtSource = New System.Windows.Forms.RichTextBox()
+        Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
+        Me.TabControl1 = New System.Windows.Forms.TabControl()
+        Me.TabPage1 = New System.Windows.Forms.TabPage()
+        Me.txtDest = New System.Windows.Forms.RichTextBox()
+        Me.TabPage2 = New System.Windows.Forms.TabPage()
+        Me.txtDest2 = New System.Windows.Forms.RichTextBox()
+        Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
+        Me.ToolStripStatusLabel1 = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
+        Me.ToolStrip2 = New System.Windows.Forms.ToolStrip()
+        Me.ToolStripLabel1 = New System.Windows.Forms.ToolStripLabel()
+        Me.txtSQLConnectionString = New System.Windows.Forms.ToolStripComboBox()
+        Me.cboTable = New System.Windows.Forms.ToolStripComboBox()
+        Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator()
+        Me.ToolStripButton9 = New System.Windows.Forms.ToolStripButton()
+        Me.ToolStripButton6 = New System.Windows.Forms.ToolStripButton()
+        Me.btnConnect = New System.Windows.Forms.ToolStripButton()
+        Me.btnEditor = New System.Windows.Forms.ToolStripButton()
+        Me.btnGenerateFromTable = New System.Windows.Forms.ToolStripButton()
+        Me.btnGenerateProc = New System.Windows.Forms.ToolStripButton()
+        Me.btnExportJSON = New System.Windows.Forms.ToolStripButton()
+        Me.ToolStripButton8 = New System.Windows.Forms.ToolStripDropDownButton()
+        Me.optAnnotation = New System.Windows.Forms.ToolStripMenuItem()
+        Me.optGenerateByHTMLHelper = New System.Windows.Forms.ToolStripMenuItem()
+        Me.optGenerateNamedParam = New System.Windows.Forms.ToolStripMenuItem()
+        Me.optCommandTimeout = New System.Windows.Forms.ToolStripTextBox()
+        Me.ToolStripButton7 = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripButton1 = New System.Windows.Forms.ToolStripSplitButton()
         Me.APIGeneratorcjTemplateToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripButton5 = New System.Windows.Forms.ToolStripDropDownButton()
         Me.ModelBuilderToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.DataAccessBuilderToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -36,7 +66,6 @@ Partial Class frmMain
         Me.ToolStripSeparator6 = New System.Windows.Forms.ToolStripSeparator()
         Me.DataAccessOnUIToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.DataAccessOnControllerAPIToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripButton3 = New System.Windows.Forms.ToolStripDropDownButton()
         Me.DefaultToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ModalPopupToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -72,38 +101,11 @@ Partial Class frmMain
         Me.DatatableGETToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.Select2AjaxToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.BsSuggestToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
+        Me.GETBLOBToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripButton4 = New System.Windows.Forms.ToolStripSplitButton()
         Me.DatatablesBootstrap4ToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.txtSource = New System.Windows.Forms.RichTextBox()
-        Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
-        Me.TabControl1 = New System.Windows.Forms.TabControl()
-        Me.TabPage1 = New System.Windows.Forms.TabPage()
-        Me.txtDest = New System.Windows.Forms.RichTextBox()
-        Me.TabPage2 = New System.Windows.Forms.TabPage()
-        Me.txtDest2 = New System.Windows.Forms.RichTextBox()
-        Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
-        Me.ToolStripStatusLabel1 = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
-        Me.ToolStrip2 = New System.Windows.Forms.ToolStrip()
-        Me.ToolStripLabel1 = New System.Windows.Forms.ToolStripLabel()
-        Me.txtSQLConnectionString = New System.Windows.Forms.ToolStripComboBox()
-        Me.ToolStripButton9 = New System.Windows.Forms.ToolStripButton()
-        Me.ToolStripButton6 = New System.Windows.Forms.ToolStripButton()
-        Me.btnConnect = New System.Windows.Forms.ToolStripButton()
-        Me.cboTable = New System.Windows.Forms.ToolStripComboBox()
-        Me.btnEditor = New System.Windows.Forms.ToolStripButton()
-        Me.btnGenerateFromTable = New System.Windows.Forms.ToolStripButton()
-        Me.btnGenerateProc = New System.Windows.Forms.ToolStripButton()
-        Me.btnExportJSON = New System.Windows.Forms.ToolStripButton()
-        Me.ToolStripButton8 = New System.Windows.Forms.ToolStripDropDownButton()
-        Me.optAnnotation = New System.Windows.Forms.ToolStripMenuItem()
-        Me.optGenerateByHTMLHelper = New System.Windows.Forms.ToolStripMenuItem()
-        Me.optGenerateNamedParam = New System.Windows.Forms.ToolStripMenuItem()
-        Me.optCommandTimeout = New System.Windows.Forms.ToolStripTextBox()
-        Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator()
-        Me.ToolStripButton7 = New System.Windows.Forms.ToolStripButton()
-        Me.GETBLOBToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripSeparator12 = New System.Windows.Forms.ToolStripSeparator()
+        Me.btnSQLBulkCopy = New System.Windows.Forms.ToolStripButton()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -118,12 +120,283 @@ Partial Class frmMain
         '
         'ToolStrip1
         '
-        Me.ToolStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripButton1, Me.ToolStripSeparator1, Me.ToolStripButton5, Me.ToolStripSeparator3, Me.ToolStripButton3, Me.ToolStripButton2, Me.ToolStripSeparator2, Me.ToolStripButton4})
+        Me.ToolStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripButton1, Me.ToolStripSeparator1, Me.ToolStripButton5, Me.ToolStripSeparator3, Me.ToolStripButton3, Me.ToolStripButton2, Me.ToolStripSeparator2, Me.ToolStripButton4, Me.ToolStripSeparator12, Me.btnSQLBulkCopy})
         Me.ToolStrip1.Location = New System.Drawing.Point(0, 0)
         Me.ToolStrip1.Name = "ToolStrip1"
-        Me.ToolStrip1.Size = New System.Drawing.Size(1130, 25)
+        Me.ToolStrip1.Size = New System.Drawing.Size(1091, 25)
         Me.ToolStrip1.TabIndex = 0
         Me.ToolStrip1.Text = "ToolStrip1"
+        '
+        'ToolStripSeparator1
+        '
+        Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
+        Me.ToolStripSeparator1.Size = New System.Drawing.Size(6, 25)
+        '
+        'ToolStripSeparator3
+        '
+        Me.ToolStripSeparator3.Name = "ToolStripSeparator3"
+        Me.ToolStripSeparator3.Size = New System.Drawing.Size(6, 25)
+        '
+        'ToolStripSeparator2
+        '
+        Me.ToolStripSeparator2.Name = "ToolStripSeparator2"
+        Me.ToolStripSeparator2.Size = New System.Drawing.Size(6, 25)
+        '
+        'txtSource
+        '
+        Me.txtSource.BackColor = System.Drawing.SystemColors.Window
+        Me.txtSource.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.txtSource.Font = New System.Drawing.Font("Consolas", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.txtSource.Location = New System.Drawing.Point(0, 0)
+        Me.txtSource.Name = "txtSource"
+        Me.txtSource.Size = New System.Drawing.Size(281, 554)
+        Me.txtSource.TabIndex = 1
+        Me.txtSource.Text = resources.GetString("txtSource.Text")
+        Me.txtSource.WordWrap = False
+        '
+        'SplitContainer1
+        '
+        Me.SplitContainer1.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer1.Location = New System.Drawing.Point(0, 50)
+        Me.SplitContainer1.Name = "SplitContainer1"
+        '
+        'SplitContainer1.Panel1
+        '
+        Me.SplitContainer1.Panel1.Controls.Add(Me.txtSource)
+        '
+        'SplitContainer1.Panel2
+        '
+        Me.SplitContainer1.Panel2.Controls.Add(Me.TabControl1)
+        Me.SplitContainer1.Size = New System.Drawing.Size(1091, 554)
+        Me.SplitContainer1.SplitterDistance = 281
+        Me.SplitContainer1.SplitterWidth = 6
+        Me.SplitContainer1.TabIndex = 2
+        '
+        'TabControl1
+        '
+        Me.TabControl1.Appearance = System.Windows.Forms.TabAppearance.FlatButtons
+        Me.TabControl1.Controls.Add(Me.TabPage1)
+        Me.TabControl1.Controls.Add(Me.TabPage2)
+        Me.TabControl1.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.TabControl1.Location = New System.Drawing.Point(0, 0)
+        Me.TabControl1.Margin = New System.Windows.Forms.Padding(0)
+        Me.TabControl1.Name = "TabControl1"
+        Me.TabControl1.SelectedIndex = 0
+        Me.TabControl1.Size = New System.Drawing.Size(804, 554)
+        Me.TabControl1.TabIndex = 3
+        '
+        'TabPage1
+        '
+        Me.TabPage1.Controls.Add(Me.txtDest)
+        Me.TabPage1.Location = New System.Drawing.Point(4, 25)
+        Me.TabPage1.Name = "TabPage1"
+        Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabPage1.Size = New System.Drawing.Size(796, 525)
+        Me.TabPage1.TabIndex = 0
+        Me.TabPage1.Text = "Source Result"
+        Me.TabPage1.UseVisualStyleBackColor = True
+        '
+        'txtDest
+        '
+        Me.txtDest.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.txtDest.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.txtDest.Font = New System.Drawing.Font("Consolas", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.txtDest.Location = New System.Drawing.Point(3, 3)
+        Me.txtDest.Name = "txtDest"
+        Me.txtDest.Size = New System.Drawing.Size(790, 519)
+        Me.txtDest.TabIndex = 2
+        Me.txtDest.Text = "Hello World!"
+        Me.txtDest.WordWrap = False
+        '
+        'TabPage2
+        '
+        Me.TabPage2.Controls.Add(Me.txtDest2)
+        Me.TabPage2.Location = New System.Drawing.Point(4, 25)
+        Me.TabPage2.Name = "TabPage2"
+        Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabPage2.Size = New System.Drawing.Size(824, 525)
+        Me.TabPage2.TabIndex = 1
+        Me.TabPage2.Text = "Script View"
+        Me.TabPage2.UseVisualStyleBackColor = True
+        '
+        'txtDest2
+        '
+        Me.txtDest2.BackColor = System.Drawing.SystemColors.Window
+        Me.txtDest2.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.txtDest2.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.txtDest2.Font = New System.Drawing.Font("Consolas", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.txtDest2.Location = New System.Drawing.Point(3, 3)
+        Me.txtDest2.Name = "txtDest2"
+        Me.txtDest2.Size = New System.Drawing.Size(818, 519)
+        Me.txtDest2.TabIndex = 3
+        Me.txtDest2.Text = "Hello World!"
+        Me.txtDest2.WordWrap = False
+        '
+        'StatusStrip1
+        '
+        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusLabel1})
+        Me.StatusStrip1.Location = New System.Drawing.Point(0, 604)
+        Me.StatusStrip1.Name = "StatusStrip1"
+        Me.StatusStrip1.Size = New System.Drawing.Size(1091, 22)
+        Me.StatusStrip1.TabIndex = 4
+        Me.StatusStrip1.Text = "StatusStrip1"
+        '
+        'ToolStripStatusLabel1
+        '
+        Me.ToolStripStatusLabel1.Name = "ToolStripStatusLabel1"
+        Me.ToolStripStatusLabel1.Size = New System.Drawing.Size(1115, 17)
+        Me.ToolStripStatusLabel1.Spring = True
+        Me.ToolStripStatusLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'ToolStrip2
+        '
+        Me.ToolStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripLabel1, Me.txtSQLConnectionString, Me.ToolStripButton9, Me.ToolStripButton6, Me.btnConnect, Me.cboTable, Me.btnEditor, Me.btnGenerateFromTable, Me.btnGenerateProc, Me.btnExportJSON, Me.ToolStripButton8, Me.ToolStripSeparator10, Me.ToolStripButton7})
+        Me.ToolStrip2.Location = New System.Drawing.Point(0, 25)
+        Me.ToolStrip2.Name = "ToolStrip2"
+        Me.ToolStrip2.Size = New System.Drawing.Size(1091, 25)
+        Me.ToolStrip2.TabIndex = 5
+        Me.ToolStrip2.Text = "ToolStrip2"
+        '
+        'ToolStripLabel1
+        '
+        Me.ToolStripLabel1.Name = "ToolStripLabel1"
+        Me.ToolStripLabel1.Size = New System.Drawing.Size(72, 22)
+        Me.ToolStripLabel1.Text = "Connection:"
+        '
+        'txtSQLConnectionString
+        '
+        Me.txtSQLConnectionString.Name = "txtSQLConnectionString"
+        Me.txtSQLConnectionString.Size = New System.Drawing.Size(500, 25)
+        Me.txtSQLConnectionString.Text = "Provider=MSOLEDBSQL;Password=sa;Persist Security Info=True;User ID=sa;Initial Cat" &
+    "alog=ebs;Data Source=DESKTOP-ABGBBCK"
+        '
+        'cboTable
+        '
+        Me.cboTable.Name = "cboTable"
+        Me.cboTable.Size = New System.Drawing.Size(200, 25)
+        Me.cboTable.ToolTipText = "Select Table/Views"
+        '
+        'ToolStripSeparator10
+        '
+        Me.ToolStripSeparator10.Name = "ToolStripSeparator10"
+        Me.ToolStripSeparator10.Size = New System.Drawing.Size(6, 25)
+        '
+        'ToolStripButton9
+        '
+        Me.ToolStripButton9.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripButton9.Image = CType(resources.GetObject("ToolStripButton9.Image"), System.Drawing.Image)
+        Me.ToolStripButton9.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripButton9.Name = "ToolStripButton9"
+        Me.ToolStripButton9.Size = New System.Drawing.Size(23, 22)
+        Me.ToolStripButton9.ToolTipText = "Edit connection string"
+        '
+        'ToolStripButton6
+        '
+        Me.ToolStripButton6.Image = CType(resources.GetObject("ToolStripButton6.Image"), System.Drawing.Image)
+        Me.ToolStripButton6.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripButton6.Name = "ToolStripButton6"
+        Me.ToolStripButton6.Size = New System.Drawing.Size(54, 22)
+        Me.ToolStripButton6.Text = "Build"
+        Me.ToolStripButton6.ToolTipText = "Build connection string"
+        '
+        'btnConnect
+        '
+        Me.btnConnect.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.btnConnect.Image = CType(resources.GetObject("btnConnect.Image"), System.Drawing.Image)
+        Me.btnConnect.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.btnConnect.Name = "btnConnect"
+        Me.btnConnect.Size = New System.Drawing.Size(23, 22)
+        Me.btnConnect.Text = "Connect"
+        '
+        'btnEditor
+        '
+        Me.btnEditor.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.btnEditor.Image = CType(resources.GetObject("btnEditor.Image"), System.Drawing.Image)
+        Me.btnEditor.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.btnEditor.Name = "btnEditor"
+        Me.btnEditor.Size = New System.Drawing.Size(23, 22)
+        Me.btnEditor.ToolTipText = "Edit script"
+        '
+        'btnGenerateFromTable
+        '
+        Me.btnGenerateFromTable.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.btnGenerateFromTable.Image = CType(resources.GetObject("btnGenerateFromTable.Image"), System.Drawing.Image)
+        Me.btnGenerateFromTable.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.btnGenerateFromTable.Name = "btnGenerateFromTable"
+        Me.btnGenerateFromTable.Size = New System.Drawing.Size(23, 22)
+        Me.btnGenerateFromTable.Text = "Generate from selected table or using SQL Query"
+        '
+        'btnGenerateProc
+        '
+        Me.btnGenerateProc.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.btnGenerateProc.Image = CType(resources.GetObject("btnGenerateProc.Image"), System.Drawing.Image)
+        Me.btnGenerateProc.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.btnGenerateProc.Name = "btnGenerateProc"
+        Me.btnGenerateProc.Size = New System.Drawing.Size(23, 22)
+        Me.btnGenerateProc.Text = "ToolStripButton10"
+        '
+        'btnExportJSON
+        '
+        Me.btnExportJSON.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.btnExportJSON.Image = CType(resources.GetObject("btnExportJSON.Image"), System.Drawing.Image)
+        Me.btnExportJSON.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.btnExportJSON.Name = "btnExportJSON"
+        Me.btnExportJSON.Size = New System.Drawing.Size(23, 22)
+        Me.btnExportJSON.Text = "Export to JSON"
+        '
+        'ToolStripButton8
+        '
+        Me.ToolStripButton8.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripButton8.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.optAnnotation, Me.optGenerateByHTMLHelper, Me.optGenerateNamedParam, Me.optCommandTimeout})
+        Me.ToolStripButton8.Image = CType(resources.GetObject("ToolStripButton8.Image"), System.Drawing.Image)
+        Me.ToolStripButton8.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripButton8.Name = "ToolStripButton8"
+        Me.ToolStripButton8.Size = New System.Drawing.Size(29, 22)
+        Me.ToolStripButton8.Text = "Options"
+        '
+        'optAnnotation
+        '
+        Me.optAnnotation.Checked = True
+        Me.optAnnotation.CheckOnClick = True
+        Me.optAnnotation.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.optAnnotation.Image = Global.MVC_TOOL.My.Resources.Resources.check_box
+        Me.optAnnotation.Name = "optAnnotation"
+        Me.optAnnotation.Size = New System.Drawing.Size(229, 22)
+        Me.optAnnotation.Text = "Generate with Annotation"
+        '
+        'optGenerateByHTMLHelper
+        '
+        Me.optGenerateByHTMLHelper.CheckOnClick = True
+        Me.optGenerateByHTMLHelper.Image = Global.MVC_TOOL.My.Resources.Resources.check_box_uncheck
+        Me.optGenerateByHTMLHelper.Name = "optGenerateByHTMLHelper"
+        Me.optGenerateByHTMLHelper.Size = New System.Drawing.Size(229, 22)
+        Me.optGenerateByHTMLHelper.Text = "Generate with HTML Helper"
+        '
+        'optGenerateNamedParam
+        '
+        Me.optGenerateNamedParam.Checked = True
+        Me.optGenerateNamedParam.CheckOnClick = True
+        Me.optGenerateNamedParam.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.optGenerateNamedParam.Image = Global.MVC_TOOL.My.Resources.Resources.check_box
+        Me.optGenerateNamedParam.Name = "optGenerateNamedParam"
+        Me.optGenerateNamedParam.Size = New System.Drawing.Size(229, 22)
+        Me.optGenerateNamedParam.Text = "Generate @named parameter"
+        '
+        'optCommandTimeout
+        '
+        Me.optCommandTimeout.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.optCommandTimeout.Name = "optCommandTimeout"
+        Me.optCommandTimeout.Size = New System.Drawing.Size(50, 23)
+        Me.optCommandTimeout.Text = "25"
+        Me.optCommandTimeout.TextBoxTextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        '
+        'ToolStripButton7
+        '
+        Me.ToolStripButton7.Image = CType(resources.GetObject("ToolStripButton7.Image"), System.Drawing.Image)
+        Me.ToolStripButton7.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripButton7.Name = "ToolStripButton7"
+        Me.ToolStripButton7.Size = New System.Drawing.Size(64, 22)
+        Me.ToolStripButton7.Text = "INSERT"
         '
         'ToolStripButton1
         '
@@ -139,11 +412,6 @@ Partial Class frmMain
         Me.APIGeneratorcjTemplateToolStripMenuItem.Name = "APIGeneratorcjTemplateToolStripMenuItem"
         Me.APIGeneratorcjTemplateToolStripMenuItem.Size = New System.Drawing.Size(217, 22)
         Me.APIGeneratorcjTemplateToolStripMenuItem.Text = "API Generator (cj template)"
-        '
-        'ToolStripSeparator1
-        '
-        Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
-        Me.ToolStripSeparator1.Size = New System.Drawing.Size(6, 25)
         '
         'ToolStripButton5
         '
@@ -194,11 +462,6 @@ Partial Class frmMain
         Me.DataAccessOnControllerAPIToolStripMenuItem.Name = "DataAccessOnControllerAPIToolStripMenuItem"
         Me.DataAccessOnControllerAPIToolStripMenuItem.Size = New System.Drawing.Size(236, 22)
         Me.DataAccessOnControllerAPIToolStripMenuItem.Text = "DataAccess on Controller (API)"
-        '
-        'ToolStripSeparator3
-        '
-        Me.ToolStripSeparator3.Name = "ToolStripSeparator3"
-        Me.ToolStripSeparator3.Size = New System.Drawing.Size(6, 25)
         '
         'ToolStripButton3
         '
@@ -386,44 +649,45 @@ Partial Class frmMain
         'GETToolStripMenuItem
         '
         Me.GETToolStripMenuItem.Name = "GETToolStripMenuItem"
-        Me.GETToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.GETToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
         Me.GETToolStripMenuItem.Text = "GET"
         '
         'FormPOSTToolStripMenuItem
         '
         Me.FormPOSTToolStripMenuItem.Name = "FormPOSTToolStripMenuItem"
-        Me.FormPOSTToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.FormPOSTToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
         Me.FormPOSTToolStripMenuItem.Text = "Form POST"
         '
         'FormPOSTJSToolStripMenuItem
         '
         Me.FormPOSTJSToolStripMenuItem.Name = "FormPOSTJSToolStripMenuItem"
-        Me.FormPOSTJSToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.FormPOSTJSToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
         Me.FormPOSTJSToolStripMenuItem.Text = "Form POST (JS)"
         '
         'DatatableGETToolStripMenuItem
         '
         Me.DatatableGETToolStripMenuItem.Name = "DatatableGETToolStripMenuItem"
-        Me.DatatableGETToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.DatatableGETToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
         Me.DatatableGETToolStripMenuItem.Text = "Datatable GET"
         '
         'Select2AjaxToolStripMenuItem
         '
         Me.Select2AjaxToolStripMenuItem.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold)
         Me.Select2AjaxToolStripMenuItem.Name = "Select2AjaxToolStripMenuItem"
-        Me.Select2AjaxToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.Select2AjaxToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
         Me.Select2AjaxToolStripMenuItem.Text = "Select2 Ajax"
         '
         'BsSuggestToolStripMenuItem
         '
         Me.BsSuggestToolStripMenuItem.Name = "BsSuggestToolStripMenuItem"
-        Me.BsSuggestToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.BsSuggestToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
         Me.BsSuggestToolStripMenuItem.Text = "bsSuggest"
         '
-        'ToolStripSeparator2
+        'GETBLOBToolStripMenuItem
         '
-        Me.ToolStripSeparator2.Name = "ToolStripSeparator2"
-        Me.ToolStripSeparator2.Size = New System.Drawing.Size(6, 25)
+        Me.GETBLOBToolStripMenuItem.Name = "GETBLOBToolStripMenuItem"
+        Me.GETBLOBToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
+        Me.GETBLOBToolStripMenuItem.Text = "GET (BLOB)"
         '
         'ToolStripButton4
         '
@@ -441,279 +705,30 @@ Partial Class frmMain
         Me.DatatablesBootstrap4ToolStripMenuItem.Size = New System.Drawing.Size(209, 22)
         Me.DatatablesBootstrap4ToolStripMenuItem.Text = "Datatables (Bootstrap 4)"
         '
-        'txtSource
+        'ToolStripSeparator12
         '
-        Me.txtSource.BackColor = System.Drawing.SystemColors.Window
-        Me.txtSource.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.txtSource.Font = New System.Drawing.Font("Consolas", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtSource.Location = New System.Drawing.Point(0, 0)
-        Me.txtSource.Name = "txtSource"
-        Me.txtSource.Size = New System.Drawing.Size(292, 554)
-        Me.txtSource.TabIndex = 1
-        Me.txtSource.Text = resources.GetString("txtSource.Text")
-        Me.txtSource.WordWrap = False
+        Me.ToolStripSeparator12.Name = "ToolStripSeparator12"
+        Me.ToolStripSeparator12.Size = New System.Drawing.Size(6, 25)
         '
-        'SplitContainer1
+        'btnSQLBulkCopy
         '
-        Me.SplitContainer1.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.SplitContainer1.Location = New System.Drawing.Point(0, 50)
-        Me.SplitContainer1.Name = "SplitContainer1"
-        '
-        'SplitContainer1.Panel1
-        '
-        Me.SplitContainer1.Panel1.Controls.Add(Me.txtSource)
-        '
-        'SplitContainer1.Panel2
-        '
-        Me.SplitContainer1.Panel2.Controls.Add(Me.TabControl1)
-        Me.SplitContainer1.Size = New System.Drawing.Size(1130, 554)
-        Me.SplitContainer1.SplitterDistance = 292
-        Me.SplitContainer1.SplitterWidth = 6
-        Me.SplitContainer1.TabIndex = 2
-        '
-        'TabControl1
-        '
-        Me.TabControl1.Appearance = System.Windows.Forms.TabAppearance.FlatButtons
-        Me.TabControl1.Controls.Add(Me.TabPage1)
-        Me.TabControl1.Controls.Add(Me.TabPage2)
-        Me.TabControl1.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.TabControl1.Location = New System.Drawing.Point(0, 0)
-        Me.TabControl1.Margin = New System.Windows.Forms.Padding(0)
-        Me.TabControl1.Name = "TabControl1"
-        Me.TabControl1.SelectedIndex = 0
-        Me.TabControl1.Size = New System.Drawing.Size(832, 554)
-        Me.TabControl1.TabIndex = 3
-        '
-        'TabPage1
-        '
-        Me.TabPage1.Controls.Add(Me.txtDest)
-        Me.TabPage1.Location = New System.Drawing.Point(4, 25)
-        Me.TabPage1.Name = "TabPage1"
-        Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage1.Size = New System.Drawing.Size(824, 525)
-        Me.TabPage1.TabIndex = 0
-        Me.TabPage1.Text = "Source Result"
-        Me.TabPage1.UseVisualStyleBackColor = True
-        '
-        'txtDest
-        '
-        Me.txtDest.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.txtDest.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.txtDest.Font = New System.Drawing.Font("Consolas", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtDest.Location = New System.Drawing.Point(3, 3)
-        Me.txtDest.Name = "txtDest"
-        Me.txtDest.Size = New System.Drawing.Size(818, 519)
-        Me.txtDest.TabIndex = 2
-        Me.txtDest.Text = "Hello World!"
-        Me.txtDest.WordWrap = False
-        '
-        'TabPage2
-        '
-        Me.TabPage2.Controls.Add(Me.txtDest2)
-        Me.TabPage2.Location = New System.Drawing.Point(4, 25)
-        Me.TabPage2.Name = "TabPage2"
-        Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage2.Size = New System.Drawing.Size(824, 525)
-        Me.TabPage2.TabIndex = 1
-        Me.TabPage2.Text = "Script View"
-        Me.TabPage2.UseVisualStyleBackColor = True
-        '
-        'txtDest2
-        '
-        Me.txtDest2.BackColor = System.Drawing.SystemColors.Window
-        Me.txtDest2.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.txtDest2.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.txtDest2.Font = New System.Drawing.Font("Consolas", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtDest2.Location = New System.Drawing.Point(3, 3)
-        Me.txtDest2.Name = "txtDest2"
-        Me.txtDest2.Size = New System.Drawing.Size(818, 519)
-        Me.txtDest2.TabIndex = 3
-        Me.txtDest2.Text = "Hello World!"
-        Me.txtDest2.WordWrap = False
-        '
-        'StatusStrip1
-        '
-        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusLabel1})
-        Me.StatusStrip1.Location = New System.Drawing.Point(0, 604)
-        Me.StatusStrip1.Name = "StatusStrip1"
-        Me.StatusStrip1.Size = New System.Drawing.Size(1130, 22)
-        Me.StatusStrip1.TabIndex = 4
-        Me.StatusStrip1.Text = "StatusStrip1"
-        '
-        'ToolStripStatusLabel1
-        '
-        Me.ToolStripStatusLabel1.Name = "ToolStripStatusLabel1"
-        Me.ToolStripStatusLabel1.Size = New System.Drawing.Size(1115, 17)
-        Me.ToolStripStatusLabel1.Spring = True
-        Me.ToolStripStatusLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'ToolStrip2
-        '
-        Me.ToolStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripLabel1, Me.txtSQLConnectionString, Me.ToolStripButton9, Me.ToolStripButton6, Me.btnConnect, Me.cboTable, Me.btnEditor, Me.btnGenerateFromTable, Me.btnGenerateProc, Me.btnExportJSON, Me.ToolStripButton8, Me.ToolStripSeparator10, Me.ToolStripButton7})
-        Me.ToolStrip2.Location = New System.Drawing.Point(0, 25)
-        Me.ToolStrip2.Name = "ToolStrip2"
-        Me.ToolStrip2.Size = New System.Drawing.Size(1130, 25)
-        Me.ToolStrip2.TabIndex = 5
-        Me.ToolStrip2.Text = "ToolStrip2"
-        '
-        'ToolStripLabel1
-        '
-        Me.ToolStripLabel1.Name = "ToolStripLabel1"
-        Me.ToolStripLabel1.Size = New System.Drawing.Size(72, 22)
-        Me.ToolStripLabel1.Text = "Connection:"
-        '
-        'txtSQLConnectionString
-        '
-        Me.txtSQLConnectionString.Name = "txtSQLConnectionString"
-        Me.txtSQLConnectionString.Size = New System.Drawing.Size(500, 25)
-        Me.txtSQLConnectionString.Text = "Provider=MSOLEDBSQL;Password=sa;Persist Security Info=True;User ID=sa;Initial Cat" &
-    "alog=ebs;Data Source=DESKTOP-ABGBBCK"
-        '
-        'ToolStripButton9
-        '
-        Me.ToolStripButton9.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.ToolStripButton9.Image = CType(resources.GetObject("ToolStripButton9.Image"), System.Drawing.Image)
-        Me.ToolStripButton9.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.ToolStripButton9.Name = "ToolStripButton9"
-        Me.ToolStripButton9.Size = New System.Drawing.Size(23, 22)
-        Me.ToolStripButton9.ToolTipText = "Edit connection string"
-        '
-        'ToolStripButton6
-        '
-        Me.ToolStripButton6.Image = CType(resources.GetObject("ToolStripButton6.Image"), System.Drawing.Image)
-        Me.ToolStripButton6.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.ToolStripButton6.Name = "ToolStripButton6"
-        Me.ToolStripButton6.Size = New System.Drawing.Size(54, 22)
-        Me.ToolStripButton6.Text = "Build"
-        Me.ToolStripButton6.ToolTipText = "Build connection string"
-        '
-        'btnConnect
-        '
-        Me.btnConnect.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.btnConnect.Image = CType(resources.GetObject("btnConnect.Image"), System.Drawing.Image)
-        Me.btnConnect.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.btnConnect.Name = "btnConnect"
-        Me.btnConnect.Size = New System.Drawing.Size(23, 22)
-        Me.btnConnect.Text = "Connect"
-        '
-        'cboTable
-        '
-        Me.cboTable.Name = "cboTable"
-        Me.cboTable.Size = New System.Drawing.Size(200, 25)
-        Me.cboTable.ToolTipText = "Select Table/Views"
-        '
-        'btnEditor
-        '
-        Me.btnEditor.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.btnEditor.Image = CType(resources.GetObject("btnEditor.Image"), System.Drawing.Image)
-        Me.btnEditor.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.btnEditor.Name = "btnEditor"
-        Me.btnEditor.Size = New System.Drawing.Size(23, 22)
-        Me.btnEditor.ToolTipText = "Edit script"
-        '
-        'btnGenerateFromTable
-        '
-        Me.btnGenerateFromTable.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.btnGenerateFromTable.Image = CType(resources.GetObject("btnGenerateFromTable.Image"), System.Drawing.Image)
-        Me.btnGenerateFromTable.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.btnGenerateFromTable.Name = "btnGenerateFromTable"
-        Me.btnGenerateFromTable.Size = New System.Drawing.Size(23, 22)
-        Me.btnGenerateFromTable.Text = "Generate from selected table or using SQL Query"
-        '
-        'btnGenerateProc
-        '
-        Me.btnGenerateProc.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.btnGenerateProc.Image = CType(resources.GetObject("btnGenerateProc.Image"), System.Drawing.Image)
-        Me.btnGenerateProc.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.btnGenerateProc.Name = "btnGenerateProc"
-        Me.btnGenerateProc.Size = New System.Drawing.Size(23, 22)
-        Me.btnGenerateProc.Text = "ToolStripButton10"
-        '
-        'btnExportJSON
-        '
-        Me.btnExportJSON.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.btnExportJSON.Image = CType(resources.GetObject("btnExportJSON.Image"), System.Drawing.Image)
-        Me.btnExportJSON.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.btnExportJSON.Name = "btnExportJSON"
-        Me.btnExportJSON.Size = New System.Drawing.Size(23, 22)
-        Me.btnExportJSON.Text = "Export to JSON"
-        '
-        'ToolStripButton8
-        '
-        Me.ToolStripButton8.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.ToolStripButton8.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.optAnnotation, Me.optGenerateByHTMLHelper, Me.optGenerateNamedParam, Me.optCommandTimeout})
-        Me.ToolStripButton8.Image = CType(resources.GetObject("ToolStripButton8.Image"), System.Drawing.Image)
-        Me.ToolStripButton8.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.ToolStripButton8.Name = "ToolStripButton8"
-        Me.ToolStripButton8.Size = New System.Drawing.Size(29, 22)
-        Me.ToolStripButton8.Text = "Options"
-        '
-        'optAnnotation
-        '
-        Me.optAnnotation.Checked = True
-        Me.optAnnotation.CheckOnClick = True
-        Me.optAnnotation.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.optAnnotation.Image = Global.MVC_TOOL.My.Resources.Resources.check_box
-        Me.optAnnotation.Name = "optAnnotation"
-        Me.optAnnotation.Size = New System.Drawing.Size(229, 22)
-        Me.optAnnotation.Text = "Generate with Annotation"
-        '
-        'optGenerateByHTMLHelper
-        '
-        Me.optGenerateByHTMLHelper.CheckOnClick = True
-        Me.optGenerateByHTMLHelper.Image = Global.MVC_TOOL.My.Resources.Resources.check_box_uncheck
-        Me.optGenerateByHTMLHelper.Name = "optGenerateByHTMLHelper"
-        Me.optGenerateByHTMLHelper.Size = New System.Drawing.Size(229, 22)
-        Me.optGenerateByHTMLHelper.Text = "Generate with HTML Helper"
-        '
-        'optGenerateNamedParam
-        '
-        Me.optGenerateNamedParam.Checked = True
-        Me.optGenerateNamedParam.CheckOnClick = True
-        Me.optGenerateNamedParam.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.optGenerateNamedParam.Image = Global.MVC_TOOL.My.Resources.Resources.check_box
-        Me.optGenerateNamedParam.Name = "optGenerateNamedParam"
-        Me.optGenerateNamedParam.Size = New System.Drawing.Size(229, 22)
-        Me.optGenerateNamedParam.Text = "Generate @named parameter"
-        '
-        'optCommandTimeout
-        '
-        Me.optCommandTimeout.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.optCommandTimeout.Font = New System.Drawing.Font("Segoe UI", 9.0!)
-        Me.optCommandTimeout.Name = "optCommandTimeout"
-        Me.optCommandTimeout.Size = New System.Drawing.Size(50, 23)
-        Me.optCommandTimeout.Text = "25"
-        Me.optCommandTimeout.TextBoxTextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        '
-        'ToolStripSeparator10
-        '
-        Me.ToolStripSeparator10.Name = "ToolStripSeparator10"
-        Me.ToolStripSeparator10.Size = New System.Drawing.Size(6, 25)
-        '
-        'ToolStripButton7
-        '
-        Me.ToolStripButton7.Image = CType(resources.GetObject("ToolStripButton7.Image"), System.Drawing.Image)
-        Me.ToolStripButton7.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.ToolStripButton7.Name = "ToolStripButton7"
-        Me.ToolStripButton7.Size = New System.Drawing.Size(64, 22)
-        Me.ToolStripButton7.Text = "INSERT"
-        '
-        'GETBLOBToolStripMenuItem
-        '
-        Me.GETBLOBToolStripMenuItem.Name = "GETBLOBToolStripMenuItem"
-        Me.GETBLOBToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
-        Me.GETBLOBToolStripMenuItem.Text = "GET (BLOB)"
+        Me.btnSQLBulkCopy.Image = CType(resources.GetObject("btnSQLBulkCopy.Image"), System.Drawing.Image)
+        Me.btnSQLBulkCopy.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.btnSQLBulkCopy.Name = "btnSQLBulkCopy"
+        Me.btnSQLBulkCopy.Size = New System.Drawing.Size(105, 22)
+        Me.btnSQLBulkCopy.Text = "SQL Bulk Copy"
         '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1130, 626)
+        Me.ClientSize = New System.Drawing.Size(1091, 626)
         Me.Controls.Add(Me.SplitContainer1)
         Me.Controls.Add(Me.ToolStrip2)
         Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.ToolStrip1)
         Me.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.MinimumSize = New System.Drawing.Size(1107, 665)
         Me.Name = "frmMain"
         Me.Text = "MVC Tooling - JHAPPS"
         Me.ToolStrip1.ResumeLayout(False)
@@ -814,4 +829,6 @@ Partial Class frmMain
     Friend WithEvents ToolStripMenuItem3 As ToolStripMenuItem
     Friend WithEvents btnExportJSON As ToolStripButton
     Friend WithEvents GETBLOBToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator12 As ToolStripSeparator
+    Friend WithEvents btnSQLBulkCopy As ToolStripButton
 End Class

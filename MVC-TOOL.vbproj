@@ -119,6 +119,12 @@
     <Compile Include="frmSQL.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="frmSQLBulkCopy.Designer.vb">
+      <DependentUpon>frmSQLBulkCopy.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmSQLBulkCopy.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="frmSQLEditor.Designer.vb">
       <DependentUpon>frmSQLEditor.vb</DependentUpon>
     </Compile>
@@ -173,6 +179,9 @@
     <EmbeddedResource Include="frmSQL.resx">
       <DependentUpon>frmSQL.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="frmSQLBulkCopy.resx">
+      <DependentUpon>frmSQLBulkCopy.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmSQLEditor.resx">
       <DependentUpon>frmSQLEditor.vb</DependentUpon>
     </EmbeddedResource>
@@ -202,6 +211,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="_DOCS\2025-11-25_13-22.png" />
     <None Include="packages.config" />
     <None Include="Resources\check_box_uncheck.png" />
     <None Include="Resources\check_box.png" />
