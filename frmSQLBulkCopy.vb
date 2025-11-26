@@ -286,14 +286,20 @@ Public Class frmSQLBulkCopy
             Return
         End If
 
+        If optNoStaging.Checked Then
+            If MsgBox("Are you sure you want to overwrite existing tables without staging?", vbExclamation + vbYesNo + vbDefaultButton2) <> MsgBoxResult.Yes Then
+                Return
+            End If
+        End If
+
         Dim forbid = {"delete", "truncate"}
         If forbid.Any(Function(x) txtSQL.Text.ToLower.Contains(x)) Then
-            MsgBox("Delete/Truncate not allowed", vbExclamation)
+            MsgBox("Delete/Truncate Not allowed", vbExclamation)
             Return
         End If
 
-        If Regex.Matches(txtSQL.Text, "SELECT", RegexOptions.IgnoreCase).Count > 1 AndAlso txtSQL.Text.Contains(";") = False Then
-            MsgBox("Please split multiple sql with ending terminator ;", vbExclamation)
+        If Regex.Matches(txtSQL.Text, "Select", RegexOptions.IgnoreCase).Count > 1 AndAlso txtSQL.Text.Contains(";") = False Then
+            MsgBox("Please split multiple sql With ending terminator ;", vbExclamation)
             Return
         End If
 
@@ -312,25 +318,42 @@ Public Class frmSQLBulkCopy
             Dim sqlQuery = sqls(s)
             Dim staging = $"STAGING_{tblName.Split("..").LastOrDefault}"
 
+            If optNoStaging.Checked Then staging = tblName
+
             AddToLog($"Copying data from {tblName} to {staging} ... ")
 
             ' get all tables in sql server database
             Try
-                Using con = New OleDbConnection(txtDest.Text)
-                    con.Open()
-
-                    Using cmd = con.CreateCommand
-                        cmd.CommandText = $"drop table if exists [{staging}]; select top 0 * into [{staging}] from {tblName}"
-
-                        Dim res = cmd.ExecuteNonQuery
-
-                    End Using
-
-                End Using
 
                 Dim dt As DataTable = Await GetDatatable(sqlQuery)
 
                 GC.Collect()
+
+                If optDirectImport.Checked = False Then
+                    Using con = New OleDbConnection(txtDest.Text)
+                        con.Open()
+                        Dim trans = con.BeginTransaction
+                        Using cmd = con.CreateCommand()
+                            cmd.Transaction = trans
+                            cmd.CommandText = $"drop table if exists [{staging}]; -- select top 0 * into [{staging}] from {tblName}"
+                            Dim res = cmd.ExecuteNonQuery
+
+                            ' Create staging table using DataTable schema
+                            Dim createTableSql = $"CREATE TABLE [{staging}] ("
+                            For Each column As DataColumn In dt.Columns
+                                Dim sqlType = GetSqlTypeFromDataColumn(column)
+                                createTableSql += $"[{column.ColumnName}] {sqlType}, "
+                            Next
+                            createTableSql = createTableSql.TrimEnd(", ".ToCharArray()) + ")"
+
+                            cmd.CommandText = createTableSql
+                            cmd.ExecuteNonQuery()
+
+                            trans.Commit()
+                        End Using
+
+                    End Using
+                End If
 
                 Dim t1 = Now
                 Dim newcon = ConvertToSqlConnectionString(txtDest.Text)
@@ -352,6 +375,37 @@ Public Class frmSQLBulkCopy
 
 
     End Sub
+
+    Private Function GetSqlTypeFromDataColumn(column As DataColumn) As String
+        Dim type = column.DataType
+
+        If type Is GetType(String) Then
+            Dim maxLength = If(column.MaxLength > 0 AndAlso column.MaxLength < 8000, column.MaxLength, "MAX")
+            Return $"NVARCHAR({maxLength})"
+        ElseIf type Is GetType(Integer) Then
+            Return "INT"
+        ElseIf type Is GetType(Long) Then
+            Return "BIGINT"
+        ElseIf type Is GetType(Short) Then
+            Return "SMALLINT"
+        ElseIf type Is GetType(Byte) Then
+            Return "TINYINT"
+        ElseIf type Is GetType(Decimal) Then
+            Return "DECIMAL(18,6)"
+        ElseIf type Is GetType(Double) Then
+            Return "FLOAT"
+        ElseIf type Is GetType(Single) Then
+            Return "REAL"
+        ElseIf type Is GetType(Boolean) Then
+            Return "BIT"
+        ElseIf type Is GetType(DateTime) Then
+            Return "DATETIME"
+        ElseIf type Is GetType(Guid) Then
+            Return "UNIQUEIDENTIFIER"
+        Else
+            Return "NVARCHAR(MAX)"
+        End If
+    End Function
 
     Public Function ConvertToSqlConnectionString(oleConnString As String) As String
         Dim builder As New Dictionary(Of String, String)(StringComparer.OrdinalIgnoreCase)

@@ -40,13 +40,7 @@ Partial Class frmSQLBulkCopy
         Me.btnExportCSV = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripButton1 = New System.Windows.Forms.ToolStripDropDownButton()
-        Me.optIdentityInsertOff = New System.Windows.Forms.ToolStripMenuItem()
-        Me.optCheckedOnly = New System.Windows.Forms.ToolStripMenuItem()
-        Me.optTruncateTable = New System.Windows.Forms.ToolStripMenuItem()
-        Me.optSkipCompleted = New System.Windows.Forms.ToolStripMenuItem()
-        Me.optLimitExport = New System.Windows.Forms.ToolStripMenuItem()
-        Me.optIgnoreErrors = New System.Windows.Forms.ToolStripMenuItem()
-        Me.optCommandTimeout = New System.Windows.Forms.ToolStripTextBox()
+        Me.optNoStaging = New System.Windows.Forms.ToolStripMenuItem()
         Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
         Me.SplitContainer2 = New System.Windows.Forms.SplitContainer()
         Me.btnExecute = New System.Windows.Forms.Button()
@@ -56,6 +50,8 @@ Partial Class frmSQLBulkCopy
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.lblStatus = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.optCommandTimeout = New System.Windows.Forms.ToolStripTextBox()
+        Me.optDirectImport = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -183,71 +179,19 @@ Partial Class frmSQLBulkCopy
         'ToolStripButton1
         '
         Me.ToolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.ToolStripButton1.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.optIdentityInsertOff, Me.optCheckedOnly, Me.optTruncateTable, Me.optSkipCompleted, Me.optLimitExport, Me.optIgnoreErrors, Me.optCommandTimeout})
+        Me.ToolStripButton1.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.optNoStaging, Me.optDirectImport, Me.optCommandTimeout})
         Me.ToolStripButton1.Image = CType(resources.GetObject("ToolStripButton1.Image"), System.Drawing.Image)
         Me.ToolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripButton1.Name = "ToolStripButton1"
         Me.ToolStripButton1.Size = New System.Drawing.Size(29, 22)
         Me.ToolStripButton1.Text = "Configurations"
         '
-        'optIdentityInsertOff
+        'optNoStaging
         '
-        Me.optIdentityInsertOff.Checked = True
-        Me.optIdentityInsertOff.CheckOnClick = True
-        Me.optIdentityInsertOff.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.optIdentityInsertOff.Name = "optIdentityInsertOff"
-        Me.optIdentityInsertOff.Size = New System.Drawing.Size(190, 22)
-        Me.optIdentityInsertOff.Text = "IDENTITY_INSERT OFF"
-        '
-        'optCheckedOnly
-        '
-        Me.optCheckedOnly.Checked = True
-        Me.optCheckedOnly.CheckOnClick = True
-        Me.optCheckedOnly.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.optCheckedOnly.Name = "optCheckedOnly"
-        Me.optCheckedOnly.Size = New System.Drawing.Size(190, 22)
-        Me.optCheckedOnly.Text = "Checked Only"
-        '
-        'optTruncateTable
-        '
-        Me.optTruncateTable.CheckOnClick = True
-        Me.optTruncateTable.Name = "optTruncateTable"
-        Me.optTruncateTable.Size = New System.Drawing.Size(190, 22)
-        Me.optTruncateTable.Text = "Truncate Table"
-        Me.optTruncateTable.ToolTipText = "truncate table/remove all records from table"
-        '
-        'optSkipCompleted
-        '
-        Me.optSkipCompleted.Checked = True
-        Me.optSkipCompleted.CheckOnClick = True
-        Me.optSkipCompleted.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.optSkipCompleted.Name = "optSkipCompleted"
-        Me.optSkipCompleted.Size = New System.Drawing.Size(190, 22)
-        Me.optSkipCompleted.Text = "Skip Completed"
-        '
-        'optLimitExport
-        '
-        Me.optLimitExport.Checked = True
-        Me.optLimitExport.CheckOnClick = True
-        Me.optLimitExport.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.optLimitExport.Name = "optLimitExport"
-        Me.optLimitExport.Size = New System.Drawing.Size(190, 22)
-        Me.optLimitExport.Text = "Limit Export to 10000"
-        '
-        'optIgnoreErrors
-        '
-        Me.optIgnoreErrors.CheckOnClick = True
-        Me.optIgnoreErrors.Name = "optIgnoreErrors"
-        Me.optIgnoreErrors.Size = New System.Drawing.Size(190, 22)
-        Me.optIgnoreErrors.Text = "Ignore Errors"
-        '
-        'optCommandTimeout
-        '
-        Me.optCommandTimeout.Font = New System.Drawing.Font("Segoe UI", 9.0!)
-        Me.optCommandTimeout.Name = "optCommandTimeout"
-        Me.optCommandTimeout.Size = New System.Drawing.Size(100, 23)
-        Me.optCommandTimeout.Text = "90"
-        Me.optCommandTimeout.ToolTipText = "Command Timeout"
+        Me.optNoStaging.CheckOnClick = True
+        Me.optNoStaging.Name = "optNoStaging"
+        Me.optNoStaging.Size = New System.Drawing.Size(180, 22)
+        Me.optNoStaging.Text = "Disable Staging"
         '
         'SplitContainer1
         '
@@ -351,6 +295,21 @@ Partial Class frmSQLBulkCopy
         Me.lblStatus.Spring = True
         Me.lblStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
+        'optCommandTimeout
+        '
+        Me.optCommandTimeout.Font = New System.Drawing.Font("Segoe UI", 9.0!)
+        Me.optCommandTimeout.Name = "optCommandTimeout"
+        Me.optCommandTimeout.Size = New System.Drawing.Size(100, 23)
+        Me.optCommandTimeout.Text = "90"
+        Me.optCommandTimeout.ToolTipText = "Command Timeout"
+        '
+        'optDirectImport
+        '
+        Me.optDirectImport.CheckOnClick = True
+        Me.optDirectImport.Name = "optDirectImport"
+        Me.optDirectImport.Size = New System.Drawing.Size(180, 22)
+        Me.optDirectImport.Text = "Direct Import"
+        '
         'frmSQLBulkCopy
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -394,13 +353,7 @@ Partial Class frmSQLBulkCopy
     Friend WithEvents ToolStripSeparator1 As ToolStripSeparator
     Friend WithEvents ToolStripSeparator2 As ToolStripSeparator
     Friend WithEvents ToolStripButton1 As ToolStripDropDownButton
-    Friend WithEvents optIdentityInsertOff As ToolStripMenuItem
-    Friend WithEvents optCheckedOnly As ToolStripMenuItem
-    Friend WithEvents optTruncateTable As ToolStripMenuItem
-    Friend WithEvents optSkipCompleted As ToolStripMenuItem
-    Friend WithEvents optLimitExport As ToolStripMenuItem
-    Friend WithEvents optIgnoreErrors As ToolStripMenuItem
-    Friend WithEvents optCommandTimeout As ToolStripTextBox
+    Friend WithEvents optNoStaging As ToolStripMenuItem
     Friend WithEvents txtSource As ToolStripComboBox
     Friend WithEvents txtDest As ToolStripComboBox
     Friend WithEvents SplitContainer1 As SplitContainer
@@ -413,4 +366,6 @@ Partial Class frmSQLBulkCopy
     Friend WithEvents ToolTip1 As ToolTip
     Friend WithEvents StatusStrip1 As StatusStrip
     Friend WithEvents lblStatus As ToolStripStatusLabel
+    Friend WithEvents optCommandTimeout As ToolStripTextBox
+    Friend WithEvents optDirectImport As ToolStripMenuItem
 End Class

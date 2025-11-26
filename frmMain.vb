@@ -8202,7 +8202,167 @@ app.init()
         ]]>.Value.Trim
     End Sub
 
-    Private Sub btnGenerateProc_Click(sender As Object, e As EventArgs) Handles btnGenerateProc.Click
+    Private Sub ToolStripMenuItem3_Click(sender As Object, e As EventArgs) Handles ToolStripMenuItem3.Click
+
+        If frmCreateModal.ShowDialog <> DialogResult.OK Then Return
+
+        Dim modalName = frmCreateModal.cboItem.Text
+
+        Dim l1 As New List(Of String)
+
+        l1.Add(<![CDATA[ <button id="btnCreateNew_mymodal" type="button" class="btn btn-primary mt-2 mb-2" data-bs-toggle="modal" data-bs-target="#mymodal"> CREATE NEW </button> ]]>.Value.Trim)
+        l1.Add(<![CDATA[
+<div class="modal fade" id="mymodal" role="dialog" data-focus="false" data-keyboard="false" data-backdrop="static" tabindex="-1" aria-labelledby="modaltitle" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-uppercase text-light">
+                <h5 class="modal-title">Title</h5>
+
+                <!-- js-level-update -->
+                <div class="js-level-update btn-group-sm" id="js-level-update" style="">
+                    <div class="btn-group btn-group-sm">
+                                
+                        <button type="button" class="btn btn-danger btn-sm" data-filter="backlevel" data-value="1" data-value-text="Prepared" data-title="Prepare" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="Return back to Prepare...">
+                        <span class="fas fa-arrow-circle-left"></span> Return to Prepare</button>
+                    
+                            <button type="button" class="btn btn-success btn-sm" data-filter="movelevel" data-value="3" data-value-text="Endorsed" data-title="Endorse" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="Update status to Endorse...">
+                            <span class="fas fa-arrow-circle-right"></span> Endorse</button>
+                    
+                        </div>
+                        <div class="btn-group btn-group-sm">
+                                
+                            <button type="button" class="btn btn-warning btn-sm" data-filter="movelevel" data-value="5" data-value-text="Cancelled" data-title="Cancel" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="Update status to Cancel...">
+                            <span class="fas fa-trash-alt"></span> Cancel</button>
+                    
+                        </div>
+                    </div>
+                </div>
+            <div class="modal-body">
+                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Nullam malesuada erat ut turpis. Suspendisse urna nibh viverra non semper suscipit posuere a pede.</p>
+                <ul>
+                <li>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</li>
+                <li>Aliquam tincidunt mauris eu risus.</li>
+                <li>Vestibulum auctor dapibus neque.</li>
+                <li>Nunc dignissim risus id metus.</li>
+                <li>Cras ornare tristique elit.</li>
+                <li>Vivamus vestibulum ntulla nec ante.</li>
+                <li>Praesent placerat risus quis eros.</li>
+                <li>Fusce pellentesque suscipit nibh.</li>
+                <li>Integer vitae libero ac risus egestas placerat.</li>
+                <li>Vestibulum commodo felis quis tortor.</li>
+                <li>Ut aliquam sollicitudin leo.</li>
+                <li>Cras iaculis ultricies nulla.</li>
+                <li>Donec quis dui at dolor tempor interdum.</li>
+                </ul>                
+            </div>
+            <div class="modal-footer d-flex justify-content-between">
+                <div class="btn-group btn-group-sm">
+                    <button type="button" class="btn btn-default btn-sm"><i class="fas fa-print"></i> PRINT</button>
+                    <button type="button" class="btn btn-default btn-sm"><i class="fas fa-share-square"></i> SHARE</button>
+                    <button type="button" class="btn btn-default btn-sm"><i class="fas fa-copy"></i> COPY</button>
+                    <button type="button" class="btn btn-default btn-sm"><i class="fas fa-plus-circle"></i> NEW</button>
+                    <button type="button" class="btn btn-default btn-sm"><i class="fas fa-edit"></i> EDIT</button>
+                </div>
+                <div class="btn-group btn-group-sm">
+                    <button type="button" class="btn btn-success"><i class="fas fa-save"></i> SAVE</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-times-circle"></i> CLOSE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+]]>.Value.Trim)
+
+        txtDest.Text = String.Join(vbCrLf, l1).Replace("mymodal", modalName).Trim
+    End Sub
+
+    Private Sub btnExportJSON_Click(sender As Object, e As EventArgs) Handles btnExportJSON.Click
+
+        Dim fl As String = ""
+        Using dlg As New SaveFileDialog()
+            dlg.Filter = "*.json|*.json;"
+            If dlg.ShowDialog() <> DialogResult.OK Then
+                Return
+            End If
+            fl = dlg.FileName
+        End Using
+
+
+        Using conn = New OleDbConnection(txtSQLConnectionString.Text)
+            conn.Open()
+
+            Dim sql = cboTable.Text.Trim
+            If cboTable.SelectedIndex >= 0 Then
+                sql = $"SELECT top 1000 * from [{cboTable.Text.Trim}]"
+                cboTable.Text = sql
+            End If
+
+            Using cmd As New OleDbCommand(cboTable.Text, conn)
+                cmd.CommandTimeout = Integer.Parse(optCommandTimeout.Text)
+
+                Using rdr = cmd.ExecuteReader(CommandBehavior.Default)
+                    Do While True
+                        Dim dt = New DataTable
+                        dt.Load(rdr)
+
+                        Dim js = JsonConvert.SerializeObject(dt)
+                        File.WriteAllText(fl, js, New UTF8Encoding(False))
+
+                        If rdr.IsClosed OrElse rdr.NextResult() = False Then Exit Do
+                    Loop
+                End Using
+                conn.Close()
+            End Using
+        End Using
+
+        MsgBox($"Data was exported to {fl}", vbInformation)
+
+    End Sub
+
+    Private Sub GETBLOBToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles GETBLOBToolStripMenuItem.Click
+
+        Dim normalPost = <![CDATA[
+            ShowSwalLoader()
+
+            return $.ajax({
+                url: "/{controller}/{action}/",                
+                data: {
+                    dtFrom: $(`[name=datefrom]`).val(),
+                    dtTo: $(`[name=dateto]`).val(),
+                },
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                complete: function (jqXHR, textStatus) {
+                    if (textStatus != 'error') {
+                        setTimeout(() => {
+                            CloseSwalLoader();
+                        }, 500);
+                    }
+                },
+                success: function (blob, textStatus, jqXHR) {
+                    const contentType = jqXHR.getResponseHeader("Content-Type");
+                    if (contentType === "application/pdf") {
+                        const url = window.URL.createObjectURL(blob);
+                        ShowPrintPreview(url)
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    var msg = jqXHR?.responseJSON?.message || `Opps ! Something went wrong ... `
+                    error(msg)
+                }
+            });
+]]>.Value
+
+        txtDest.Text = normalPost
+
+    End Sub
+
+    Private Sub btnSQLBulkCopy_Click(sender As Object, e As EventArgs) Handles btnSQLBulkCopy.Click
+        frmSQLBulkCopy.Show()
+    End Sub
+
+    Private Sub btnGenerateProc_ButtonClick(sender As Object, e As EventArgs) Handles btnGenerateProc.ButtonClick
 
         If String.IsNullOrWhiteSpace(cboTable.Text) Then Return
         If cboTable.Text.StartsWith("----") Then Return
@@ -8410,163 +8570,162 @@ END
 
     End Sub
 
-    Private Sub ToolStripMenuItem3_Click(sender As Object, e As EventArgs) Handles ToolStripMenuItem3.Click
+    Private Sub GenerateMERGETemplateToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles GenerateMERGETemplateToolStripMenuItem.Click
 
-        If frmCreateModal.ShowDialog <> DialogResult.OK Then Return
+        If String.IsNullOrWhiteSpace(cboTable.Text) Then Return
+        If cboTable.Text.StartsWith("----") Then Return
 
-        Dim modalName = frmCreateModal.cboItem.Text
+        Dim tblName = cboTable.Text
+        Dim l2 As New List(Of String)
+        Dim l3 As New List(Of String)
+        Dim l4 As New Dictionary(Of String, Object)
+        Dim params As New List(Of String)
 
-        Dim l1 As New List(Of String)
+        Dim dtoList As New List(Of String)
 
-        l1.Add(<![CDATA[ <button id="btnCreateNew_mymodal" type="button" class="btn btn-primary mt-2 mb-2" data-bs-toggle="modal" data-bs-target="#mymodal"> CREATE NEW </button> ]]>.Value.Trim)
-        l1.Add(<![CDATA[
-<div class="modal fade" id="mymodal" role="dialog" data-focus="false" data-keyboard="false" data-backdrop="static" tabindex="-1" aria-labelledby="modaltitle" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-dark text-uppercase text-light">
-                <h5 class="modal-title">Title</h5>
+        l3.Add("var data = JRaw.Parse(Request.PostBody());")
+        l3.Add("var dic = new Dictionary<string, object>();")
 
-                <!-- js-level-update -->
-                <div class="js-level-update btn-group-sm" id="js-level-update" style="">
-                    <div class="btn-group btn-group-sm">
-                                
-                        <button type="button" class="btn btn-danger btn-sm" data-filter="backlevel" data-value="1" data-value-text="Prepared" data-title="Prepare" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="Return back to Prepare...">
-                        <span class="fas fa-arrow-circle-left"></span> Return to Prepare</button>
-                    
-                            <button type="button" class="btn btn-success btn-sm" data-filter="movelevel" data-value="3" data-value-text="Endorsed" data-title="Endorse" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="Update status to Endorse...">
-                            <span class="fas fa-arrow-circle-right"></span> Endorse</button>
-                    
-                        </div>
-                        <div class="btn-group btn-group-sm">
-                                
-                            <button type="button" class="btn btn-warning btn-sm" data-filter="movelevel" data-value="5" data-value-text="Cancelled" data-title="Cancel" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="Update status to Cancel...">
-                            <span class="fas fa-trash-alt"></span> Cancel</button>
-                    
-                        </div>
-                    </div>
-                </div>
-            <div class="modal-body">
-                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Nullam malesuada erat ut turpis. Suspendisse urna nibh viverra non semper suscipit posuere a pede.</p>
-                <ul>
-                <li>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</li>
-                <li>Aliquam tincidunt mauris eu risus.</li>
-                <li>Vestibulum auctor dapibus neque.</li>
-                <li>Nunc dignissim risus id metus.</li>
-                <li>Cras ornare tristique elit.</li>
-                <li>Vivamus vestibulum ntulla nec ante.</li>
-                <li>Praesent placerat risus quis eros.</li>
-                <li>Fusce pellentesque suscipit nibh.</li>
-                <li>Integer vitae libero ac risus egestas placerat.</li>
-                <li>Vestibulum commodo felis quis tortor.</li>
-                <li>Ut aliquam sollicitudin leo.</li>
-                <li>Cras iaculis ultricies nulla.</li>
-                <li>Donec quis dui at dolor tempor interdum.</li>
-                </ul>                
-            </div>
-            <div class="modal-footer d-flex justify-content-between">
-                <div class="btn-group btn-group-sm">
-                    <button type="button" class="btn btn-default btn-sm"><i class="fas fa-print"></i> PRINT</button>
-                    <button type="button" class="btn btn-default btn-sm"><i class="fas fa-share-square"></i> SHARE</button>
-                    <button type="button" class="btn btn-default btn-sm"><i class="fas fa-copy"></i> COPY</button>
-                    <button type="button" class="btn btn-default btn-sm"><i class="fas fa-plus-circle"></i> NEW</button>
-                    <button type="button" class="btn btn-default btn-sm"><i class="fas fa-edit"></i> EDIT</button>
-                </div>
-                <div class="btn-group btn-group-sm">
-                    <button type="button" class="btn btn-success"><i class="fas fa-save"></i> SAVE</button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-times-circle"></i> CLOSE</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-]]>.Value.Trim)
-
-        txtDest.Text = String.Join(vbCrLf, l1).Replace("mymodal", modalName).Trim
-    End Sub
-
-    Private Sub btnExportJSON_Click(sender As Object, e As EventArgs) Handles btnExportJSON.Click
-
-        Dim fl As String = ""
-        Using dlg As New SaveFileDialog()
-            dlg.Filter = "*.json|*.json;"
-            If dlg.ShowDialog() <> DialogResult.OK Then
-                Return
-            End If
-            fl = dlg.FileName
-        End Using
-
+        'Using cn = New OleDbConnection(txtSQLConnectionString.Text)
+        '    cn.Open()
+        '    Using cmd = cn.CreateCommand()
+        '        cmd.CommandText = cboTable.Text
+        '        Using reader = cmd.ExecuteReader
+        '            Dim dt2 = New DataTable()
+        '            dt2.Load(reader)
+        '            Debug.Print("")
+        '        End Using
+        '    End Using
+        'End Using
 
         Using conn = New OleDbConnection(txtSQLConnectionString.Text)
             conn.Open()
 
-            Dim sql = cboTable.Text.Trim
-            If cboTable.SelectedIndex >= 0 Then
-                sql = $"SELECT top 1000 * from [{cboTable.Text.Trim}]"
-                cboTable.Text = sql
+            If cboTable.Text.Trim.ToLower.Contains("select ") Or cboTable.Text.Trim.ToLower.StartsWith("exec ") Then
+                Using cmd As New OleDbCommand(cboTable.Text, conn)
+                    cmd.CommandTimeout = Integer.Parse(optCommandTimeout.Text)
+
+                    Using rdr = cmd.ExecuteReader(CommandBehavior.Default And CommandBehavior.SchemaOnly)
+                        Do While True
+                            l2.Clear()
+
+                            Dim dt = rdr.GetSchemaTable
+                            params.Clear()
+                            For i = 0 To dt.Rows.Count - 1
+                                params.Add(DbTypeToDeclaredStringOle(dt.Rows(i)))
+                            Next
+                            For i = 0 To dt.Rows.Count - 1
+                                Dim propertyString As String = DbTypeToStringFromGetSchemaTable(dt.Rows(i))
+                                l2.Add(propertyString)
+
+                                If propertyString.Contains("[Required]") Then
+                                    l3.Add(<![CDATA[dic["_"] = "_"; // required ]]>.Value.Replace("_", dt.Rows(i)("ColumnName")))
+                                Else
+                                    l3.Add(<![CDATA[dic["_"] = "_";]]>.Value.Replace("_", dt.Rows(i)("ColumnName")))
+                                End If
+
+                                Dim colname = dt.Rows(i)("ColumnName")
+                                Dim colid = 2
+                                Dim unik = colname
+                                Do While True
+                                    If l4.ContainsKey(unik) Then
+                                        unik = colname & colid
+                                        colid += 1
+                                        Continue Do
+                                    End If
+                                    l4.Add(unik, "")
+                                    Exit Do
+                                Loop
+                            Next
+
+                            dtoList.Add(<![CDATA[
+public class PositionModel
+{
+// replace
+}
+]]>.Value.Replace("// replace", String.Join(vbCrLf, l2)).Replace("PositionModel", Regex.Replace(StrConv(tblName, VbStrConv.ProperCase), "[^a-z0-9_]", "", RegexOptions.IgnoreCase)))
+
+                            If rdr.NextResult() = False Then Exit Do
+                        Loop
+
+                    End Using
+
+                    conn.Close()
+                End Using
+
+                tblName = Regex.Match(cboTable.Text, " from \[(.*?)\]", RegexOptions.IgnoreCase).Groups(1).Value.Trim
+                If String.IsNullOrWhiteSpace(tblName) Then tblName = Regex.Match(cboTable.Text, " from (.*?) ", RegexOptions.IgnoreCase).Groups(1).Value.Trim
+                If String.IsNullOrWhiteSpace(tblName) Then tblName = Regex.Match(cboTable.Text, " from (.*?)$", RegexOptions.IgnoreCase).Groups(1).Value.Trim
+                If String.IsNullOrWhiteSpace(tblName) Then tblName = Regex.Match(cboTable.Text, "exec (.*?) ", RegexOptions.IgnoreCase).Groups(1).Value.Trim
+                l3.Add("")
+                l3.Add(<![CDATA[var res = DB.InsertParam("_", dic, true);]]>.Value.Replace("_", tblName))
+
+            Else
+
+                Dim dt = conn.GetOleDbSchemaTable(OleDbSchemaGuid.Columns, {Nothing, Nothing, cboTable.Text, Nothing})
+                params.Clear()
+                For i = 0 To dt.Rows.Count - 1
+                    params.Add(DbTypeToDeclaredString(dt.Rows(i)))
+                Next
+                For i = 0 To dt.Rows.Count - 1
+                    Dim propertyString As String = DbTypeToString(dt.Rows(i))
+                    l2.Add(propertyString)
+
+                    If propertyString.Contains("[Required]") Then
+                        l3.Add(<![CDATA[dic["_"] = "_"; // required]]>.Value.Replace("_", dt.Rows(i)("COLUMN_NAME")))
+                    Else
+                        l3.Add(<![CDATA[dic["_"] = "_";]]>.Value.Replace("_", dt.Rows(i)("COLUMN_NAME")))
+                    End If
+
+                    Dim colname = dt.Rows(i)("COLUMN_NAME")
+                    Dim colid = 2
+                    Dim unik = colname
+                    Do While True
+                        If l4.ContainsKey(unik) Then
+                            unik = colname & colid
+                            colid += 1
+                            Continue Do
+                        End If
+                        l4.Add(unik, "")
+                        Exit Do
+                    Loop
+
+                Next
+
+                dtoList.Add(<![CDATA[
+public class PositionModel
+{
+// replace
+}
+]]>.Value.Replace("// replace", String.Join(vbCrLf, l2)).Replace("PositionModel", Regex.Replace(StrConv(tblName, VbStrConv.ProperCase), "[^a-z0-9_]", "", RegexOptions.IgnoreCase)))
+
+                l3.Add("")
+                l3.Add(<![CDATA[var res = DB.InsertParam("_", dic, true);]]>.Value.Replace("_", cboTable.Text))
+
             End If
 
-            Using cmd As New OleDbCommand(cboTable.Text, conn)
-                cmd.CommandTimeout = Integer.Parse(optCommandTimeout.Text)
-
-                Using rdr = cmd.ExecuteReader(CommandBehavior.Default)
-                    Do While True
-                        Dim dt = New DataTable
-                        dt.Load(rdr)
-
-                        Dim js = JsonConvert.SerializeObject(dt)
-                        File.WriteAllText(fl, js, New UTF8Encoding(False))
-
-                        If rdr.IsClosed OrElse rdr.NextResult() = False Then Exit Do
-                    Loop
-                End Using
-                conn.Close()
-            End Using
         End Using
 
-        MsgBox($"Data was exported to {fl}", vbInformation)
+        Dim cs = String.Join(", ", l4.Keys)
+        Dim vs = String.Join(", ", l4.Keys.Select(Function(x) $"source.{x}"))
 
-    End Sub
+        Dim sql = <![CDATA[
+        begin tran
 
-    Private Sub GETBLOBToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles GETBLOBToolStripMenuItem.Click
+            MERGE DB_Target.dbo.arstrxdtl AS target
+            USING DB_Source.dbo.arstrxdtl AS source
+                -- condition key
+                ON  target.TransNmbr = source.TransNmbr
+                AND target.LineNmbr  = source.LineNmbr
+            WHEN NOT MATCHED BY TARGET THEN
+                INSERT (_CS_)
+                VALUES (_VS_);
 
-        Dim normalPost = <![CDATA[
-            ShowSwalLoader()
+        -- commit tran
+        -- rollback tran
 
-            return $.ajax({
-                url: "/{controller}/{action}/",                
-                data: {
-                    dtFrom: $(`[name=datefrom]`).val(),
-                    dtTo: $(`[name=dateto]`).val(),
-                },
-                xhrFields: {
-                    responseType: 'blob'
-                },
-                complete: function (jqXHR, textStatus) {
-                    if (textStatus != 'error') {
-                        setTimeout(() => {
-                            CloseSwalLoader();
-                        }, 500);
-                    }
-                },
-                success: function (blob, textStatus, jqXHR) {
-                    const contentType = jqXHR.getResponseHeader("Content-Type");
-                    if (contentType === "application/pdf") {
-                        const url = window.URL.createObjectURL(blob);
-                        ShowPrintPreview(url)
-                    }
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    var msg = jqXHR?.responseJSON?.message || `Opps ! Something went wrong ... `
-                    error(msg)
-                }
-            });
-]]>.Value
+        ]]>.Value.Replace("_CS_", cs).Replace("_VS_", vs)
 
-        txtDest.Text = normalPost
-
-    End Sub
-
-    Private Sub btnSQLBulkCopy_Click(sender As Object, e As EventArgs) Handles btnSQLBulkCopy.Click
-        frmSQLBulkCopy.Show()
+        txtDest.Text = String.Join(vbCrLf, sql)
     End Sub
 End Class
