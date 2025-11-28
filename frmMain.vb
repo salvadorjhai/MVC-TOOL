@@ -121,7 +121,7 @@ Public Class frmMain
 
             If i = 0 Then
                 'l3.Add(<![CDATA[ <div class="mb-2"> ]]>.Value)
-                l1.Add(<![CDATA[ @Html.ValidationSummary(false, "", new { @class = "text-danger" }) ]]>.Value)
+                l1.Add(<![CDATA[ @Html.ValidationSummary(false, "", new { @class = "text-danger", style= "display:none;"  }) ]]>.Value)
                 l1.Add(<![CDATA[ <div class="alert alert-danger" id="ajaxResponseError" style="display:none;"></div> ]]>.Value)
                 'l3.Add(<![CDATA[ </div> ]]>.Value)
 
@@ -133,7 +133,7 @@ Public Class frmMain
             End If
 
             If ddt.Contains("string") Then
-                l1.Add(<![CDATA[ <div class="mb-3"> ]]>.Value)
+                l1.Add(<![CDATA[ <div class="form-group mb-3"> ]]>.Value)
                 l1.Add(<![CDATA[  @Html.LabelFor(m => m.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
 
                 Select Case field.ToLower
@@ -150,7 +150,7 @@ Public Class frmMain
                 l1.Add(<![CDATA[ </div> ]]>.Value)
 
             ElseIf ddt.Contains("bool") Then
-                l1.Add(<![CDATA[ <div class="mb-3 form-check"> ]]>.Value)
+                l1.Add(<![CDATA[ <div class="form-group mb-3 form-check"> ]]>.Value)
                 l1.Add(<![CDATA[  @Html.CheckBoxFor(m => m.brand, new { @class = "form-check-input" }) ]]>.Value.Replace("brand", field))
                 l1.Add(<![CDATA[  @Html.LabelFor(m => m.brand, new { @class = "form-check-label" }) ]]>.Value.Replace("brand", field))
                 l1.Add(<![CDATA[ </div> ]]>.Value)
@@ -158,7 +158,7 @@ Public Class frmMain
             ElseIf ddt.Contains("int") Or ddt.Contains("decimal") Or ddt.Contains("double") Then
 
                 If field.EndsWith("id") Or field.EndsWith("code") Then
-                    l1.Add(<![CDATA[ <div class="mb-2 col-6"> ]]>.Value)
+                    l1.Add(<![CDATA[ <div class="form-group mb-2 col-6"> ]]>.Value)
                     l1.Add(<![CDATA[  @Html.LabelFor(m => m.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
                     l1.Add(<![CDATA[  @Html.DropDownListFor(m => m.brand, new SelectList(ViewBag.Brands, "id", "name"), new { @class = "form-select" }) ]]>.Value.Replace("brand", field))
                     l1.Add(<![CDATA[ </div> ]]>.Value)
@@ -171,7 +171,7 @@ Public Class frmMain
                     '    ]]>.Value.Replace("brand", field))
 
                 Else
-                    l1.Add(<![CDATA[ <div class="mb-3 col-4"> ]]>.Value)
+                    l1.Add(<![CDATA[ <div class="form-group mb-3 col-4"> ]]>.Value)
                     l1.Add(<![CDATA[  @Html.LabelFor(m => m.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
                     l1.Add(<![CDATA[  @Html.TextBoxFor(m => m.brand, new { @type = "number", @class = "form-control", @Value = "0" }) ]]>.Value.Replace("brand", field))
                     l1.Add(<![CDATA[ </div> ]]>.Value)
@@ -180,7 +180,7 @@ Public Class frmMain
 
 
             ElseIf ddt.StartsWith("date") Then
-                l1.Add(<![CDATA[ <div class="mb-3"> ]]>.Value)
+                l1.Add(<![CDATA[ <div class="form-group mb-3"> ]]>.Value)
                 l1.Add(<![CDATA[  @Html.LabelFor(m => m.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
 
                 If ddt.Contains("time") Then
@@ -191,7 +191,7 @@ Public Class frmMain
                 l1.Add(<![CDATA[ </div> ]]>.Value)
 
             ElseIf ddt.StartsWith("byte[]") Then
-                l1.Add(<![CDATA[ <div class="mb-3"> ]]>.Value)
+                l1.Add(<![CDATA[ <div class="form-group mb-3"> ]]>.Value)
                 l1.Add(<![CDATA[  @Html.LabelFor(m => m.brand, new { @class = "form-label" }) ]]>.Value.Replace("brand", field))
                 l1.Add(<![CDATA[  @Html.TextBoxFor(m => m.brand, new { @type = "file", @accept = "image/*", @class = "form-control" }) ]]>.Value.Replace("brand", field))
                 l1.Add(<![CDATA[  <img id="brandPreview" src="https://place-hold.it/500x500?text=" alt="Preview" class="img-thumbnail mt-2" style="width: 200px; height: 200px;" /> ]]>.Value.Replace("brand", field))
@@ -8372,6 +8372,7 @@ app.init()
         Dim l3 As New List(Of String)
         Dim l4 As New Dictionary(Of String, Object)
         Dim params As New List(Of String)
+        Dim params2 As New List(Of String)
 
         Dim dtoList As New List(Of String)
 
@@ -8506,6 +8507,8 @@ public class PositionModel
         l3.Add("---------------------------- or ---------------------------- ")
         l3.Add("")
 
+        Dim lx = String.Join(", ", params.Select(Function(x) x.Substring(1).Split("=")(0).Trim).ToList)
+
         Dim qq = $"
 -- =============================================
 -- Created by: jhai
@@ -8514,7 +8517,7 @@ public class PositionModel
 -- =============================================
 CREATE OR ALTER PROCEDURE dbo.[js_{tblName.ToLower}_crud]
     @js_method NVARCHAR(10), -- 'new', 'get', 'list', 'update', 'delete'
-    {String.Join("," & vbCrLf & "    ", params)}
+    @data NVARCHAR(MAX)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -8707,16 +8710,20 @@ public class PositionModel
         End Using
 
         Dim cs = String.Join(", ", l4.Keys)
-        Dim vs = String.Join(", ", l4.Keys.Select(Function(x) $"source.{x}"))
+        Dim vs = String.Join(", ", l4.Keys.Select(Function(x) $"src.{x}"))
+        Dim xs = String.Join(", ", l4.Keys.Select(Function(x) $"dest.{x} = src.{x}"))
 
         Dim sql = <![CDATA[
         begin tran
 
-            MERGE DB_Target.dbo.arstrxdtl AS target
-            USING DB_Source.dbo.arstrxdtl AS source
+            MERGE DB_Target.dbo.arstrxdtl AS dest
+            USING DB_Source.dbo.arstrxdtl AS src
                 -- condition key
-                ON  target.TransNmbr = source.TransNmbr
-                AND target.LineNmbr  = source.LineNmbr
+                ON  dest.TransNmbr = src.TransNmbr
+                AND dest.LineNmbr  = src.LineNmbr
+            WHEN MATCHED THEN
+                UPDATE SET
+                    _XS_
             WHEN NOT MATCHED BY TARGET THEN
                 INSERT (_CS_)
                 VALUES (_VS_);
@@ -8724,7 +8731,7 @@ public class PositionModel
         -- commit tran
         -- rollback tran
 
-        ]]>.Value.Replace("_CS_", cs).Replace("_VS_", vs)
+        ]]>.Value.Replace("_CS_", cs).Replace("_VS_", vs).Replace("_XS_", xs)
 
         txtDest.Text = String.Join(vbCrLf, sql)
     End Sub
