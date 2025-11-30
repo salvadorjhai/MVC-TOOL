@@ -8722,8 +8722,8 @@ public class PositionModel
         Dim sql = <![CDATA[
         begin tran
 
-            MERGE DB_Target.dbo.arstrxdtl AS dest
-            USING DB_Source.dbo.arstrxdtl AS src
+            MERGE DB_Target..arstrxdtl AS dest
+            USING DB_Source..arstrxdtl AS src
                 -- condition key
                 ON  dest.TransNmbr = src.TransNmbr
                 AND dest.LineNmbr  = src.LineNmbr
@@ -8737,7 +8737,7 @@ public class PositionModel
         -- commit tran
         -- rollback tran
 
-        ]]>.Value.Replace("_CS_", cs).Replace("_VS_", vs).Replace("_XS_", xs)
+        ]]>.Value.Replace("arstrxdtl", tblName).Replace("_CS_", cs).Replace("_VS_", vs).Replace("_XS_", xs)
 
         txtDest.Text = String.Join(vbCrLf, sql)
     End Sub
