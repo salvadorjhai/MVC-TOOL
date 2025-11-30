@@ -8523,6 +8523,12 @@ BEGIN
     SET NOCOUNT ON;
     set xact_abort on   -- use with transaction, save all or nothing
 
+    -- as JSON
+    select * from openjson(@data)
+    with (
+        {lx}
+    )
+
     -- CREATE
     IF @js_method = 'new'
     BEGIN
