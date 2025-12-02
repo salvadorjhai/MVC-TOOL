@@ -7183,7 +7183,7 @@ var table = {
                         Case "email"
                             formGen.Add(<![CDATA[
                                 <div class="form-group">
-                                    <label>consumerid</label>
+                                    <label for="txtconsumerid">consumerid</label>
                                     <input type="email" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid">
                                 </div>
                                 ]]>.Value.Replace("consumerid", fieldname))
@@ -7193,7 +7193,7 @@ var table = {
                         Case "pass", "password", "pwd", "syspassword", "loginpwd"
                             formGen.Add(<![CDATA[
                                 <div class="form-group">
-                                    <label>consumerid</label>
+                                    <label for="txtconsumerid">consumerid</label>
                                     <div class="input-group">
                                         <input type="password" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid">
                                         <span class="input-group-append">
@@ -7223,7 +7223,7 @@ var table = {
                         Case Else
                             formGen.Add(<![CDATA[
                                 <div class="form-group">
-                                    <label>consumerid</label>
+                                    <label for="txtconsumerid">consumerid</label>
                                     <input type="text" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid">
                                 </div>
                                 ]]>.Value.Replace("consumerid", fieldname))
@@ -7243,7 +7243,7 @@ var table = {
                 Case type = "bool", type = "int" And (fieldname.StartsWith("is") Or fieldname.EndsWith("flag") Or fieldname.Contains("enable") Or fieldname.Contains("disable"))
                     formGen.Add(<![CDATA[
                     <div class="form-group">
-                        <label>consumerid</label>
+                        <label for="chkconsumerid">consumerid</label>
                         <div class="custom-control custom-checkbox">
                             <input class="custom-control-input" type="checkbox" id="chkconsumerid" name="consumerid">
                             <label for="chkconsumerid" class="custom-control-label">consumerid</label>
@@ -7272,7 +7272,7 @@ var table = {
                         ' dropdown
                         formGen.Add(<![CDATA[
                         <div class="form-group">
-                            <label>consumerid</label>
+                            <label for="cboconsumerid">consumerid</label>
                             <select class="form-control select2" style="width: 100%;" name="consumerid" id="cboconsumerid">
                             </select>
                         </div>
@@ -7303,7 +7303,7 @@ var table = {
                         ' normal
                         formGen.Add(<![CDATA[
                         <div class="form-group">
-                            <label>consumerid</label>
+                            <label for="txtconsumerid">consumerid</label>
                             <input type="number" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid">
                         </div>
                         ]]>.Value.Replace("consumerid", fieldname))
@@ -7322,9 +7322,9 @@ var table = {
 
                     formGen.Add(<![CDATA[
                         <div class="form-group">
-                            <label>consumerid</label>
+                            <label for="dtconsumerid">consumerid</label>
                             <div class="input-group date" id="dtconsumerid" data-target-input="nearest">
-                                <input type="text" class="form-control datetimepicker-input" data-target="#dtconsumerid" placeholder="MM/DD/YYYY" id="txtconsumerid" name="consumerid" data-inputmask-alias="datetime" data-inputmask-inputformat="mm/dd/yyyy" data-mask />
+                                <input type="text" class="form-control datetimepicker-input" data-target="#dtconsumerid" placeholder="mm/dd/yyyy" id="txtconsumerid" name="consumerid" data-inputmask-alias="datetime" data-inputmask-inputformat="mm/dd/yyyy" data-mask />
                                 <div class="input-group-append" data-target="#dtconsumerid" data-toggle="datetimepicker">
                                     <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                 </div>
@@ -7336,7 +7336,7 @@ var table = {
                         <div class="form-group">
                             @Html.LabelFor(m => m.consumerid, new { @class = "form-label" })
                             <div class="input-group date" id="dtconsumerid" data-target-input="nearest">
-                                @Html.TextBoxFor(m => m.consumerid, new { @type = "text", @class = "form-control datetimepicker-input", @data_target="#dtconsumerid", @data_inputmask_alias="datetime", @data_inputmask_inputformat="mm/dd/yyyy", @placeholder = "MM/DD/YYYY", @data_mask = "" })
+                                @Html.TextBoxFor(m => m.consumerid, new { @type = "text", @class = "form-control datetimepicker-input", @data_target="#dtconsumerid", @data_inputmask_alias="datetime", @data_inputmask_inputformat="mm/dd/yyyy", @placeholder = "mm/dd/yyyy", @data_mask = "" })
                                 <div class="input-group-append" data-target="#dtconsumerid" data-toggle="datetimepicker">
                                     <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                 </div>
@@ -7349,6 +7349,8 @@ var table = {
                         $('#dtconsumerid').datetimepicker({
                             defaultDate: new Date(),
                             format: 'MM/DD/YYYY',
+                            maxDate: new Date(), // Disable future dates
+                            //maxDate: moment().endOf('day'), // End of today (11:59:59 PM)
                         });
                         ]]>.Value.Replace("consumerid", fieldname))
 
