@@ -6573,7 +6573,7 @@ Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}
                             l3.Add(<![CDATA[dic["_"] = "_";]]>.Value.Replace("_", dt.Rows(i)("ColumnName")))
                         End If
 
-                        Dim colname = dt.Rows(i)("ColumnName")
+                        Dim colname = dt.Rows(i)("ColumnName").ToString.ToLower
                         Dim colid = 2
                         Dim unik = colname
                         Do While True
@@ -6611,7 +6611,7 @@ Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}
                         l3.Add(<![CDATA[dic["_"] = "_";]]>.Value.Replace("_", dt.Rows(i)("COLUMN_NAME")))
                     End If
 
-                    Dim colname = dt.Rows(i)("COLUMN_NAME")
+                    Dim colname = dt.Rows(i)("COLUMN_NAME").ToString.ToLower
                     Dim colid = 2
                     Dim unik = colname
                     Do While True
@@ -8635,7 +8635,7 @@ END
                                     l3.Add(<![CDATA[dic["_"] = "_";]]>.Value.Replace("_", dt.Rows(i)("ColumnName")))
                                 End If
 
-                                Dim colname = dt.Rows(i)("ColumnName")
+                                Dim colname = dt.Rows(i)("ColumnName").ToString.ToLower
                                 Dim colid = 2
                                 Dim unik = colname
                                 Do While True
@@ -8688,7 +8688,7 @@ public class PositionModel
                         l3.Add(<![CDATA[dic["_"] = "_";]]>.Value.Replace("_", dt.Rows(i)("COLUMN_NAME")))
                     End If
 
-                    Dim colname = dt.Rows(i)("COLUMN_NAME")
+                    Dim colname = dt.Rows(i)("COLUMN_NAME").ToString.ToLower
                     Dim colid = 2
                     Dim unik = colname
                     Do While True
