@@ -8743,4 +8743,146 @@ public class PositionModel
 
         txtDest.Text = String.Join(vbCrLf, sql)
     End Sub
+
+    Private Sub GenerateJSONToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles GenerateJSONToolStripMenuItem.Click
+
+        If String.IsNullOrWhiteSpace(cboTable.Text) Then Return
+        If cboTable.Text.StartsWith("----") Then Return
+
+        Dim tblName = cboTable.Text
+        Dim l2 As New List(Of String)
+        Dim l3 As New List(Of String)
+        Dim l4 As New Dictionary(Of String, Object)
+        Dim params As New List(Of String)
+
+        Dim dtoList As New List(Of String)
+
+        l3.Add("var data = JRaw.Parse(Request.PostBody());")
+        l3.Add("var dic = new Dictionary<string, object>();")
+
+        'Using cn = New OleDbConnection(txtSQLConnectionString.Text)
+        '    cn.Open()
+        '    Using cmd = cn.CreateCommand()
+        '        cmd.CommandText = cboTable.Text
+        '        Using reader = cmd.ExecuteReader
+        '            Dim dt2 = New DataTable()
+        '            dt2.Load(reader)
+        '            Debug.Print("")
+        '        End Using
+        '    End Using
+        'End Using
+
+        Using conn = New OleDbConnection(txtSQLConnectionString.Text)
+            conn.Open()
+
+            If cboTable.Text.Trim.ToLower.Contains("select ") Or cboTable.Text.Trim.ToLower.StartsWith("exec ") Then
+                Using cmd As New OleDbCommand(cboTable.Text, conn)
+                    cmd.CommandTimeout = Integer.Parse(optCommandTimeout.Text)
+
+                    Using rdr = cmd.ExecuteReader(CommandBehavior.Default And CommandBehavior.SchemaOnly)
+                        Do While True
+                            l2.Clear()
+
+                            Dim dt = rdr.GetSchemaTable
+                            params.Clear()
+                            For i = 0 To dt.Rows.Count - 1
+                                params.Add(DbTypeToDeclaredStringOle(dt.Rows(i)))
+                            Next
+                            For i = 0 To dt.Rows.Count - 1
+                                Dim propertyString As String = DbTypeToStringFromGetSchemaTable(dt.Rows(i))
+                                l2.Add(propertyString)
+
+                                If propertyString.Contains("[Required]") Then
+                                    l3.Add(<![CDATA[dic["_"] = "_"; // required ]]>.Value.Replace("_", dt.Rows(i)("ColumnName")))
+                                Else
+                                    l3.Add(<![CDATA[dic["_"] = "_";]]>.Value.Replace("_", dt.Rows(i)("ColumnName")))
+                                End If
+
+                                Dim colname = dt.Rows(i)("ColumnName").ToString.ToLower
+                                Dim colid = 2
+                                Dim unik = colname
+                                Do While True
+                                    If l4.ContainsKey(unik) Then
+                                        unik = colname & colid
+                                        colid += 1
+                                        Continue Do
+                                    End If
+                                    l4.Add(unik, "")
+                                    Exit Do
+                                Loop
+                            Next
+
+                            Dim lx = String.Join(", ", params.Select(Function(x) x.Substring(1).Split("=")(0).Trim).ToList)
+
+                            dtoList.Add(<![CDATA[
+    -- as JSON
+    select * from openjson(@data)
+    with (
+        {lx}
+    )
+]]>.Value.Replace("{lx}", String.Join(vbCrLf, lx)))
+
+                            If rdr.NextResult() = False Then Exit Do
+                        Loop
+
+                    End Using
+
+                    conn.Close()
+                End Using
+
+                tblName = Regex.Match(cboTable.Text, " from \[(.*?)\]", RegexOptions.IgnoreCase).Groups(1).Value.Trim
+                If String.IsNullOrWhiteSpace(tblName) Then tblName = Regex.Match(cboTable.Text, " from (.*?) ", RegexOptions.IgnoreCase).Groups(1).Value.Trim
+                If String.IsNullOrWhiteSpace(tblName) Then tblName = Regex.Match(cboTable.Text, " from (.*?)$", RegexOptions.IgnoreCase).Groups(1).Value.Trim
+                If String.IsNullOrWhiteSpace(tblName) Then tblName = Regex.Match(cboTable.Text, "exec (.*?) ", RegexOptions.IgnoreCase).Groups(1).Value.Trim
+                l3.Add("")
+                l3.Add(<![CDATA[var res = DB.InsertParam("_", dic, true);]]>.Value.Replace("_", tblName))
+
+            Else
+
+                Dim dt = conn.GetOleDbSchemaTable(OleDbSchemaGuid.Columns, {Nothing, Nothing, cboTable.Text, Nothing})
+                params.Clear()
+                For i = 0 To dt.Rows.Count - 1
+                    params.Add(DbTypeToDeclaredString(dt.Rows(i)))
+                Next
+                For i = 0 To dt.Rows.Count - 1
+                    Dim propertyString As String = DbTypeToString(dt.Rows(i))
+                    l2.Add(propertyString)
+
+                    If propertyString.Contains("[Required]") Then
+                        l3.Add(<![CDATA[dic["_"] = "_"; // required]]>.Value.Replace("_", dt.Rows(i)("COLUMN_NAME")))
+                    Else
+                        l3.Add(<![CDATA[dic["_"] = "_";]]>.Value.Replace("_", dt.Rows(i)("COLUMN_NAME")))
+                    End If
+
+                    Dim colname = dt.Rows(i)("COLUMN_NAME").ToString.ToLower
+                    Dim colid = 2
+                    Dim unik = colname
+                    Do While True
+                        If l4.ContainsKey(unik) Then
+                            unik = colname & colid
+                            colid += 1
+                            Continue Do
+                        End If
+                        l4.Add(unik, "")
+                        Exit Do
+                    Loop
+
+                Next
+
+                Dim lx = String.Join(", ", params.Select(Function(x) x.Substring(1).Split("=")(0).Trim).ToList)
+
+                dtoList.Add(<![CDATA[
+    -- as JSON
+    select * from openjson(@data)
+    with (
+        {lx}
+    )
+]]>.Value.Replace("{lx}", String.Join(vbCrLf, lx)))
+
+            End If
+
+        End Using
+
+        txtDest.Text = String.Join(vbCrLf, dtoList)
+    End Sub
 End Class

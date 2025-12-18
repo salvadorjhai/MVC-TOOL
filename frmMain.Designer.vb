@@ -97,6 +97,8 @@ Partial Class frmMain
         Me.cboTable = New System.Windows.Forms.ToolStripComboBox()
         Me.btnEditor = New System.Windows.Forms.ToolStripButton()
         Me.btnGenerateFromTable = New System.Windows.Forms.ToolStripButton()
+        Me.btnGenerateProc = New System.Windows.Forms.ToolStripSplitButton()
+        Me.GenerateMERGETemplateToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.btnExportJSON = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripButton8 = New System.Windows.Forms.ToolStripDropDownButton()
         Me.optAnnotation = New System.Windows.Forms.ToolStripMenuItem()
@@ -105,8 +107,7 @@ Partial Class frmMain
         Me.optCommandTimeout = New System.Windows.Forms.ToolStripTextBox()
         Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripButton7 = New System.Windows.Forms.ToolStripButton()
-        Me.btnGenerateProc = New System.Windows.Forms.ToolStripSplitButton()
-        Me.GenerateMERGETemplateToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.GenerateJSONToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -642,6 +643,22 @@ Partial Class frmMain
         Me.btnGenerateFromTable.Size = New System.Drawing.Size(23, 22)
         Me.btnGenerateFromTable.Text = "Generate from selected table or using SQL Query"
         '
+        'btnGenerateProc
+        '
+        Me.btnGenerateProc.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.btnGenerateProc.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.GenerateMERGETemplateToolStripMenuItem, Me.GenerateJSONToolStripMenuItem})
+        Me.btnGenerateProc.Image = CType(resources.GetObject("btnGenerateProc.Image"), System.Drawing.Image)
+        Me.btnGenerateProc.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.btnGenerateProc.Name = "btnGenerateProc"
+        Me.btnGenerateProc.Size = New System.Drawing.Size(32, 22)
+        Me.btnGenerateProc.Text = "Generate Proc"
+        '
+        'GenerateMERGETemplateToolStripMenuItem
+        '
+        Me.GenerateMERGETemplateToolStripMenuItem.Name = "GenerateMERGETemplateToolStripMenuItem"
+        Me.GenerateMERGETemplateToolStripMenuItem.Size = New System.Drawing.Size(214, 22)
+        Me.GenerateMERGETemplateToolStripMenuItem.Text = "Generate MERGE Template"
+        '
         'btnExportJSON
         '
         Me.btnExportJSON.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
@@ -711,21 +728,11 @@ Partial Class frmMain
         Me.ToolStripButton7.Size = New System.Drawing.Size(64, 22)
         Me.ToolStripButton7.Text = "INSERT"
         '
-        'btnGenerateProc
+        'GenerateJSONToolStripMenuItem
         '
-        Me.btnGenerateProc.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.btnGenerateProc.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.GenerateMERGETemplateToolStripMenuItem})
-        Me.btnGenerateProc.Image = CType(resources.GetObject("btnGenerateProc.Image"), System.Drawing.Image)
-        Me.btnGenerateProc.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.btnGenerateProc.Name = "btnGenerateProc"
-        Me.btnGenerateProc.Size = New System.Drawing.Size(32, 22)
-        Me.btnGenerateProc.Text = "Generate Proc"
-        '
-        'GenerateMERGETemplateToolStripMenuItem
-        '
-        Me.GenerateMERGETemplateToolStripMenuItem.Name = "GenerateMERGETemplateToolStripMenuItem"
-        Me.GenerateMERGETemplateToolStripMenuItem.Size = New System.Drawing.Size(214, 22)
-        Me.GenerateMERGETemplateToolStripMenuItem.Text = "Generate MERGE Template"
+        Me.GenerateJSONToolStripMenuItem.Name = "GenerateJSONToolStripMenuItem"
+        Me.GenerateJSONToolStripMenuItem.Size = New System.Drawing.Size(214, 22)
+        Me.GenerateJSONToolStripMenuItem.Text = "Generate OPENJSON"
         '
         'frmMain
         '
@@ -841,4 +848,5 @@ Partial Class frmMain
     Friend WithEvents btnSQLBulkCopy As ToolStripButton
     Friend WithEvents btnGenerateProc As ToolStripSplitButton
     Friend WithEvents GenerateMERGETemplateToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents GenerateJSONToolStripMenuItem As ToolStripMenuItem
 End Class
