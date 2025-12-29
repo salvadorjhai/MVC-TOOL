@@ -8517,62 +8517,80 @@ public class PositionModel
 -- Created date: {DateTime.Now}
 -- Description: crud operation
 -- =============================================
-CREATE OR ALTER PROCEDURE dbo.[js_{tblName.ToLower}_crud]
+CREATE OR ALTER PROCEDURE js_{tblName.ToLower}_crud
     @js_method NVARCHAR(10), -- 'new', 'get', 'list', 'update', 'delete'
     @data NVARCHAR(MAX)
 AS
 BEGIN
-    SET NOCOUNT ON;
-    set xact_abort on   -- use with transaction, save all or nothing
+    SET NOCOUNT ON
+    SET XACT_ABORT ON   -- USE WITH TRANSACTION, SAVE ALL OR NOTHING
 
-    -- as JSON
-    select * from openjson(@data)
-    with (
-        {lx}
-    )
+    BEGIN TRY
+        -- as JSON
+        declare @temp table ({lx})
+        insert into @temp
+        select * from openjson(@data)
+        with (
+            {lx}
+        )
 
-    -- CREATE
-    IF @js_method = 'new'
-    BEGIN
-{generateInsertAndReturn(tblName, l4)}
-        RETURN;
-    END
+        -- DDL
+        BEGIN TRAN
+            -- USE MERGE
 
-    -- GET BY ID
-    IF @js_method = 'get'
-    BEGIN
-        SELECT *
-        FROM dbo.[{tblName}]
-        WHERE Id = @Id
-        RETURN;
-    END
+            -- OR
+            -- CREATE
+            IF @js_method = 'new'
+            BEGIN
+                {generateInsertAndReturn(tblName, l4)}
+                RETURN;
+            END
 
-    -- READ/LIST ALL
-    IF @js_method = 'list'
-    BEGIN
-        SELECT *
-        FROM dbo.[{tblName}]
-        RETURN;
-    END
+            -- GET BY ID
+            IF @js_method = 'get'
+            BEGIN
+                SELECT *
+                FROM [{tblName}]
+                WHERE Id = @Id
+                RETURN;
+            END
 
-    -- UPDATE
-    IF @js_method = 'update'
-    BEGIN
-{generateUpdateAndReturn(tblName, l4)}
-        RETURN;
-    END
+            -- READ/LIST ALL
+            IF @js_method = 'list'
+            BEGIN
+                SELECT *
+                FROM [{tblName}]
+                RETURN;
+            END
 
-    -- DELETE
-    --IF @js_method = 'delete'
-    --BEGIN
-        --DELETE FROM dbo.[{tblName}]
-        --OUTPUT deleted.*
-        --WHERE Id = @Id
-        --RETURN;
-    --END
+            -- UPDATE
+            IF @js_method = 'update'
+            BEGIN
+                {generateUpdateAndReturn(tblName, l4)}
+                RETURN;
+            END
 
-    -- INVALID ACTION
-    RAISERROR('Invalid @js_method parameter. Use new, get, list, update.', 16, 1);
+            -- DELETE
+            --IF @js_method = 'delete'
+            --BEGIN
+                --DELETE FROM [{tblName}]
+                --OUTPUT deleted.*
+                --WHERE Id = @Id
+                --RETURN;
+            --END
+
+            -- INVALID ACTION
+            -- RAISERROR('Invalid @js_method parameter. Use new, get, list, update.', 16, 1);
+
+        COMMIT TRAN
+    END TRY
+    BEGIN CATCH
+        if @@TRANCOUNT>0
+            rollback tran;
+
+        throw;
+    END CATCH
+
 END
 "
         l3.Add(qq)
