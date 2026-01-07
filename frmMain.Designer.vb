@@ -99,6 +99,7 @@ Partial Class frmMain
         Me.btnGenerateFromTable = New System.Windows.Forms.ToolStripButton()
         Me.btnGenerateProc = New System.Windows.Forms.ToolStripSplitButton()
         Me.GenerateMERGETemplateToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.GenerateJSONToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.btnExportJSON = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripButton8 = New System.Windows.Forms.ToolStripDropDownButton()
         Me.optAnnotation = New System.Windows.Forms.ToolStripMenuItem()
@@ -107,7 +108,8 @@ Partial Class frmMain
         Me.optCommandTimeout = New System.Windows.Forms.ToolStripTextBox()
         Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripButton7 = New System.Windows.Forms.ToolStripButton()
-        Me.GenerateJSONToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.FormPOSTToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem()
+        Me.FormPOSTToolStripMenuItem2 = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -379,7 +381,7 @@ Partial Class frmMain
         '
         'ToolStripButton2
         '
-        Me.ToolStripButton2.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.GETToolStripMenuItem, Me.FormPOSTToolStripMenuItem, Me.FormPOSTJSToolStripMenuItem, Me.DatatableGETToolStripMenuItem, Me.Select2AjaxToolStripMenuItem, Me.BsSuggestToolStripMenuItem, Me.GETBLOBToolStripMenuItem})
+        Me.ToolStripButton2.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.GETToolStripMenuItem, Me.FormPOSTToolStripMenuItem, Me.FormPOSTJSToolStripMenuItem, Me.DatatableGETToolStripMenuItem, Me.Select2AjaxToolStripMenuItem, Me.BsSuggestToolStripMenuItem, Me.GETBLOBToolStripMenuItem, Me.FormPOSTToolStripMenuItem1, Me.FormPOSTToolStripMenuItem2})
         Me.ToolStripButton2.Image = CType(resources.GetObject("ToolStripButton2.Image"), System.Drawing.Image)
         Me.ToolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripButton2.Name = "ToolStripButton2"
@@ -390,44 +392,44 @@ Partial Class frmMain
         'GETToolStripMenuItem
         '
         Me.GETToolStripMenuItem.Name = "GETToolStripMenuItem"
-        Me.GETToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
+        Me.GETToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.GETToolStripMenuItem.Text = "GET"
         '
         'FormPOSTToolStripMenuItem
         '
         Me.FormPOSTToolStripMenuItem.Name = "FormPOSTToolStripMenuItem"
-        Me.FormPOSTToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
+        Me.FormPOSTToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.FormPOSTToolStripMenuItem.Text = "Form POST"
         '
         'FormPOSTJSToolStripMenuItem
         '
         Me.FormPOSTJSToolStripMenuItem.Name = "FormPOSTJSToolStripMenuItem"
-        Me.FormPOSTJSToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
+        Me.FormPOSTJSToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.FormPOSTJSToolStripMenuItem.Text = "Form POST (JS)"
         '
         'DatatableGETToolStripMenuItem
         '
         Me.DatatableGETToolStripMenuItem.Name = "DatatableGETToolStripMenuItem"
-        Me.DatatableGETToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
+        Me.DatatableGETToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.DatatableGETToolStripMenuItem.Text = "Datatable GET"
         '
         'Select2AjaxToolStripMenuItem
         '
         Me.Select2AjaxToolStripMenuItem.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold)
         Me.Select2AjaxToolStripMenuItem.Name = "Select2AjaxToolStripMenuItem"
-        Me.Select2AjaxToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
+        Me.Select2AjaxToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.Select2AjaxToolStripMenuItem.Text = "Select2 Ajax"
         '
         'BsSuggestToolStripMenuItem
         '
         Me.BsSuggestToolStripMenuItem.Name = "BsSuggestToolStripMenuItem"
-        Me.BsSuggestToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
+        Me.BsSuggestToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.BsSuggestToolStripMenuItem.Text = "bsSuggest"
         '
         'GETBLOBToolStripMenuItem
         '
         Me.GETBLOBToolStripMenuItem.Name = "GETBLOBToolStripMenuItem"
-        Me.GETBLOBToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
+        Me.GETBLOBToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.GETBLOBToolStripMenuItem.Text = "GET (BLOB)"
         '
         'ToolStripSeparator2
@@ -659,6 +661,12 @@ Partial Class frmMain
         Me.GenerateMERGETemplateToolStripMenuItem.Size = New System.Drawing.Size(214, 22)
         Me.GenerateMERGETemplateToolStripMenuItem.Text = "Generate MERGE Template"
         '
+        'GenerateJSONToolStripMenuItem
+        '
+        Me.GenerateJSONToolStripMenuItem.Name = "GenerateJSONToolStripMenuItem"
+        Me.GenerateJSONToolStripMenuItem.Size = New System.Drawing.Size(214, 22)
+        Me.GenerateJSONToolStripMenuItem.Text = "Generate OPENJSON"
+        '
         'btnExportJSON
         '
         Me.btnExportJSON.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
@@ -728,11 +736,17 @@ Partial Class frmMain
         Me.ToolStripButton7.Size = New System.Drawing.Size(64, 22)
         Me.ToolStripButton7.Text = "INSERT"
         '
-        'GenerateJSONToolStripMenuItem
+        'FormPOSTToolStripMenuItem1
         '
-        Me.GenerateJSONToolStripMenuItem.Name = "GenerateJSONToolStripMenuItem"
-        Me.GenerateJSONToolStripMenuItem.Size = New System.Drawing.Size(214, 22)
-        Me.GenerateJSONToolStripMenuItem.Text = "Generate OPENJSON"
+        Me.FormPOSTToolStripMenuItem1.Name = "FormPOSTToolStripMenuItem1"
+        Me.FormPOSTToolStripMenuItem1.Size = New System.Drawing.Size(180, 22)
+        Me.FormPOSTToolStripMenuItem1.Text = "Form POST"
+        '
+        'FormPOSTToolStripMenuItem2
+        '
+        Me.FormPOSTToolStripMenuItem2.Name = "FormPOSTToolStripMenuItem2"
+        Me.FormPOSTToolStripMenuItem2.Size = New System.Drawing.Size(180, 22)
+        Me.FormPOSTToolStripMenuItem2.Text = "Form POST"
         '
         'frmMain
         '
@@ -849,4 +863,6 @@ Partial Class frmMain
     Friend WithEvents btnGenerateProc As ToolStripSplitButton
     Friend WithEvents GenerateMERGETemplateToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents GenerateJSONToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents FormPOSTToolStripMenuItem1 As ToolStripMenuItem
+    Friend WithEvents FormPOSTToolStripMenuItem2 As ToolStripMenuItem
 End Class

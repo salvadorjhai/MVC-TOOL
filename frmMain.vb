@@ -8903,4 +8903,92 @@ public class PositionModel
 
         txtDest.Text = String.Join(vbCrLf, dtoList)
     End Sub
+
+    Private Sub FormPOSTToolStripMenuItem1_Click(sender As Object, e As EventArgs) Handles FormPOSTToolStripMenuItem1.Click
+
+        txtDest.Text = <![CDATA[
+
+    ShowSwalLoader()
+
+    return $.ajax({
+        type: "POST",
+        url: "/{Controller}/{Action}",
+        data: {
+            name: $(`#txtName`).val(),
+            initials: $(`#txtInitial`).val()
+        },
+        complete: function (jqXHR, textStatus) {
+            //if (textStatus != 'error') setTimeout(CloseSwalLoader, 800);
+        },
+        success: function (response, textStatus, jqXHR) {
+
+            setTimeout(() => {
+                $(`#frmSettings`).data('isDirty', false)
+
+                CloseSwalLoader()
+                msgbox('', 'Information updated successfully !', 'success', false)
+            }, 800);
+
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            setTimeout(() => {
+                CloseSwalLoader()
+                var msg = jqXHR?.responseJSON?.message || `Opps ! Something went wrong ... `
+                error(msg)
+            }, 800);
+
+        }
+    });
+
+]]>.Value
+
+
+    End Sub
+
+    Private Sub FormPOSTToolStripMenuItem2_Click(sender As Object, e As EventArgs) Handles FormPOSTToolStripMenuItem2.Click
+        txtDest.Text = <![CDATA[
+
+                let model = {
+                    oldpass: $(`#txtOldPassword`).val(),
+                    newpass: $(`#txtNewPassword`).val(),
+                    verify: $(`#txtReenterPassword`).val(),
+                }
+
+                if (!$(`#frmSecurity`).valid()) { return; }
+
+                ShowSwalLoader()
+
+                return $.ajax({
+                    type: "POST",
+                    url: "/{Controller}/{Action}",
+                    data: JSON.stringify(model),
+                    contentType: "application/json;charset=UTF-8",
+                    dataType: "json",
+                    complete: function (jqXHR, textStatus) {
+                        //if (textStatus != 'error') setTimeout(CloseSwalLoader, 800);
+                    },
+                    success: function (response, textStatus, jqXHR) {
+
+                        setTimeout(() => {
+                            CloseSwalLoader()
+
+                            msgbox('', 'Password changed successfully !', 'success', false, null, null, false, () => {
+                                setTimeout(userlogout, 800)
+                            })
+
+                        }, 800);
+
+
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        setTimeout(() => {
+                            CloseSwalLoader()
+                            var msg = jqXHR?.responseJSON?.message || `Opps ! Something went wrong ... `
+                            error(msg)
+                        }, 800);
+
+                    }
+                });
+]]>.Value
+    End Sub
 End Class
