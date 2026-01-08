@@ -6567,10 +6567,17 @@ Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}
                         Dim propertyString As String = DbTypeToStringFromGetSchemaTable(dt.Rows(i))
                         l2.Add(propertyString)
 
-                        If propertyString.Contains("[Required]") Then
-                            l3.Add(<![CDATA[dic["_"] = "_"; // required ]]>.Value.Replace("_", dt.Rows(i)("ColumnName")))
+                        Dim required As Boolean = propertyString.Contains("[Required]")
+                        Dim isstring As Boolean = propertyString.Contains(" string ")
+
+                        If required Then
+                            If isstring Then
+                                l3.Add(<![CDATA[dic["_"] = !string.IsNullOrWhiteSpace(data._) ? data._ : ""; // required]]>.Value.Replace("_", dt.Rows(i)("ColumnName")))
+                            Else
+                                l3.Add(<![CDATA[dic["_"] = data._; // required ]]>.Value.Replace("_", dt.Rows(i)("ColumnName")))
+                            End If
                         Else
-                            l3.Add(<![CDATA[dic["_"] = "_";]]>.Value.Replace("_", dt.Rows(i)("ColumnName")))
+                            l3.Add(<![CDATA[dic["_"] = data._;]]>.Value.Replace("_", dt.Rows(i)("ColumnName")))
                         End If
 
                         Dim colname = dt.Rows(i)("ColumnName").ToString.ToLower
@@ -6605,10 +6612,17 @@ Replace("Item1_", $"{IIf(String.IsNullOrWhiteSpace(tupName) = False, $"{tupName}
                     Dim propertyString As String = DbTypeToString(dt.Rows(i))
                     l2.Add(propertyString)
 
-                    If propertyString.Contains("[Required]") Then
-                        l3.Add(<![CDATA[dic["_"] = "_"; // required]]>.Value.Replace("_", dt.Rows(i)("COLUMN_NAME")))
+                    Dim required As Boolean = propertyString.Contains("[Required]")
+                    Dim isstring As Boolean = propertyString.Contains(" string ")
+
+                    If required Then
+                        If isstring Then
+                            l3.Add(<![CDATA[dic["_"] = !string.IsNullOrWhiteSpace(data._) ? data._ : ""; // required]]>.Value.Replace("_", dt.Rows(i)("COLUMN_NAME")))
+                        Else
+                            l3.Add(<![CDATA[dic["_"] = data._; // required]]>.Value.Replace("_", dt.Rows(i)("COLUMN_NAME")))
+                        End If
                     Else
-                        l3.Add(<![CDATA[dic["_"] = "_";]]>.Value.Replace("_", dt.Rows(i)("COLUMN_NAME")))
+                        l3.Add(<![CDATA[dic["_"] = data._;]]>.Value.Replace("_", dt.Rows(i)("COLUMN_NAME")))
                     End If
 
                     Dim colname = dt.Rows(i)("COLUMN_NAME").ToString.ToLower
@@ -8627,6 +8641,7 @@ END
         '    End Using
         'End Using
 
+        Dim lstRequired As New List(Of String)
         Using conn = New OleDbConnection(txtSQLConnectionString.Text)
             conn.Open()
 
@@ -8647,7 +8662,10 @@ END
                                 Dim propertyString As String = DbTypeToStringFromGetSchemaTable(dt.Rows(i))
                                 l2.Add(propertyString)
 
-                                If propertyString.Contains("[Required]") Then
+                                Dim required As Boolean = propertyString.Contains("[Required]")
+                                Dim isstring As Boolean = propertyString.Contains(" string ")
+
+                                If required Then
                                     l3.Add(<![CDATA[dic["_"] = "_"; // required ]]>.Value.Replace("_", dt.Rows(i)("ColumnName")))
                                 Else
                                     l3.Add(<![CDATA[dic["_"] = "_";]]>.Value.Replace("_", dt.Rows(i)("ColumnName")))
@@ -8663,6 +8681,8 @@ END
                                         Continue Do
                                     End If
                                     l4.Add(unik, "")
+                                    If required And isstring Then lstRequired.Add(unik)
+
                                     Exit Do
                                 Loop
                             Next
@@ -8700,7 +8720,10 @@ public class PositionModel
                     Dim propertyString As String = DbTypeToString(dt.Rows(i))
                     l2.Add(propertyString)
 
-                    If propertyString.Contains("[Required]") Then
+                    Dim required As Boolean = propertyString.Contains("[Required]")
+                    Dim isstring As Boolean = propertyString.Contains(" string ")
+
+                    If required Then
                         l3.Add(<![CDATA[dic["_"] = "_"; // required]]>.Value.Replace("_", dt.Rows(i)("COLUMN_NAME")))
                     Else
                         l3.Add(<![CDATA[dic["_"] = "_";]]>.Value.Replace("_", dt.Rows(i)("COLUMN_NAME")))
@@ -8716,6 +8739,9 @@ public class PositionModel
                             Continue Do
                         End If
                         l4.Add(unik, "")
+
+                        If required And isstring Then lstRequired.Add(unik)
+
                         Exit Do
                     Loop
 
@@ -8736,8 +8762,8 @@ public class PositionModel
         End Using
 
         Dim cs = String.Join(", ", l4.Keys)
-        Dim vs = String.Join(", ", l4.Keys.Select(Function(x) $"src.{x}"))
-        Dim xs = String.Join(", ", l4.Keys.Select(Function(x) $"dest.{x} = src.{x}"))
+        Dim vs = String.Join(vbCrLf & ", ", l4.Keys.Select(Function(x) IIf(lstRequired.Contains(x), $"ISNULL(src.{x}, '')", $"src.{x}")))
+        Dim xs = String.Join(vbCrLf & ", ", l4.Keys.Select(Function(x) IIf(lstRequired.Contains(x), $"dest.{x} = ISNULL(src.{x}, '')", $"dest.{x} = src.{x}")))
 
         Dim sql = <![CDATA[
         begin tran
@@ -8752,7 +8778,11 @@ public class PositionModel
                     _XS_
             WHEN NOT MATCHED BY TARGET THEN
                 INSERT (_CS_)
-                VALUES (_VS_);
+                VALUES (
+                _VS_
+                ) 
+            OUTPUT $action, 
+                inserted.*
 
         -- commit tran
         -- rollback tran
