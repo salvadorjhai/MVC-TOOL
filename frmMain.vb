@@ -7403,7 +7403,7 @@ var table = {
         Dim source = <![CDATA[
 
 <form autocomplete="off" id="formId">
-    <div class="modal fade" id="modalId" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+    <div class="modal fade modal-dark-bg text-sm" id="modalId" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
