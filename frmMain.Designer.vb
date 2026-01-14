@@ -73,6 +73,8 @@ Partial Class frmMain
         Me.Select2AjaxToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.BsSuggestToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.GETBLOBToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.FormPOSTToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem()
+        Me.FormPOSTToolStripMenuItem2 = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripButton4 = New System.Windows.Forms.ToolStripSplitButton()
         Me.DatatablesBootstrap4ToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -108,8 +110,7 @@ Partial Class frmMain
         Me.optCommandTimeout = New System.Windows.Forms.ToolStripTextBox()
         Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripButton7 = New System.Windows.Forms.ToolStripButton()
-        Me.FormPOSTToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem()
-        Me.FormPOSTToolStripMenuItem2 = New System.Windows.Forms.ToolStripMenuItem()
+        Me.optUseHorizontalForm = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -392,45 +393,57 @@ Partial Class frmMain
         'GETToolStripMenuItem
         '
         Me.GETToolStripMenuItem.Name = "GETToolStripMenuItem"
-        Me.GETToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.GETToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
         Me.GETToolStripMenuItem.Text = "GET"
         '
         'FormPOSTToolStripMenuItem
         '
         Me.FormPOSTToolStripMenuItem.Name = "FormPOSTToolStripMenuItem"
-        Me.FormPOSTToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.FormPOSTToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
         Me.FormPOSTToolStripMenuItem.Text = "Form POST"
         '
         'FormPOSTJSToolStripMenuItem
         '
         Me.FormPOSTJSToolStripMenuItem.Name = "FormPOSTJSToolStripMenuItem"
-        Me.FormPOSTJSToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.FormPOSTJSToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
         Me.FormPOSTJSToolStripMenuItem.Text = "Form POST (JS)"
         '
         'DatatableGETToolStripMenuItem
         '
         Me.DatatableGETToolStripMenuItem.Name = "DatatableGETToolStripMenuItem"
-        Me.DatatableGETToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.DatatableGETToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
         Me.DatatableGETToolStripMenuItem.Text = "Datatable GET"
         '
         'Select2AjaxToolStripMenuItem
         '
         Me.Select2AjaxToolStripMenuItem.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold)
         Me.Select2AjaxToolStripMenuItem.Name = "Select2AjaxToolStripMenuItem"
-        Me.Select2AjaxToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.Select2AjaxToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
         Me.Select2AjaxToolStripMenuItem.Text = "Select2 Ajax"
         '
         'BsSuggestToolStripMenuItem
         '
         Me.BsSuggestToolStripMenuItem.Name = "BsSuggestToolStripMenuItem"
-        Me.BsSuggestToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.BsSuggestToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
         Me.BsSuggestToolStripMenuItem.Text = "bsSuggest"
         '
         'GETBLOBToolStripMenuItem
         '
         Me.GETBLOBToolStripMenuItem.Name = "GETBLOBToolStripMenuItem"
-        Me.GETBLOBToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.GETBLOBToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
         Me.GETBLOBToolStripMenuItem.Text = "GET (BLOB)"
+        '
+        'FormPOSTToolStripMenuItem1
+        '
+        Me.FormPOSTToolStripMenuItem1.Name = "FormPOSTToolStripMenuItem1"
+        Me.FormPOSTToolStripMenuItem1.Size = New System.Drawing.Size(155, 22)
+        Me.FormPOSTToolStripMenuItem1.Text = "Form POST"
+        '
+        'FormPOSTToolStripMenuItem2
+        '
+        Me.FormPOSTToolStripMenuItem2.Name = "FormPOSTToolStripMenuItem2"
+        Me.FormPOSTToolStripMenuItem2.Size = New System.Drawing.Size(155, 22)
+        Me.FormPOSTToolStripMenuItem2.Text = "Form POST"
         '
         'ToolStripSeparator2
         '
@@ -679,7 +692,7 @@ Partial Class frmMain
         'ToolStripButton8
         '
         Me.ToolStripButton8.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.ToolStripButton8.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.optAnnotation, Me.optGenerateByHTMLHelper, Me.optGenerateNamedParam, Me.optCommandTimeout})
+        Me.ToolStripButton8.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.optAnnotation, Me.optGenerateByHTMLHelper, Me.optGenerateNamedParam, Me.optCommandTimeout, Me.optUseHorizontalForm})
         Me.ToolStripButton8.Image = CType(resources.GetObject("ToolStripButton8.Image"), System.Drawing.Image)
         Me.ToolStripButton8.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.ToolStripButton8.Name = "ToolStripButton8"
@@ -736,17 +749,13 @@ Partial Class frmMain
         Me.ToolStripButton7.Size = New System.Drawing.Size(64, 22)
         Me.ToolStripButton7.Text = "INSERT"
         '
-        'FormPOSTToolStripMenuItem1
+        'optUseHorizontalForm
         '
-        Me.FormPOSTToolStripMenuItem1.Name = "FormPOSTToolStripMenuItem1"
-        Me.FormPOSTToolStripMenuItem1.Size = New System.Drawing.Size(180, 22)
-        Me.FormPOSTToolStripMenuItem1.Text = "Form POST"
-        '
-        'FormPOSTToolStripMenuItem2
-        '
-        Me.FormPOSTToolStripMenuItem2.Name = "FormPOSTToolStripMenuItem2"
-        Me.FormPOSTToolStripMenuItem2.Size = New System.Drawing.Size(180, 22)
-        Me.FormPOSTToolStripMenuItem2.Text = "Form POST"
+        Me.optUseHorizontalForm.CheckOnClick = True
+        Me.optUseHorizontalForm.Image = Global.MVC_TOOL.My.Resources.Resources.check_box_uncheck
+        Me.optUseHorizontalForm.Name = "optUseHorizontalForm"
+        Me.optUseHorizontalForm.Size = New System.Drawing.Size(229, 22)
+        Me.optUseHorizontalForm.Text = "Use Horizontal Form"
         '
         'frmMain
         '
@@ -865,4 +874,5 @@ Partial Class frmMain
     Friend WithEvents GenerateJSONToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents FormPOSTToolStripMenuItem1 As ToolStripMenuItem
     Friend WithEvents FormPOSTToolStripMenuItem2 As ToolStripMenuItem
+    Friend WithEvents optUseHorizontalForm As ToolStripMenuItem
 End Class

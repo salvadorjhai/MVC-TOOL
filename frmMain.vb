@@ -7168,6 +7168,7 @@ var table = {
 
         Dim formGen As New List(Of String)
         Dim formGen2 As New List(Of String) ' mvc
+        Dim formGen3 As New List(Of String) ' hr
         Dim scriptGen As New List(Of String)
         Dim scriptFillData As New List(Of String)
 
@@ -7202,6 +7203,15 @@ var table = {
                                 </div>
                                 ]]>.Value.Replace("consumerid", fieldname))
 
+                            formGen3.Add(<![CDATA[
+                                <div class="form-group row">
+                                    <label for="txtconsumerid" class="col-sm-2 col-form-label">consumerid</label>
+                                    <div class="col-sm-10">
+                                        <input type="email" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid">
+                                    </div>
+                                </div>
+                                ]]>.Value.Replace("consumerid", fieldname))
+
                             l0.Add(<![CDATA[  @Html.TextBoxFor(m => m.consumerid, new { @type = "email", @class = "form-control", @placeholder = Html.DisplayNameFor(m => m.consumerid) }) ]]>.Value)
 
                         Case "pass", "password", "pwd", "syspassword", "loginpwd"
@@ -7213,6 +7223,20 @@ var table = {
                                         <span class="input-group-append">
                                             <button type="button" class="btn btn-sm btn-default btn-flat" data-action="showpassword"> <i class="fas fa-eye"></i> </button>
                                         </span>
+                                    </div>
+                                </div>
+                                ]]>.Value.Replace("consumerid", fieldname))
+
+                            formGen3.Add(<![CDATA[
+                                <div class="form-group row">
+                                    <label for="txtconsumerid" class="col-sm-2 col-form-label">consumerid</label>
+                                    <div class="col-sm-10">
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid">
+                                            <span class="input-group-append">
+                                                <button type="button" class="btn btn-sm btn-default btn-flat" data-action="showpassword"> <i class="fas fa-eye"></i> </button>
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                                 ]]>.Value.Replace("consumerid", fieldname))
@@ -7242,6 +7266,15 @@ var table = {
                                 </div>
                                 ]]>.Value.Replace("consumerid", fieldname))
 
+                            formGen3.Add(<![CDATA[
+                                <div class="form-group row">
+                                    <label for="txtconsumerid" class="col-sm-2 col-form-label">consumerid</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid">
+                                    </div>
+                                </div>
+                                ]]>.Value.Replace("consumerid", fieldname))
+
                             l0.Add(<![CDATA[  @Html.TextBoxFor(m => m.consumerid, new { @type = "text", @class = "form-control", @placeholder = Html.DisplayNameFor(m => m.consumerid) }) ]]>.Value)
 
                     End Select
@@ -7257,12 +7290,22 @@ var table = {
                 Case type = "bool", type = "int" And (fieldname.StartsWith("is") Or fieldname.EndsWith("flag") Or fieldname.Contains("enable") Or fieldname.Contains("disable"))
                     formGen.Add(<![CDATA[
                     <div class="form-group">
-                        <label for="chkconsumerid">consumerid</label>
                         <div class="custom-control custom-checkbox">
                             <input class="custom-control-input" type="checkbox" id="chkconsumerid" name="consumerid">
                             <label for="chkconsumerid" class="custom-control-label">consumerid</label>
                         </div>
                     </div>
+                    ]]>.Value.Replace("consumerid", fieldname))
+
+                    formGen3.Add(<![CDATA[
+                        <div class="form-group row">
+                            <div class="offset-sm-2 col-sm-10">
+                                <div class="custom-control custom-checkbox">
+                                    <input class="custom-control-input" type="checkbox" id="chkconsumerid" name="consumerid">
+                                    <label for="chkconsumerid" class="custom-control-label">consumerid</label>
+                                </div>
+                            </div>
+                        </div>
                     ]]>.Value.Replace("consumerid", fieldname))
 
                     formGen2.Add(<![CDATA[
@@ -7290,6 +7333,17 @@ var table = {
                             <select class="form-control select2" style="width: 100%;" name="consumerid" id="cboconsumerid">
                             </select>
                         </div>
+                        ]]>.Value.Replace("consumerid", fieldname))
+
+                        formGen3.Add(<![CDATA[
+                            <div class="form-group row">
+                                <label for="cboconsumerid" class="col-sm-2 col-form-label">consumerid</label>
+                                <div class="col-sm-10">
+                                    <select class="form-control select2" style="width: 100%;" name="consumerid" id="cboconsumerid">
+                                    <option></option>
+                                    </select>
+                                </div>
+                            </div>
                         ]]>.Value.Replace("consumerid", fieldname))
 
                         formGen2.Add(<![CDATA[
@@ -7322,6 +7376,15 @@ var table = {
                         </div>
                         ]]>.Value.Replace("consumerid", fieldname))
 
+                        formGen3.Add(<![CDATA[
+                            <div class="form-group row">
+                                <label for="txtconsumerid" class="col-sm-2 col-form-label">consumerid</label>
+                                <div class="col-sm-10">
+                                    <input type="number" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid">
+                                </div>
+                            </div>
+                        ]]>.Value.Replace("consumerid", fieldname))
+
                         formGen2.Add(<![CDATA[
                         <div class="form-group">
                             @Html.LabelFor(m => m.consumerid, new { @class = "form-label" })
@@ -7341,6 +7404,20 @@ var table = {
                                 <input type="text" class="form-control datetimepicker-input" data-target="#dtconsumerid" placeholder="mm/dd/yyyy" id="txtconsumerid" name="consumerid" data-inputmask-alias="datetime" data-inputmask-inputformat="mm/dd/yyyy" data-mask />
                                 <div class="input-group-append" data-target="#dtconsumerid" data-toggle="datetimepicker">
                                     <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    ]]>.Value.Replace("consumerid", fieldname))
+
+                    formGen3.Add(<![CDATA[
+                        <div class="form-group row">
+                            <label for="dtconsumerid" class="col-sm-2 col-form-label">consumerid</label>
+                            <div class="col-sm-10">
+                                <div class="input-group date" id="dtconsumerid" data-target-input="nearest">
+                                    <input type="text" class="form-control datetimepicker-input" data-target="#dtconsumerid" placeholder="mm/dd/yyyy" id="txtconsumerid" name="consumerid" data-inputmask-alias="datetime" data-inputmask-inputformat="mm/dd/yyyy" data-mask />
+                                    <div class="input-group-append" data-target="#dtconsumerid" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -7390,19 +7467,19 @@ var table = {
                         // initialize select2
                         $(`select.select2`).select2({
                             placeholder: {
-                                id: '-1',
+                                id: '',
                                 text: 'Select option'
                             },
                             allowClear: true,
                             // tags: true,              // for custom input
-                            parent: $(`.modal`)
+                            parent: $(`#formId .modal`)
                         })
-                        ]]>.Value)
+                        ]]>.Value.Replace("formId", formId))
         End If
 
         Dim source = <![CDATA[
 
-<form autocomplete="off" id="formId">
+<form autocomplete="off" id="formId" _HR_>
     <div class="modal fade modal-dark-bg text-sm" id="modalId" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -7418,7 +7495,7 @@ var table = {
                     // content
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-default text-primary" data-action="close"> <i class="fas fa-times"></i> Close</button>
+                    <button type="button" class="btn btn-default" data-action="close"> <i class="fas fa-times"></i> Close</button>
                     <button type="button" class="btn btn-primary" data-action="save"> <i class="fas fa-save"></i> Save</button>
                 </div>
             </div>
@@ -7429,12 +7506,16 @@ var table = {
     <!-- /.modal -->
 </form>
 
-        ]]>.Value.Replace("formId", formId).Replace("modalId", dialogId)
+        ]]>.Value.Replace("formId", formId).Replace("modalId", dialogId).Replace("_HR_", IIf(optUseHorizontalForm.Checked, "class=""form-horizontal""", ""))
 
         If optGenerateByHTMLHelper.Checked Then
             source = source.Replace("// content", String.Join(vbCrLf, formGen2.Select(Function(x) x.Trim))).Trim
         Else
-            source = source.Replace("// content", String.Join(vbCrLf, formGen.Select(Function(x) x.Trim))).Trim
+            If optUseHorizontalForm.Checked = False Then
+                source = source.Replace("// content", String.Join(vbCrLf, formGen.Select(Function(x) x.Trim))).Trim
+            Else
+                source = source.Replace("// content", String.Join(vbCrLf, formGen3.Select(Function(x) x.Trim))).Trim
+            End If
         End If
 
         Dim js = <![CDATA[
