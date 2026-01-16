@@ -108,9 +108,10 @@ Partial Class frmMain
         Me.optGenerateByHTMLHelper = New System.Windows.Forms.ToolStripMenuItem()
         Me.optGenerateNamedParam = New System.Windows.Forms.ToolStripMenuItem()
         Me.optCommandTimeout = New System.Windows.Forms.ToolStripTextBox()
+        Me.optUseHorizontalForm = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripButton7 = New System.Windows.Forms.ToolStripButton()
-        Me.optUseHorizontalForm = New System.Windows.Forms.ToolStripMenuItem()
+        Me.GenerateJSONToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -661,7 +662,7 @@ Partial Class frmMain
         'btnGenerateProc
         '
         Me.btnGenerateProc.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.btnGenerateProc.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.GenerateMERGETemplateToolStripMenuItem, Me.GenerateJSONToolStripMenuItem})
+        Me.btnGenerateProc.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.GenerateMERGETemplateToolStripMenuItem, Me.GenerateJSONToolStripMenuItem, Me.GenerateJSONToolStripMenuItem1})
         Me.btnGenerateProc.Image = CType(resources.GetObject("btnGenerateProc.Image"), System.Drawing.Image)
         Me.btnGenerateProc.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.btnGenerateProc.Name = "btnGenerateProc"
@@ -736,6 +737,14 @@ Partial Class frmMain
         Me.optCommandTimeout.Text = "25"
         Me.optCommandTimeout.TextBoxTextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
+        'optUseHorizontalForm
+        '
+        Me.optUseHorizontalForm.CheckOnClick = True
+        Me.optUseHorizontalForm.Image = Global.MVC_TOOL.My.Resources.Resources.check_box_uncheck
+        Me.optUseHorizontalForm.Name = "optUseHorizontalForm"
+        Me.optUseHorizontalForm.Size = New System.Drawing.Size(229, 22)
+        Me.optUseHorizontalForm.Text = "Use Horizontal Form"
+        '
         'ToolStripSeparator10
         '
         Me.ToolStripSeparator10.Name = "ToolStripSeparator10"
@@ -749,13 +758,11 @@ Partial Class frmMain
         Me.ToolStripButton7.Size = New System.Drawing.Size(64, 22)
         Me.ToolStripButton7.Text = "INSERT"
         '
-        'optUseHorizontalForm
+        'GenerateJSONToolStripMenuItem1
         '
-        Me.optUseHorizontalForm.CheckOnClick = True
-        Me.optUseHorizontalForm.Image = Global.MVC_TOOL.My.Resources.Resources.check_box_uncheck
-        Me.optUseHorizontalForm.Name = "optUseHorizontalForm"
-        Me.optUseHorizontalForm.Size = New System.Drawing.Size(229, 22)
-        Me.optUseHorizontalForm.Text = "Use Horizontal Form"
+        Me.GenerateJSONToolStripMenuItem1.Name = "GenerateJSONToolStripMenuItem1"
+        Me.GenerateJSONToolStripMenuItem1.Size = New System.Drawing.Size(214, 22)
+        Me.GenerateJSONToolStripMenuItem1.Text = "Generate JSON"
         '
         'frmMain
         '
@@ -875,4 +882,5 @@ Partial Class frmMain
     Friend WithEvents FormPOSTToolStripMenuItem1 As ToolStripMenuItem
     Friend WithEvents FormPOSTToolStripMenuItem2 As ToolStripMenuItem
     Friend WithEvents optUseHorizontalForm As ToolStripMenuItem
+    Friend WithEvents GenerateJSONToolStripMenuItem1 As ToolStripMenuItem
 End Class

@@ -9102,4 +9102,30 @@ public class PositionModel
                 });
 ]]>.Value
     End Sub
+
+    Private Sub GenerateJSONToolStripMenuItem1_Click(sender As Object, e As EventArgs) Handles GenerateJSONToolStripMenuItem1.Click
+        Using conn = New OleDbConnection(txtSQLConnectionString.Text)
+            conn.Open()
+
+            Dim query As New List(Of String)
+            If cboTable.SelectedIndex >= 0 Then query.Add($"SELECT * from [{cboTable.Text}]")
+            If cboTable.SelectedIndex < 0 Then query.Add(cboTable.Text)
+
+            Using cmd As New OleDbCommand(String.Join(vbCrLf & ";", query), conn)
+                cmd.CommandTimeout = Integer.Parse(optCommandTimeout.Text)
+
+                Using rdr = cmd.ExecuteReader()
+                    Dim dt As New DataTable
+                    dt.Load(rdr)
+                    Dim js = JsonConvert.SerializeObject(dt, Formatting.None)
+                    txtDest.Text = js
+                End Using
+
+                conn.Close()
+            End Using
+
+        End Using
+
+
+    End Sub
 End Class
