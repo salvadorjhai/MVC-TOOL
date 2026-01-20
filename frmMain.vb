@@ -8843,12 +8843,19 @@ public class PositionModel
         End Using
 
         Dim cs = String.Join(", ", l4.Keys)
-        Dim vs = String.Join(vbCrLf & ", ", l4.Keys.Select(Function(x) IIf(lstRequired.Contains(x), $"ISNULL(src.{x}, '')", $"src.{x}")))
-        Dim xs = String.Join(vbCrLf & ", ", l4.Keys.Select(Function(x) IIf(lstRequired.Contains(x), $"dest.{x} = ISNULL(src.{x}, '')", $"dest.{x} = src.{x}")))
+        Dim vs = String.Join(vbCrLf & "                    , ", l4.Keys.Select(Function(x) IIf(lstRequired.Contains(x), $"ISNULL(src.{x}, '')", $"src.{x}")))
+        Dim xs = String.Join(vbCrLf & "                    , ", l4.Keys.Select(Function(x) IIf(lstRequired.Contains(x), $"dest.{x} = ISNULL(src.{x}, '')", $"dest.{x} = src.{x}")))
+        Dim lx = String.Join(", ", params.Select(Function(x) x.Substring(1).Split("=")(0).Trim).ToList)
 
         Dim sql = <![CDATA[
         begin tran
+            declare @temp table ({lx})
 
+            -- use this as a source
+            select * from openjson(@data)
+            with ({lx})
+
+            -- merge template
             MERGE DB_Target..arstrxdtl AS dest
             USING DB_Source..arstrxdtl AS src
                 -- condition key
@@ -8860,15 +8867,16 @@ public class PositionModel
             WHEN NOT MATCHED BY TARGET THEN
                 INSERT (_CS_)
                 VALUES (
-                _VS_
+                    _VS_
                 ) 
-            OUTPUT $action, 
-                inserted.*
+            -- OUTPUT $action, inserted.*
+            -- OUTPUT inserted.* INTO @temp
+            ;
 
         -- commit tran
         -- rollback tran
 
-        ]]>.Value.Replace("arstrxdtl", tblName).Replace("_CS_", cs).Replace("_VS_", vs).Replace("_XS_", xs)
+        ]]>.Value.Replace("arstrxdtl", tblName).Replace("_CS_", cs).Replace("_VS_", vs).Replace("_XS_", xs).Replace("{lx}", lx)
 
         txtDest.Text = String.Join(vbCrLf, sql)
     End Sub
