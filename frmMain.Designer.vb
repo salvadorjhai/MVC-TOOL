@@ -102,6 +102,7 @@ Partial Class frmMain
         Me.btnGenerateProc = New System.Windows.Forms.ToolStripSplitButton()
         Me.GenerateMERGETemplateToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.GenerateJSONToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.GenerateJSONToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem()
         Me.btnExportJSON = New System.Windows.Forms.ToolStripButton()
         Me.ToolStripButton8 = New System.Windows.Forms.ToolStripDropDownButton()
         Me.optAnnotation = New System.Windows.Forms.ToolStripMenuItem()
@@ -111,7 +112,7 @@ Partial Class frmMain
         Me.optUseHorizontalForm = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripButton7 = New System.Windows.Forms.ToolStripButton()
-        Me.GenerateJSONToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem()
+        Me.GenerateCRUDProcToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -662,7 +663,7 @@ Partial Class frmMain
         'btnGenerateProc
         '
         Me.btnGenerateProc.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.btnGenerateProc.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.GenerateMERGETemplateToolStripMenuItem, Me.GenerateJSONToolStripMenuItem, Me.GenerateJSONToolStripMenuItem1})
+        Me.btnGenerateProc.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.GenerateMERGETemplateToolStripMenuItem, Me.GenerateCRUDProcToolStripMenuItem, Me.GenerateJSONToolStripMenuItem, Me.GenerateJSONToolStripMenuItem1})
         Me.btnGenerateProc.Image = CType(resources.GetObject("btnGenerateProc.Image"), System.Drawing.Image)
         Me.btnGenerateProc.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.btnGenerateProc.Name = "btnGenerateProc"
@@ -680,6 +681,12 @@ Partial Class frmMain
         Me.GenerateJSONToolStripMenuItem.Name = "GenerateJSONToolStripMenuItem"
         Me.GenerateJSONToolStripMenuItem.Size = New System.Drawing.Size(214, 22)
         Me.GenerateJSONToolStripMenuItem.Text = "Generate OPENJSON"
+        '
+        'GenerateJSONToolStripMenuItem1
+        '
+        Me.GenerateJSONToolStripMenuItem1.Name = "GenerateJSONToolStripMenuItem1"
+        Me.GenerateJSONToolStripMenuItem1.Size = New System.Drawing.Size(214, 22)
+        Me.GenerateJSONToolStripMenuItem1.Text = "Generate JSON"
         '
         'btnExportJSON
         '
@@ -758,11 +765,11 @@ Partial Class frmMain
         Me.ToolStripButton7.Size = New System.Drawing.Size(64, 22)
         Me.ToolStripButton7.Text = "INSERT"
         '
-        'GenerateJSONToolStripMenuItem1
+        'GenerateCRUDProcToolStripMenuItem
         '
-        Me.GenerateJSONToolStripMenuItem1.Name = "GenerateJSONToolStripMenuItem1"
-        Me.GenerateJSONToolStripMenuItem1.Size = New System.Drawing.Size(214, 22)
-        Me.GenerateJSONToolStripMenuItem1.Text = "Generate JSON"
+        Me.GenerateCRUDProcToolStripMenuItem.Name = "GenerateCRUDProcToolStripMenuItem"
+        Me.GenerateCRUDProcToolStripMenuItem.Size = New System.Drawing.Size(214, 22)
+        Me.GenerateCRUDProcToolStripMenuItem.Text = "Generate CRUD Proc"
         '
         'frmMain
         '
@@ -883,4 +890,5 @@ Partial Class frmMain
     Friend WithEvents FormPOSTToolStripMenuItem2 As ToolStripMenuItem
     Friend WithEvents optUseHorizontalForm As ToolStripMenuItem
     Friend WithEvents GenerateJSONToolStripMenuItem1 As ToolStripMenuItem
+    Friend WithEvents GenerateCRUDProcToolStripMenuItem As ToolStripMenuItem
 End Class

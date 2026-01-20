@@ -7399,7 +7399,7 @@ var table = {
 
                     formGen.Add(<![CDATA[
                         <div class="form-group">
-                            <label for="dtconsumerid">consumerid</label>
+                            <label for="txtconsumerid">consumerid</label>
                             <div class="input-group date" id="dtconsumerid" data-target-input="nearest">
                                 <input type="text" class="form-control datetimepicker-input" data-target="#dtconsumerid" placeholder="mm/dd/yyyy" id="txtconsumerid" name="consumerid" data-inputmask-alias="datetime" data-inputmask-inputformat="mm/dd/yyyy" data-mask />
                                 <div class="input-group-append" data-target="#dtconsumerid" data-toggle="datetimepicker">
@@ -7411,7 +7411,7 @@ var table = {
 
                     formGen3.Add(<![CDATA[
                         <div class="form-group row">
-                            <label for="dtconsumerid" class="col-sm-2 col-form-label">consumerid</label>
+                            <label for="txtconsumerid" class="col-sm-2 col-form-label">consumerid</label>
                             <div class="col-sm-10">
                                 <div class="input-group date" id="dtconsumerid" data-target-input="nearest">
                                     <input type="text" class="form-control datetimepicker-input" data-target="#dtconsumerid" placeholder="mm/dd/yyyy" id="txtconsumerid" name="consumerid" data-inputmask-alias="datetime" data-inputmask-inputformat="mm/dd/yyyy" data-mask />
@@ -8613,15 +8613,15 @@ public class PositionModel
 -- Description: crud operation
 -- =============================================
 CREATE OR ALTER PROCEDURE js_{tblName.ToLower}_crud
-    @js_method NVARCHAR(10), -- 'new', 'get', 'list', 'update', 'delete'
-    @data NVARCHAR(MAX)
+    @data NVARCHAR(MAX) = '',   -- for insert/update
+    @id int = 0                 -- for selecting specific record
 AS
 BEGIN
     SET NOCOUNT ON
     SET XACT_ABORT ON   -- USE WITH TRANSACTION, SAVE ALL OR NOTHING
 
     BEGIN TRY
-        -- as JSON
+        -- as JSON (see merge template generator)
         declare @temp table ({lx})
         insert into @temp
         select * from openjson(@data)
@@ -8631,7 +8631,7 @@ BEGIN
 
         -- DDL
         BEGIN TRAN
-            -- USE MERGE
+            -- USE MERGE TEMPLATE EXAMPLE
 
             -- OR
             -- CREATE
@@ -8872,7 +8872,7 @@ public class PositionModel
             -- OUTPUT $action, inserted.*
             -- OUTPUT inserted.* INTO @temp
             ;
-
+            -- select * from @temp
         -- commit tran
         -- rollback tran
 
@@ -9134,6 +9134,214 @@ public class PositionModel
 
         End Using
 
+
+    End Sub
+
+    Private Sub GenerateCRUDProcToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles GenerateCRUDProcToolStripMenuItem.Click
+
+        If String.IsNullOrWhiteSpace(cboTable.Text) Then Return
+        If cboTable.Text.StartsWith("----") Then Return
+
+        Dim tblName = cboTable.Text
+        Dim l2 As New List(Of String)
+        Dim l3 As New List(Of String)
+        Dim l4 As New Dictionary(Of String, Object)
+        Dim params As New List(Of String)
+        Dim params2 As New List(Of String)
+
+        Dim dtoList As New List(Of String)
+
+        l3.Add("var data = JRaw.Parse(Request.PostBody());")
+        l3.Add("var dic = new Dictionary<string, object>();")
+
+        'Using cn = New OleDbConnection(txtSQLConnectionString.Text)
+        '    cn.Open()
+        '    Using cmd = cn.CreateCommand()
+        '        cmd.CommandText = cboTable.Text
+        '        Using reader = cmd.ExecuteReader
+        '            Dim dt2 = New DataTable()
+        '            dt2.Load(reader)
+        '            Debug.Print("")
+        '        End Using
+        '    End Using
+        'End Using
+
+        Using conn = New OleDbConnection(txtSQLConnectionString.Text)
+            conn.Open()
+
+            If cboTable.Text.Trim.ToLower.Contains("select ") Or cboTable.Text.Trim.ToLower.StartsWith("exec ") Then
+                Using cmd As New OleDbCommand(cboTable.Text, conn)
+                    cmd.CommandTimeout = Integer.Parse(optCommandTimeout.Text)
+
+                    Using rdr = cmd.ExecuteReader(CommandBehavior.Default And CommandBehavior.SchemaOnly)
+                        Do While True
+                            l2.Clear()
+
+                            Dim dt = rdr.GetSchemaTable
+                            params.Clear()
+                            For i = 0 To dt.Rows.Count - 1
+                                params.Add(DbTypeToDeclaredStringOle(dt.Rows(i)))
+                            Next
+                            For i = 0 To dt.Rows.Count - 1
+                                Dim propertyString As String = DbTypeToStringFromGetSchemaTable(dt.Rows(i))
+                                l2.Add(propertyString)
+
+                                If propertyString.Contains("[Required]") Then
+                                    l3.Add(<![CDATA[dic["_"] = "_"; // required ]]>.Value.Replace("_", dt.Rows(i)("ColumnName")))
+                                Else
+                                    l3.Add(<![CDATA[dic["_"] = "_";]]>.Value.Replace("_", dt.Rows(i)("ColumnName")))
+                                End If
+
+                                Dim colname = dt.Rows(i)("ColumnName")
+                                Dim colid = 2
+                                Dim unik = colname
+                                Do While True
+                                    If l4.ContainsKey(unik) Then
+                                        unik = colname & colid
+                                        colid += 1
+                                        Continue Do
+                                    End If
+                                    l4.Add(unik, "")
+                                    Exit Do
+                                Loop
+                            Next
+
+                            dtoList.Add(<![CDATA[
+public class PositionModel
+{
+// replace
+}
+]]>.Value.Replace("// replace", String.Join(vbCrLf, l2)).Replace("PositionModel", Regex.Replace(StrConv(tblName, VbStrConv.ProperCase), "[^a-z0-9_]", "", RegexOptions.IgnoreCase)))
+
+                            If rdr.NextResult() = False Then Exit Do
+                        Loop
+
+                    End Using
+
+                    conn.Close()
+                End Using
+
+                tblName = Regex.Match(cboTable.Text, " from \[(.*?)\]", RegexOptions.IgnoreCase).Groups(1).Value.Trim
+                If String.IsNullOrWhiteSpace(tblName) Then tblName = Regex.Match(cboTable.Text, " from (.*?) ", RegexOptions.IgnoreCase).Groups(1).Value.Trim
+                If String.IsNullOrWhiteSpace(tblName) Then tblName = Regex.Match(cboTable.Text, " from (.*?)$", RegexOptions.IgnoreCase).Groups(1).Value.Trim
+                If String.IsNullOrWhiteSpace(tblName) Then tblName = Regex.Match(cboTable.Text, "exec (.*?) ", RegexOptions.IgnoreCase).Groups(1).Value.Trim
+                l3.Add("")
+                l3.Add(<![CDATA[var res = DB.InsertParam("_", dic, true);]]>.Value.Replace("_", tblName))
+
+            Else
+
+                Dim dt = conn.GetOleDbSchemaTable(OleDbSchemaGuid.Columns, {Nothing, Nothing, cboTable.Text, Nothing})
+                params.Clear()
+                For i = 0 To dt.Rows.Count - 1
+                    params.Add(DbTypeToDeclaredString(dt.Rows(i)))
+                Next
+                For i = 0 To dt.Rows.Count - 1
+                    Dim propertyString As String = DbTypeToString(dt.Rows(i))
+                    l2.Add(propertyString)
+
+                    If propertyString.Contains("[Required]") Then
+                        l3.Add(<![CDATA[dic["_"] = "_"; // required]]>.Value.Replace("_", dt.Rows(i)("COLUMN_NAME")))
+                    Else
+                        l3.Add(<![CDATA[dic["_"] = "_";]]>.Value.Replace("_", dt.Rows(i)("COLUMN_NAME")))
+                    End If
+
+                    Dim colname = dt.Rows(i)("COLUMN_NAME")
+                    Dim colid = 2
+                    Dim unik = colname
+                    Do While True
+                        If l4.ContainsKey(unik) Then
+                            unik = colname & colid
+                            colid += 1
+                            Continue Do
+                        End If
+                        l4.Add(unik, "")
+                        Exit Do
+                    Loop
+
+                Next
+
+                dtoList.Add(<![CDATA[
+public class PositionModel
+{
+// replace
+}
+]]>.Value.Replace("// replace", String.Join(vbCrLf, l2)).Replace("PositionModel", Regex.Replace(StrConv(tblName, VbStrConv.ProperCase), "[^a-z0-9_]", "", RegexOptions.IgnoreCase)))
+
+                l3.Add("")
+                l3.Add(<![CDATA[var res = DB.InsertParam("_", dic, true);]]>.Value.Replace("_", cboTable.Text))
+
+            End If
+
+        End Using
+
+        l3.Clear()
+        l3.Add($"
+    // using dapper to insert, serialize the model
+    var js = JsonConvert.SerializeObject(data);
+    var res = DB.QueryFirstOrDefault<>($""exec js_{tblName.ToLower}_crud ?"", new {{js}});
+    return res;")
+
+        txtSource.Text = String.Join(vbCrLf, dtoList)
+
+        l3.Add("")
+        l3.Add("---------------------------- and ---------------------------- ")
+        l3.Add("")
+
+        Dim lx = String.Join(", ", params.Select(Function(x) x.Substring(1).Split("=")(0).Trim).ToList)
+
+        Dim qq = $"
+-- =============================================
+-- Created by: jhai
+-- Created date: {DateTime.Now}
+-- Description: crud operation
+-- =============================================
+CREATE OR ALTER PROCEDURE js_{tblName.ToLower}_crud
+    @data NVARCHAR(MAX) = '',   -- for insert/update
+    @id int = 0                 -- for selecting specific record
+AS
+BEGIN
+    SET NOCOUNT ON
+    SET XACT_ABORT ON   -- USE WITH TRANSACTION, SAVE ALL OR NOTHING
+
+    BEGIN TRY
+
+        -- NEW/UPDATE
+        IF isnull(@data,'') <> ''
+        BEGIN
+            BEGIN TRAN
+            -- merge code goes here
+            -- do audit
+            COMMIT TRAN
+            RETURN;
+        END
+
+        -- LIST ALL
+        IF @id = 0 and isnull(@data,'') = ''
+        BEGIN
+            select * from [{tblName.ToLower}]
+            RETURN;
+        END
+
+        -- SINGLE
+        IF @id > 0 and isnull(@data,'') = ''
+        BEGIN
+            select * from [{tblName.ToLower}] where id = @id
+            RETURN;
+        END        
+
+    END TRY
+    BEGIN CATCH
+        if @@TRANCOUNT>0
+            rollback tran;
+
+        throw;
+    END CATCH
+
+END
+"
+        l3.Add(qq)
+
+        txtDest.Text = String.Join(vbCrLf, l3)
 
     End Sub
 End Class
