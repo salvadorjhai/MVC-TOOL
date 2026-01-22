@@ -7268,7 +7268,7 @@ var table = {
                         Case "email"
                             formGen.Add(<![CDATA[
                                 <div class="form-group">
-                                    <label for="txtconsumerid">consumerid</label>
+                                    <label for="txtconsumerid" class="form-label">consumerid</label>
                                     <input type="email" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid">
                                 </div>
                                 ]]>.Value.Replace("consumerid", fieldname))
@@ -7287,7 +7287,7 @@ var table = {
                         Case "pass", "password", "pwd", "syspassword", "loginpwd"
                             formGen.Add(<![CDATA[
                                 <div class="form-group">
-                                    <label for="txtconsumerid">consumerid</label>
+                                    <label for="txtconsumerid" class="form-label">consumerid</label>
                                     <div class="input-group">
                                         <input type="password" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid">
                                         <span class="input-group-append">
@@ -7331,7 +7331,7 @@ var table = {
                         Case Else
                             formGen.Add(<![CDATA[
                                 <div class="form-group">
-                                    <label for="txtconsumerid">consumerid</label>
+                                    <label for="txtconsumerid" class="form-label">consumerid</label>
                                     <input type="text" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid" {ATTR}>
                                 </div>
                                 ]]>.Value.Replace("consumerid", fieldname).Replace("{ATTR}", String.Join(" ", attr)))
@@ -7399,7 +7399,7 @@ var table = {
                         ' dropdown
                         formGen.Add(<![CDATA[
                         <div class="form-group">
-                            <label for="cboconsumerid">consumerid</label>
+                            <label for="cboconsumerid" class="form-label">consumerid</label>
                             <select class="form-control select2" style="width: 100%;" name="consumerid" id="cboconsumerid">
                             </select>
                         </div>
@@ -7441,7 +7441,7 @@ var table = {
                         ' normal
                         formGen.Add(<![CDATA[
                         <div class="form-group">
-                            <label for="txtconsumerid">consumerid</label>
+                            <label for="txtconsumerid" class="form-label">consumerid</label>
                             <input type="number" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid">
                         </div>
                         ]]>.Value.Replace("consumerid", fieldname))
@@ -7469,7 +7469,7 @@ var table = {
 
                     formGen.Add(<![CDATA[
                         <div class="form-group">
-                            <label for="txtconsumerid">consumerid</label>
+                            <label for="txtconsumerid" class="form-label">consumerid</label>
                             <div class="input-group date" id="dtconsumerid" data-target-input="nearest">
                                 <input type="text" class="form-control datetimepicker-input" data-target="#dtconsumerid" placeholder="mm/dd/yyyy" id="txtconsumerid" name="consumerid" data-inputmask-alias="datetime" data-inputmask-inputformat="mm/dd/yyyy" data-mask />
                                 <div class="input-group-append" data-target="#dtconsumerid" data-toggle="datetimepicker">
