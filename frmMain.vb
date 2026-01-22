@@ -7141,15 +7141,59 @@ var table = {
             Return Nothing
         End If
 
+        Dim origSource = txtSource.Lines.Select(Function(x) x.Trim).ToList
         Dim modelName = txtSource.Lines.Where(Function(x) x.Contains("public class ")).FirstOrDefault.Trim.Split(" ").LastOrDefault
-        Dim props = txtSource.Lines.Where(Function(x) x.Contains("public ") And x.Contains(" class ") = False).ToList
+        Dim props = txtSource.Lines.Where(Function(x) x.Contains("public ") And x.Contains(" class ") = False).ToList.Select(Function(x) x.Trim).ToList
         modelName = Regex.Replace(modelName, "model", "", RegexOptions.IgnoreCase).Trim
 
         Dim dialogId = $"{StrConv(modelName.ToLower, VbStrConv.ProperCase)}Modal"
         Dim tableId = $"{StrConv(modelName.ToLower, VbStrConv.ProperCase)}Table"
         Dim formId = $"{StrConv(modelName.ToLower, VbStrConv.ProperCase)}Form"
 
-        Return {modelName, props, dialogId, tableId, formId}.ToList
+        ' Create a dictionary to store property annotations
+        Dim propertyAnnotations As New Dictionary(Of String, List(Of String))
+
+        ' Process each property line to extract annotations
+        For Each propLine In origSource
+            ' Find the property name
+            Dim propName As String = ""
+            If propLine.Contains("{ get; set; }") Then
+                Dim arr = propLine.Split(" ")
+                Dim type = arr(1).Trim.ToLower
+                propName = arr(2).Trim
+
+                ' Find annotations for this property
+                Dim annotations As New List(Of String)
+                Dim currentLineIndex = origSource.IndexOf(propLine)
+
+                ' Look for annotation lines above the property
+                For i = currentLineIndex - 1 To 0 Step -1
+                    Dim line = txtSource.Lines(i).Trim()
+                    If String.IsNullOrEmpty(line) Then
+                        Continue For
+                    End If
+
+                    If line.StartsWith("[") And line.EndsWith("]") Then
+                        ' This is an annotation
+                        annotations.Add(line)
+                    ElseIf line.Contains("public ") Or line.Contains("private ") Or line.Contains("protected ") Then
+                        ' We've reached another property or field, stop looking
+                        Exit For
+                    End If
+                Next
+
+                If annotations.Count = 0 Then Continue For
+
+                ' Reverse to maintain original order (from top to bottom)
+                annotations.Reverse()
+
+                ' Add to dictionary
+                propertyAnnotations.Add(propName, annotations)
+            End If
+
+        Next
+
+        Return {modelName, props, dialogId, tableId, formId, propertyAnnotations}.ToList
     End Function
 
     Private Sub ModalPopupBS46xToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ModalPopupBS46xToolStripMenuItem.Click
@@ -7162,6 +7206,7 @@ var table = {
         Dim dialogId = ds(2)
         Dim tableId = ds(3)
         Dim formId = ds(4)
+        Dim annot As Dictionary(Of String, List(Of String)) = ds(5)
 
         Dim haveDateMask As Boolean = False
         Dim haveSelect2 As Boolean = False
@@ -7188,8 +7233,33 @@ var table = {
             Dim arr = line.Split(" ")
             Dim type = arr(1).Trim.ToLower
             Dim fieldname = arr(2).Trim
+            Dim attr As New List(Of String)
+
+            If annot.ContainsKey(fieldname.Trim.ToLower) Then
+                Dim an = annot(fieldname.Trim.ToLower)
+                For a = 0 To an.Count - 1
+                    If an(a).ToLower.Contains("required") Then attr.Add("required")
+                    If an(a).ToLower.Contains("maxlength") Then
+                        attr.Add($"maxlength=""{Regex.Replace(an(a), "[^0-9]", "")}""")
+                    End If
+                Next
+            End If
 
             Select Case True
+                Case type = "int" And fieldname.ToLower = "id"
+                    ' normal
+                    formGen.Add(<![CDATA[
+                        <input type="hidden" id="txtconsumerid" name="consumerid" value="-1">
+                        ]]>.Value.Replace("consumerid", fieldname))
+
+                    formGen3.Add(<![CDATA[
+                        <input type="hidden" id="txtconsumerid" name="consumerid" value="-1">
+                        ]]>.Value.Replace("consumerid", fieldname))
+
+                    formGen2.Add(<![CDATA[
+                        <input type="hidden" id="txtconsumerid" name="consumerid" value="-1">
+                        ]]>.Value.Replace("consumerid", fieldname))
+
                 Case type = "string" And Not type.Contains("[]")
 
                     Dim l0 As New List(Of String)
@@ -7262,18 +7332,18 @@ var table = {
                             formGen.Add(<![CDATA[
                                 <div class="form-group">
                                     <label for="txtconsumerid">consumerid</label>
-                                    <input type="text" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid">
+                                    <input type="text" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid" {ATTR}>
                                 </div>
-                                ]]>.Value.Replace("consumerid", fieldname))
+                                ]]>.Value.Replace("consumerid", fieldname).Replace("{ATTR}", String.Join(" ", attr)))
 
                             formGen3.Add(<![CDATA[
                                 <div class="form-group row">
                                     <label for="txtconsumerid" class="col-sm-2 col-form-label">consumerid</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid">
+                                        <input type="text" class="form-control" id="txtconsumerid" name="consumerid" placeholder="consumerid" {ATTR}>
                                     </div>
                                 </div>
-                                ]]>.Value.Replace("consumerid", fieldname))
+                                ]]>.Value.Replace("consumerid", fieldname).Replace("{ATTR}", String.Join(" ", attr)))
 
                             l0.Add(<![CDATA[  @Html.TextBoxFor(m => m.consumerid, new { @type = "text", @class = "form-control", @placeholder = Html.DisplayNameFor(m => m.consumerid) }) ]]>.Value)
 
