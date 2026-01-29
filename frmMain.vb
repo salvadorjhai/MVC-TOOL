@@ -6714,6 +6714,13 @@ END CATCH
         'query.Add($"-- insert -- ")
         'query.Add($"")
 
+        'query.Add($"   INSERT INTO dbo.[{tableName}] ")
+        'query.Add($"    ({String.Join(", ", col1)}) ")
+        'query.Add($"    -- OUTPUT inserted.* ")
+        'query.Add($"    select ")
+        'query.Add($"    VALUES ({String.Join(", ", col2)}) ")
+        'query.Add($"")
+
         query.Add($"   INSERT INTO dbo.[{tableName}] ")
         query.Add($"    ({String.Join(", ", col1)}) ")
         query.Add($"    -- OUTPUT inserted.* ")
@@ -8916,18 +8923,48 @@ public class PositionModel
         Dim vs = String.Join(vbCrLf & "                    , ", l4.Keys.Select(Function(x) IIf(lstRequired.Contains(x), $"ISNULL(src.{x}, '')", $"src.{x}")))
         Dim xs = String.Join(vbCrLf & "                    , ", l4.Keys.Select(Function(x) IIf(lstRequired.Contains(x), $"dest.{x} = ISNULL(src.{x}, '')", $"dest.{x} = src.{x}")))
         Dim lx = String.Join(", ", params.Select(Function(x) x.Substring(1).Split("=")(0).Trim).ToList)
+        Dim ins = String.Join(", ", l4.Keys.Select(Function(x) $"inserted.{x}").ToList)
 
         Dim sql = <![CDATA[
         begin tran
+            -- column names: _CS_
+            declare @src table ({lx})
             declare @temp table ({lx})
+            declare @exists table ({lx})
 
             -- use this as a source
+            insert into @src
             select * from openjson(@data)
             with ({lx})
 
+            -- exists check (before update)
+            insert into @exists
+            SELECT _CS_ 
+            FROM dbo.arstrxdtl 
+            WHERE userid = (select top 1 userid from @src)
+
+            /* using insert/update separately
+            if not exists (select 1 from @exists)
+            begin
+                INSERT INTO dbo.arstrxdtl (_CS_)
+                OUTPUT inserted.* INTO @temp
+                SELECT _VS_ 
+                FROM @src src;
+            end
+            else
+            begin
+                UPDATE dest SET
+                _XS_
+                OUTPUT inserted.* INTO @temp
+                FROM dbo.arstrxdtl dest 
+                JOIN @src src 
+                    ON dest.TransNmbr = src.TransNmbr AND dest.LineNmbr  = src.LineNmbr;
+            end
+            */
+
             -- merge template
             MERGE DB_Target..arstrxdtl AS dest
-            USING DB_Source..arstrxdtl AS src
+            USING @src AS src
                 -- condition key
                 ON  dest.TransNmbr = src.TransNmbr
                 AND dest.LineNmbr  = src.LineNmbr
@@ -8943,10 +8980,16 @@ public class PositionModel
             -- OUTPUT inserted.* INTO @temp
             ;
             -- select * from @temp
+
+        -- audit logs starts here
+        -- declare @old nvarchar(max) = (SELECT * from @exists FOR JSON PATH, WITHOUT_ARRAY_WRAPPER )
+        -- declare @new nvarchar(max) = (SELECT * from @temp FOR JSON PATH, WITHOUT_ARRAY_WRAPPER)
+        -- exec ebsextension..js_writechangesonly_to_userlog @userid, 'table', 'table updated', @old, @new;
+
         -- commit tran
         -- rollback tran
 
-        ]]>.Value.Replace("arstrxdtl", tblName).Replace("_CS_", cs).Replace("_VS_", vs).Replace("_XS_", xs).Replace("{lx}", lx)
+        ]]>.Value.Replace("arstrxdtl", tblName).Replace("_CS_", cs).Replace("_VS_", vs).Replace("_XS_", xs).Replace("{lx}", lx).Replace("inserted.*", ins)
 
         txtDest.Text = String.Join(vbCrLf, sql)
     End Sub
