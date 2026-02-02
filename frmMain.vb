@@ -7408,6 +7408,7 @@ var table = {
                         <div class="form-group">
                             <label for="cboconsumerid" class="form-label">consumerid</label>
                             <select class="form-control select2" style="width: 100%;" name="consumerid" id="cboconsumerid">
+                                <option value="">Select option</option>
                             </select>
                         </div>
                         ]]>.Value.Replace("consumerid", fieldname))
@@ -7417,7 +7418,7 @@ var table = {
                                 <label for="cboconsumerid" class="col-sm-2 col-form-label">consumerid</label>
                                 <div class="col-sm-10">
                                     <select class="form-control select2" style="width: 100%;" name="consumerid" id="cboconsumerid">
-                                    <option></option>
+                                        <option value="">Select option</option>
                                     </select>
                                 </div>
                             </div>
@@ -7515,7 +7516,7 @@ var table = {
 
                     scriptGen.Add(<![CDATA[
                         $('#dtconsumerid').datetimepicker({
-                            defaultDate: new Date(),
+                            defaultDate: moment(DateNow()).format('MM-DD-yyyy'),
                             format: 'MM/DD/YYYY',
                             maxDate: new Date(), // Disable future dates
                             //maxDate: moment().endOf('day'), // End of today (11:59:59 PM)
@@ -7529,28 +7530,78 @@ var table = {
             Debug.Print("")
         Next
 
+        Dim datatableColumn As New List(Of String)
+
+        ' generate table
+        For i = 0 To props.Count - 1
+            Dim line = props(i).Trim
+            If String.IsNullOrWhiteSpace(line) Then Continue For
+            Dim arr = line.Split(" ")
+            Dim type = arr(1).Trim.ToLower
+            Dim fieldname = arr(2).Trim
+            Dim attr As New List(Of String)
+
+            If annot.ContainsKey(fieldname.Trim.ToLower) Then
+                Dim an = annot(fieldname.Trim.ToLower)
+                For a = 0 To an.Count - 1
+                    If an(a).ToLower.Contains("required") Then attr.Add("required")
+                    If an(a).ToLower.Contains("maxlength") Then
+                        attr.Add($"maxlength=""{Regex.Replace(an(a), "[^0-9]", "")}""")
+                    End If
+                Next
+            End If
+
+            If type.StartsWith("byte[]") Then Continue For
+
+            If fieldname.Trim.ToLower = "id" Then
+                datatableColumn.Add(<![CDATA[
+{
+    data: "id", title: "", autoWidth: true, width: "18px", searchable: false, orderable: true, render: function (data, type, full, meta) {
+        return `<button type="button" class="btn btn-default btn-xs btnPostEdit" data-id="${data}" title="update"> <i class="fas fa-edit"></i> </button>`
+    },
+},
+            ]]>.Value.Replace("column", fieldname).Trim)
+
+                Continue For
+            End If
+
+            If type.StartsWith("date") Then
+                datatableColumn.Add(<![CDATA[{ data: "column", title: "column", autoWidth: true, width: "78px", searchable: true, orderable: true, visible: false, render: (data, type, full, meta) => data ? ToDateTime(data) : '' },]]>.Value.Replace("column", fieldname).Trim)
+                Continue For
+            End If
+
+            datatableColumn.Add(<![CDATA[{ data: "column", title: "column", autoWidth: true, searchable: true, orderable: true, },]]>.Value.Replace("column", fieldname).Trim)
+
+            Debug.Print("")
+        Next
+
         If haveDateMask Then
             scriptGen.Add(<![CDATA[
-                        $('[data-mask]').inputmask()
+$('[data-mask]').on('focus', function () {
+    if (!$(this).data('inputmask-applied')) {
+        $(this).inputmask();
+        $(this).data('inputmask-applied', true);
+    }
+});
                         ]]>.Value)
         End If
 
         If haveSelect2 Then
             scriptGen.Add(<![CDATA[
-                        // focus when opened
-                        $(document).on('select2:open', function (e) {
-                            document.querySelector('.select2-search__field').focus();
-                        });
-                        // initialize select2
-                        $(`select.select2`).select2({
-                            placeholder: {
-                                id: '',
-                                text: 'Select option'
-                            },
-                            allowClear: true,
-                            // tags: true,              // for custom input
-                            parent: $(`#formId .modal`)
-                        })
+// focus when opened
+$(document).on('select2:open', function (e) {
+    document.querySelector('.select2-search__field').focus();
+});
+// initialize select2
+$(`select.select2`).select2({
+    placeholder: {
+        id: '',
+        text: 'Select option'
+    },
+    allowClear: true,
+    // tags: true,              // for custom input
+    parent: $(targetModal)
+})
                         ]]>.Value.Replace("formId", formId))
         End If
 
@@ -7599,9 +7650,394 @@ var table = {
              
         ]]>.Value
 
+        Dim scriptGen2 As New List(Of String)
+        scriptGen2.Add(<![CDATA[
+function pagescript() {
+    /*
+    * form functions
+    */
+    let otable = {}
+    let otableData = []
+    let seldata = {}
+    let targetForm = $(`#formId`)
+    let targetModal = $(`#formId .modal`)[0]
+    let oNatureOfWork = []
+    let oAreaOffices = []
+
+    function init() {
+        // listiner , initializer
+        // crud
+        $(document).on("click", "[data-action=add]", function (e) {
+            onAddClick()
+        })
+        $(document).on("click", "[data-action=edit]", function (e) {
+            onEditClick()
+        })
+        $(document).on("click", "[data-action=delete]", function (e) {
+            onDeleteClick()
+        })
+
+        // dialog
+        $(targetForm).on("click", "[data-action=close]", function (e) {
+            if (isDirty($(this), 1)) {
+                msgbox(`Ingore changes?`, `Are you sure you want to ignore unsave changes?`, 'warning', true, ()=>hideDialog($(targetModal)))
+            } else {
+                hideDialog($(targetModal))
+            }
+        })
+
+        $(targetForm).on("click", "[data-action=save]", function (e) {
+            onSaveClick()
+        })
+
+        $(document).on("dblclick", "#trx_table", function (e) {
+
+        })
+
+        // modal
+        $(targetModal).on('shown.bs.modal', function (e) {
+            $(this).find(`input:visible`)[0].focus()
+        });
+
+        $(targetModal).on('hidden.bs.modal', function (e) {
+            //onResetClick()
+        });
+
+        __ADDITIONAL_SELECT_SCRIPT__
+
+        // additional options
+        // $(document).on('click', '[name=optShowList]', function () {
+        //     updateListView()
+        // })
+
+        // $(document).on('click', '[data-action=print]', function () {
+        //     if (seldata != null && seldata?.id) {
+        //         ShowPrintPreviewPDF(`/reports/PrintJoborderSlip?id=${seldata.id}`, 0)
+        //     } else {
+        //         error('please save the form first !')
+        //     }
+        // })
+
+    }
+
+    function onItemClick(data) {
+        seldata = Object.assign({}, data[0], getFormData($(targetForm)))
+    }
+
+    function onAddClick() {
+        seldata = {}
+        onResetClick()
+        onTableItemSelected(null)
+        $('#dttrxdate input').val(moment().format('MM/DD/YYYY'));
+        $(targetModal).find(`.modal-title`).html(`<i class="fas fa-file-signature"></i> Add New`)
+        showDialog($(targetModal))
+    }
+
+    function onEditClick(id) {
+        onResetClick()
+        fillData(seldata)
+        $(targetModal).find(`.modal-title`).html(`<i class="fas fa-file-signature"></i> Edit Details`)
+        showDialog($(targetModal))
+    }
+
+    function onDeleteClick(id) {
+        error('not allowed !')
+    }
+
+    function onSaveClick() {
+        if (!isValid($(targetForm))) { return; }
+
+        if (!isDirty($(targetForm))) {
+            hideDialog($(targetModal))
+            return;
+        }
+
+        msgbox(`Save Changes?`, `Are you sure you want to save changes?`, 'warning', true, () => {
+            var model = Object.assign({}, seldata, getFormData($(targetForm)))
+
+            ShowSwalLoader()
+
+            return $.ajax({
+                url: `/{controller}/{action}`,
+                type: "POST",
+                data: JSON.stringify(model),
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                complete: function (jqXHR, textStatus) { },
+                success: function (response, textStatus, jqXHR) {
+
+                    getTableData()
+                    onTableItemSelected(null)
+
+                    setTimeout(() => {
+                        CloseSwalLoader()
+                        success('Changes was saved successfuly', 'Success')
+
+                        seldata = response.data
+                        fillData(seldata)
+
+                    }, 800);
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    setTimeout(() => {
+                        CloseSwalLoader()
+                        var msg = jqXHR?.responseJSON?.message || `Opps ! Something went wrong ... `
+                        error(msg)
+                    }, 800);
+                }
+            });
+
+        })
+
+    }
+
+    function onResetClick() {
+        resetForm($(targetForm))
+    }
+
+    function showDialog(targetModal) {
+        $(targetModal).modal('show')
+    }
+
+    function hideDialog(targetModal) {
+        $(targetModal).modal('hide')
+    }
+
+    function fillData(data) {
+        setFormData($(targetForm), data)
+        $(targetModal).find(`.modal-title`).html(`<i class="fas fa-file-signature"></i> Edit Job Order : <strong>${data.series_fmt}</strong>`)
+    }
+
+    function isDirty(targetForm, isclosing = 0) {
+        if (isclosing == 0 && !seldata) return true;
+
+        // check if modified first; list and form key-value must be the same
+        if ($(targetForm).data('isDirty')) {
+            // check whats chages
+            var model = Object.assign({}, seldata, getFormData($(targetForm)))
+            var exists = Object.assign({}, seldata, $(targetForm).data('data'))
+            if (exists != null && Object.keys(exists).length > 0) {
+                // $(targetForm).data('isDirty', !isShallowEqual(model, exists));
+                return !isShallowEqual(model, exists)
+            }
+        }
+
+        return $(targetForm).data('isDirty')
+    }
+
+    function isValid(targetForm) {
+        return $(targetForm).valid()
+    }
+
+    function validator() {
+        setValidator()
+        let form = $(targetForm)
+
+        //// additional rules
+        // form.find(`#txtname`).rules('add', {
+        //     required: true,
+        //     messages: {
+        //         required: "name is required",
+        //     }
+        // });
+
+        // $(`#txtdate_accomplished`).rules('add', {
+        //     required: () => $(`#chkis_accomplished`)[0].checked,
+        //     messages: {
+        //         required: "accomplished date is required",
+        //     }
+        // })
+
+    }
+
+    /*
+     * Table Functions
+     */
+
+    function initTable() {
+        otable = loaddt(`trx_table`, [
+            //{
+            //    data: "id", title: "", autoWidth: true, width: "48px", searchable: false, orderable: true, render: function (data, type, full, meta) {
+            //        if (type == 'display') {
+            //            return `<button type="button" class="btn btn-default btn-xs btnEdit" data-id=${data}>edit</button>`
+            //        } else {
+            //            return data // for proper filter/sorting
+            //        }
+            //        //return `<button type="button" class="btn btn-default btn-xs btnEdit" data-id=${data}>edit</button>`
+            //    }
+            //},
+            //{ data: "id", title: "", autoWidth: true, width: "15px", searchable: true, orderable: true, },
+            __DATATABLECOLUMN__
+        ], 5, null, { order: [[2, "desc"]] }, true, '#trx_button_wrapper')
+
+        initSingleRowSelect(otable.datatable, onTableItemSelected)
+
+    }
+
+    function onTableItemSelected(data) {
+        if (!data) {
+            if ($(`[data-action=edit]`).length > 0)
+                $(`[data-action=edit]`)[0].disabled = true
+
+            if ($(`[data-action=delete]`).length > 0)
+                $(`[data-action=delete]`)[0].disabled = true
+
+            otable.clearSelection()
+
+            return;
+        }
+        if ($(`[data-action=edit]`).length > 0)
+            $(`[data-action=edit]`)[0].disabled = data?.length == 0;
+
+        if ($(`[data-action=delete]`).length > 0)
+            $(`[data-action=delete]`)[0].disabled = data?.length == 0;
+
+        if (data?.length > 0 || 0) { onItemClick(data) }
+    }
+
+    function getTableData(q) {
+        return $.ajax({
+            url: "/{controller}/{action}/",
+            type: "GET",
+            contentType: "application/json;charset=UTF-8",
+            dataType: "json",
+            complete: function (jqXHR, textStatus) {
+
+            },
+            success: function (response, textStatus, jqXHR) {
+                if (response?.data) {
+                    setTableData(response.data)
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                swal("Error!", "Something went wrong with the request...", "error");
+                return;
+            }
+        });
+    }
+
+    function ListNatureOfWork() {
+        return $.ajax({
+            url: "/{controller}/{action}/",
+            type: "GET",
+            data: {
+                type: 'JO'
+            },
+            contentType: "application/json;charset=UTF-8",
+            dataType: "json",
+            complete: function (jqXHR, textStatus) {
+
+            },
+            success: function (response, textStatus, jqXHR) {
+                if (response?.data) {
+                    oNatureOfWork = response.data;
+
+                    // Get the datalist element
+                    const natureDatalist = $(`#nature`);
+                    natureDatalist.empty();
+
+                    // Create options for each item in the response
+                    oNatureOfWork.forEach((item) => {
+                        // Create option element with value (code) and text (label)
+                        const option = $('<option>')
+                            .val(item.nature)  // Show text in input
+                            .attr('data-code', item.code)  // Store code separately
+                            .attr('data-text', item.nature); // Store text for reference
+
+                        // Append option to datalist
+                        natureDatalist.append(option);
+                    });
+
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                swal("Error!", "Something went wrong with the request...", "error");
+                return;
+            }
+        });
+    }
+
+    function ListAreaOffices() {
+        return $.ajax({
+            url: "/{controller}/{action}/",
+            type: "GET",
+            data: {
+                type: 'CO'
+            },
+            contentType: "application/json;charset=UTF-8",
+            dataType: "json",
+            complete: function (jqXHR, textStatus) {
+
+            },
+            success: function (response, textStatus, jqXHR) {
+                if (response?.data) {
+                    oAreaOffices = response.data;
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                swal("Error!", "Something went wrong with the request...", "error");
+                return;
+            }
+        });
+    }
+
+    function setTableData(data) {
+        otableData = data
+        updateListView()
+    }
+
+    function updateListView() {
+        otable.setData(otableData)
+        // var unacc = otableData.filter(e => !e.is_accomplished && e.trxtype == 'JO')
+        // var rec = otableData.filter(e => !e.is_accomplished && e.trxtype == 'R')
+        // var acc = otableData.filter(e => e.is_accomplished)
+
+        // $(`#optShowPending ~ span.badge`).html(unacc.length > 99 ? '99+' : unacc.length)
+        // $(`#optShowPendingReconnection ~ span.badge`).html(rec.length > 99 ? '99+' : rec.length)
+        // $(`#optShowAccomplished ~ span.badge`).html(acc.length > 99 ? '99+' : acc.length)
+
+        // if ($(`#optShowPending`)[0].checked) {
+        //     otable.setData(unacc)
+
+        // //} else if ($(`#optShowPendingReconnection`)[0].checked) {
+        // //    otable.setData(rec)
+
+        // } else {
+        //     otable.setData(acc)
+        // }
+    }
+
+    init()
+    initTable()
+    validator()
+
+    // ajax initial loader
+    $.when(
+        ShowSwalLoader(),
+        // table
+        getTableData(),
+        // sample dropdown
+        //ListNatureOfWork(),
+        //ListAreaOffices(),
+    ).done(() => {
+        setTimeout(() => {
+            CloseSwalLoader();
+        }, 800);
+    })
+
+}
+
+$(function () {
+    pagescript()
+});
+
+]]>.Value.Replace("#formId", "#" & formId).Replace(
+    "__DATATABLECOLUMN__", String.Join(vbCrLf, datatableColumn)).Replace("__ADDITIONAL_SELECT_SCRIPT__", String.Join(vbCrLf, scriptGen.Select(Function(x) x.Trim)).Trim)
+)
 
         txtDest.Text = source 'String.Join(vbCrLf, formGen.Select(Function(x) x.Trim)).Trim
-        txtDest2.Text = String.Join(vbCrLf, scriptGen.Select(Function(x) x.Trim)).Trim
+        txtDest2.Text = String.Join(vbCrLf, scriptGen2.Select(Function(x) x.Trim)).Trim
 
     End Sub
 
