@@ -8982,9 +8982,13 @@ public class PositionModel
             -- select * from @temp
 
         -- audit logs starts here
-        -- declare @old nvarchar(max) = (SELECT * from @exists FOR JSON PATH, WITHOUT_ARRAY_WRAPPER )
-        -- declare @new nvarchar(max) = (SELECT * from @temp FOR JSON PATH, WITHOUT_ARRAY_WRAPPER)
+        -- declare @old nvarchar(max) = (SELECT * from @exists FOR JSON PATH, INCLUDE_NULL_VALUES, WITHOUT_ARRAY_WRAPPER)
+        -- declare @new nvarchar(max) = (SELECT * from @temp FOR JSON PATH, INCLUDE_NULL_VALUES, WITHOUT_ARRAY_WRAPPER)
         -- exec ebsextension..js_writechangesonly_to_userlog @userid, 'table', 'table updated', @old, @new;
+        -- if isnull(@old, '') = ''
+        --         exec ebsextension..js_writechangesonly_to_userlog @userid, 'table', 'data created', @old, @new;
+        --     else
+        --         exec ebsextension..js_writechangesonly_to_userlog @userid, 'table', 'data updated', @old, @new;
 
         -- commit tran
         -- rollback tran
@@ -9410,7 +9414,8 @@ public class PositionModel
 -- =============================================
 CREATE OR ALTER PROCEDURE js_{tblName.ToLower}_crud
     @data NVARCHAR(MAX) = '',   -- for insert/update
-    @id int = 0                 -- for selecting specific record
+    @id int = 0,                -- for selecting specific record
+    @userid nvarchar(4) = ''    -- processed by user
 AS
 BEGIN
     SET NOCOUNT ON
