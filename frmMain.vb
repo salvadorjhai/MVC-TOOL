@@ -9359,6 +9359,7 @@ public class PositionModel
         Dim vs = String.Join(vbCrLf & "                    , ", l4.Keys.Select(Function(x) IIf(lstRequired.Contains(x), $"ISNULL(src.{x}, '')", $"src.{x}")))
         Dim xs = String.Join(vbCrLf & "                    , ", l4.Keys.Select(Function(x) IIf(lstRequired.Contains(x), $"dest.{x} = ISNULL(src.{x}, '')", $"dest.{x} = src.{x}")))
         Dim lx = String.Join(", ", params.Select(Function(x) x.Substring(1).Split("=")(0).Trim).ToList)
+        Dim lx2 = String.Join(", ", l4.Keys.Select(Function(x) $"JSON_VALUE(value, '$.{x}')").ToList)
         Dim ins = String.Join(", ", l4.Keys.Select(Function(x) $"inserted.{x}").ToList)
 
         Dim sql = <![CDATA[
@@ -9368,10 +9369,15 @@ public class PositionModel
             declare @temp table ({lx})
             declare @exists table ({lx})
 
-            -- use this as a source
+            -- use this as a source (by position)
+            -- insert into @src
+            -- select * from openjson(@data)
+            -- with ({lx})
+
+            -- use this as a source (by property name)
             insert into @src
-            select * from openjson(@data)
-            with ({lx})
+            select {lx2}
+            from openjson(@data)
 
             -- exists check (before update)
             insert into @exists
@@ -9429,7 +9435,7 @@ public class PositionModel
         -- commit tran
         -- rollback tran
 
-        ]]>.Value.Replace("arstrxdtl", tblName).Replace("_CS_", cs).Replace("_VS_", vs).Replace("_XS_", xs).Replace("{lx}", lx).Replace("inserted.*", ins)
+        ]]>.Value.Replace("arstrxdtl", tblName).Replace("_CS_", cs).Replace("_VS_", vs).Replace("_XS_", xs).Replace("{lx}", lx).Replace("{lx2}", lx2).Replace("inserted.*", ins)
 
         txtDest.Text = String.Join(vbCrLf, sql)
     End Sub
@@ -9897,5 +9903,13 @@ END
 
         txtDest.Text = String.Join(vbCrLf, l3)
 
+    End Sub
+
+    Private Sub optUseHorizontalForm_Click(sender As Object, e As EventArgs) Handles optUseHorizontalForm.Click
+        optUseHorizontalForm.Image = IIf(optUseHorizontalForm.Checked, My.Resources.check_box, My.Resources.check_box_uncheck)
+    End Sub
+
+    Private Sub optUseJSONVALUE_Click(sender As Object, e As EventArgs) Handles optUseJSONVALUE.Click
+        optUseJSONVALUE.Image = IIf(optUseJSONVALUE.Checked, My.Resources.check_box, My.Resources.check_box_uncheck)
     End Sub
 End Class
