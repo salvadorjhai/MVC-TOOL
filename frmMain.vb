@@ -9359,7 +9359,7 @@ public class PositionModel
         Dim vs = String.Join(vbCrLf & "                    , ", l4.Keys.Select(Function(x) IIf(lstRequired.Contains(x), $"ISNULL(src.{x}, '')", $"src.{x}")))
         Dim xs = String.Join(vbCrLf & "                    , ", l4.Keys.Select(Function(x) IIf(lstRequired.Contains(x), $"dest.{x} = ISNULL(src.{x}, '')", $"dest.{x} = src.{x}")))
         Dim lx = String.Join(", ", params.Select(Function(x) x.Substring(1).Split("=")(0).Trim).ToList)
-        Dim lx2 = String.Join(", ", l4.Keys.Select(Function(x) $"JSON_VALUE(value, '$.{x}')").ToList)
+        Dim lx2 = String.Join(", ", l4.Keys.Select(Function(x) $"JSON_VALUE(@data, '$.{x}')").ToList) ' single value from json
         Dim ins = String.Join(", ", l4.Keys.Select(Function(x) $"inserted.{x}").ToList)
 
         Dim sql = <![CDATA[
@@ -9911,5 +9911,58 @@ END
 
     Private Sub optUseJSONVALUE_Click(sender As Object, e As EventArgs) Handles optUseJSONVALUE.Click
         optUseJSONVALUE.Image = IIf(optUseJSONVALUE.Checked, My.Resources.check_box, My.Resources.check_box_uncheck)
+    End Sub
+
+    Private Sub GenerateJSONSchemaToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles GenerateJSONSchemaToolStripMenuItem.Click
+        Dim ds = NewPageData()
+        If IsNothing(ds) Then Return
+
+        Dim modelName As String = ds(0)
+        Dim props As List(Of String) = ds(1)
+        Dim dialogId = ds(2)
+        Dim tableId = ds(3)
+        Dim formId = ds(4)
+        Dim annot As Dictionary(Of String, List(Of String)) = ds(5)
+
+        Dim datatableColumn As New List(Of String)
+
+        ' generate table
+        For i = 0 To props.Count - 1
+            Dim line = props(i).Trim
+            If String.IsNullOrWhiteSpace(line) Then Continue For
+            Dim arr = line.Split(" ")
+            Dim type = arr(1).Trim.ToLower
+            Dim fieldname = arr(2).Trim.ToLower
+            Dim attr As New List(Of String)
+
+            If annot.ContainsKey(fieldname) Then
+                Dim an = annot(fieldname)
+                For a = 0 To an.Count - 1
+                    If an(a).ToLower.Contains("required") Then attr.Add("required")
+                    If an(a).ToLower.Contains("maxlength") Then
+                        attr.Add($"maxlength=""{Regex.Replace(an(a), "[^0-9]", "")}""")
+                    End If
+                Next
+            End If
+
+            If type.StartsWith("byte[]") Then Continue For
+
+            Select Case type
+                Case "string", "date", "datetime"
+                    datatableColumn.Add($"{fieldname}: ''")
+
+                Case "int", "decimal", "double", "float"
+                    datatableColumn.Add($"{fieldname}: 0")
+
+            End Select
+
+        Next
+
+        txtDest.Text = $"
+            let {modelName.ToLower} = {{
+                {String.Join(", ", datatableColumn)}
+            }}
+        "
+
     End Sub
 End Class

@@ -114,6 +114,7 @@ Partial Class frmMain
         Me.optUseJSONVALUE = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator10 = New System.Windows.Forms.ToolStripSeparator()
         Me.ToolStripButton7 = New System.Windows.Forms.ToolStripButton()
+        Me.GenerateJSONSchemaToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStrip1.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -664,7 +665,7 @@ Partial Class frmMain
         'btnGenerateProc
         '
         Me.btnGenerateProc.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.btnGenerateProc.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.GenerateMERGETemplateToolStripMenuItem, Me.GenerateCRUDProcToolStripMenuItem, Me.GenerateJSONToolStripMenuItem, Me.GenerateJSONToolStripMenuItem1})
+        Me.btnGenerateProc.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.GenerateMERGETemplateToolStripMenuItem, Me.GenerateCRUDProcToolStripMenuItem, Me.GenerateJSONToolStripMenuItem, Me.GenerateJSONSchemaToolStripMenuItem, Me.GenerateJSONToolStripMenuItem1})
         Me.btnGenerateProc.Image = CType(resources.GetObject("btnGenerateProc.Image"), System.Drawing.Image)
         Me.btnGenerateProc.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.btnGenerateProc.Name = "btnGenerateProc"
@@ -781,6 +782,12 @@ Partial Class frmMain
         Me.ToolStripButton7.Name = "ToolStripButton7"
         Me.ToolStripButton7.Size = New System.Drawing.Size(64, 22)
         Me.ToolStripButton7.Text = "INSERT"
+        '
+        'GenerateJSONSchemaToolStripMenuItem
+        '
+        Me.GenerateJSONSchemaToolStripMenuItem.Name = "GenerateJSONSchemaToolStripMenuItem"
+        Me.GenerateJSONSchemaToolStripMenuItem.Size = New System.Drawing.Size(214, 22)
+        Me.GenerateJSONSchemaToolStripMenuItem.Text = "Generate JSON Schema"
         '
         'frmMain
         '
@@ -903,4 +910,5 @@ Partial Class frmMain
     Friend WithEvents GenerateJSONToolStripMenuItem1 As ToolStripMenuItem
     Friend WithEvents GenerateCRUDProcToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents optUseJSONVALUE As ToolStripMenuItem
+    Friend WithEvents GenerateJSONSchemaToolStripMenuItem As ToolStripMenuItem
 End Class
