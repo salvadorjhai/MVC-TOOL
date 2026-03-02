@@ -9377,7 +9377,6 @@ public class PositionModel
             -- use this as a source (by property name)
             insert into @src
             select {lx2}
-            from openjson(@data)
 
             -- exists check (before update)
             insert into @exists
