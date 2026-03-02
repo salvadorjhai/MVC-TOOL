@@ -1,9 +1,10 @@
 ﻿Imports System.Data.OleDb
-Imports System.Text.RegularExpressions
 Imports System.IO
 Imports System.Linq
-Imports Newtonsoft.Json
 Imports System.Text
+Imports System.Text.RegularExpressions
+Imports Newtonsoft.Json
+Imports Newtonsoft.Json.Serialization
 
 Public Class frmMain
 
@@ -9359,7 +9360,8 @@ public class PositionModel
         Dim vs = String.Join(vbCrLf & "                    , ", l4.Keys.Select(Function(x) IIf(lstRequired.Contains(x), $"ISNULL(src.{x}, '')", $"src.{x}")))
         Dim xs = String.Join(vbCrLf & "                    , ", l4.Keys.Select(Function(x) IIf(lstRequired.Contains(x), $"dest.{x} = ISNULL(src.{x}, '')", $"dest.{x} = src.{x}")))
         Dim lx = String.Join(", ", params.Select(Function(x) x.Substring(1).Split("=")(0).Trim).ToList)
-        Dim lx2 = String.Join(", ", l4.Keys.Select(Function(x) $"JSON_VALUE(@data, '$.{x}')").ToList) ' single value from json
+        Dim lx2 = String.Join(", ", l4.Keys.Select(Function(x) $"JSON_VALUE(@data, '$.{x}')").ToList) ' single value from json wrap in {}
+        Dim lx3 = String.Join(", ", l4.Keys.Select(Function(x) $"JSON_VALUE(value, '$.{x}')").ToList) ' multi value from json wrapped in []
         Dim ins = String.Join(", ", l4.Keys.Select(Function(x) $"inserted.{x}").ToList)
 
         Dim sql = <![CDATA[
@@ -9369,12 +9371,12 @@ public class PositionModel
             declare @temp table ({lx})
             declare @exists table ({lx})
 
-            -- use this as a source (by position)
-            -- insert into @src
-            -- select * from openjson(@data)
-            -- with ({lx})
+            -- use this as a source (by property name), multi row wrapped in []
+            insert into @src
+            select {lx3} 
+            from openjson(@data)
 
-            -- use this as a source (by property name)
+            -- use this as a source (by property name), single row wrapped in {}
             insert into @src
             select {lx2}
 
@@ -9434,7 +9436,7 @@ public class PositionModel
         -- commit tran
         -- rollback tran
 
-        ]]>.Value.Replace("arstrxdtl", tblName).Replace("_CS_", cs).Replace("_VS_", vs).Replace("_XS_", xs).Replace("{lx}", lx).Replace("{lx2}", lx2).Replace("inserted.*", ins)
+        ]]>.Value.Replace("arstrxdtl", tblName).Replace("_CS_", cs).Replace("_VS_", vs).Replace("_XS_", xs).Replace("{lx}", lx).Replace("{lx2}", lx2).Replace("{lx3}", lx3).Replace("inserted.*", ins)
 
         txtDest.Text = String.Join(vbCrLf, sql)
     End Sub
@@ -9912,7 +9914,72 @@ END
         optUseJSONVALUE.Image = IIf(optUseJSONVALUE.Checked, My.Resources.check_box, My.Resources.check_box_uncheck)
     End Sub
 
+    Class JSON
+        Class LowercaseContractResolver
+            Inherits DefaultContractResolver
+            Protected Overrides Function ResolvePropertyName(propertyName As String) As String
+                Return propertyName.ToLower
+            End Function
+        End Class
+
+        ''' <summary>
+        ''' Serializes an object to a JSON string with lowercase property names.
+        ''' </summary>
+        ''' <param name="data"></param>
+        ''' <param name="formatting"></param>
+        ''' <returns></returns>
+        Public Shared Function Stringify(data As Object, Optional formatting As Formatting = Formatting.None) As String
+            Dim config = New JsonSerializerSettings
+            config.ContractResolver = New LowercaseContractResolver
+            'config.NullValueHandling = NullValueHandling.Include
+            Return JsonConvert.SerializeObject(data, formatting, config)
+        End Function
+
+        Public Shared Function Parse(Of T)(jsonString As String) As T
+            Dim config = New JsonSerializerSettings
+            config.ContractResolver = New LowercaseContractResolver
+            Return JsonConvert.DeserializeObject(Of T)(jsonString, config)
+        End Function
+    End Class
+
+    Function ClassStringToJson(classString As String) As String
+        Dim props As New List(Of String)
+        Dim lines = classString.Split(vbLf)
+        Dim modelName = ""
+
+        For Each line In lines
+            Dim trimmed = line.Trim()
+            If trimmed.Contains(" class ") Then modelName = trimmed.Split(" ").LastOrDefault.ToLower
+
+            If trimmed.Contains(" get;") Then
+                Dim parts = trimmed.Split(" "c)
+                Dim propType = parts(1).ToLower()
+                Dim propName = parts(2).Replace("{", "").Trim()
+
+                Select Case propType
+                    Case "string", "datetime", "date"
+                        props.Add($"{propName}: ''")
+                    Case "int", "decimal", "double", "float", "long"
+                        props.Add($"{propName}: 0")
+                    Case "bool"
+                        props.Add($"{propName}: false")
+                End Select
+            End If
+        Next
+
+        Return $"
+            let {modelName.ToLower} = {{
+                {String.Join(", ", props)}
+            }}
+        "
+
+    End Function
+
+
     Private Sub GenerateJSONSchemaToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles GenerateJSONSchemaToolStripMenuItem.Click
+        txtDest.Text = ClassStringToJson(txtSource.Text)
+        Return
+
         Dim ds = NewPageData()
         If IsNothing(ds) Then Return
 
