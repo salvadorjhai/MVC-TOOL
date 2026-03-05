@@ -9953,7 +9953,7 @@ END
 
             If trimmed.Contains(" get;") Then
                 Dim parts = trimmed.Split(" "c)
-                Dim propType = parts(1).ToLower()
+                Dim propType = Regex.Replace(parts(1).ToLower(), "[^a-z]", "", RegexOptions.IgnoreCase)
                 Dim propName = parts(2).Replace("{", "").Trim()
 
                 Select Case propType
