@@ -9217,6 +9217,8 @@ END
         If String.IsNullOrWhiteSpace(cboTable.Text) Then Return
         If cboTable.Text.StartsWith("----") Then Return
 
+        Dim prefix = InputBox("Customized your table by adding prefix.", "Enter prefix (optional)")
+
         Dim tblName = cboTable.Text
         Dim l2 As New List(Of String)
         Dim l3 As New List(Of String)
@@ -9442,7 +9444,16 @@ public class PositionModel
 
         ]]>.Value.Replace("arstrxdtl", tblName).Replace("_CS_", cs).Replace("_VS_", vs).Replace("_XS_", xs).Replace("{lx}", lx).Replace("{lx2}", lx2).Replace("{lx3}", lx3).Replace("inserted.*", ins)
 
-        txtDest.Text = String.Join(vbCrLf, sql)
+        Dim s1 = $"@{String.Join("_", {prefix, "src"}.Where(Function(x) x.Length > 0))}"
+        Dim s2 = $"@{String.Join("_", {prefix, "temp"}.Where(Function(x) x.Length > 0))}"
+        Dim s3 = $"@{String.Join("_", {prefix, "exists"}.Where(Function(x) x.Length > 0))}"
+        Dim s4 = $"@{String.Join("_", {prefix, "data"}.Where(Function(x) x.Length > 0))}"
+
+        txtDest.Text = String.Join(vbCrLf, sql).
+            Replace("@src", s1).
+            Replace("@temp", s2).
+            Replace("@exists", s3).
+            Replace("@data", s4)
     End Sub
 
     Private Sub GenerateJSONToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles GenerateJSONToolStripMenuItem.Click
