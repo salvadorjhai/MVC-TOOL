@@ -6786,14 +6786,16 @@ END CATCH
 
         Dim csType As String = GetCsNetType(dataType)
         Select Case csType
-            Case "int", "long"
+            Case "int"
                 Return $"@{columnName} int = NULL".Trim
+            Case "long"
+                Return $"@{columnName} bigint = NULL".Trim
             Case "decimal"
                 Return $"@{columnName} decimal(19,4) = NULL".Trim
             Case "bool"
                 Return $"@{columnName} bit = NULL".Trim
             Case "DateTime?"
-                Return $"@{columnName} datetime = NULL".Trim
+                Return $"@{columnName} datetime2 = NULL".Trim
             Case Else
                 Return $"@{columnName} nvarchar({maxLength}) = NULL".Trim
         End Select
@@ -6808,14 +6810,16 @@ END CATCH
         ' Map OleDbType to C# data type
         Dim csType As String = GetCsNetTypeFromSchema(dataType)
         Select Case csType
-            Case "int", "long"
+            Case "int"
                 Return $"@{columnName} int = NULL".Trim
+            Case "long"
+                Return $"@{columnName} bigint = NULL".Trim
             Case "decimal"
                 Return $"@{columnName} decimal(19,4) = NULL".Trim
             Case "bool"
                 Return $"@{columnName} bit = NULL".Trim
             Case "DateTime?"
-                Return $"@{columnName} datetime = NULL".Trim
+                Return $"@{columnName} datetime2 = NULL".Trim
             Case Else
                 Return $"@{columnName} nvarchar({maxLength}) = NULL".Trim
         End Select
