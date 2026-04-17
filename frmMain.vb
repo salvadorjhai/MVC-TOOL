@@ -9392,6 +9392,9 @@ public class PositionModel
             FROM dbo.arstrxdtl 
             WHERE userid = (select top 1 userid from @src)
 
+            -- get unique identifier for audit log (assuming there's a column named UID, adjust as necessary)
+            declare @UID nvarchar(max) = (SELECT UID from @temp)
+
             /* using insert/update separately
             if not exists (select 1 from @exists)
             begin
@@ -9433,11 +9436,13 @@ public class PositionModel
         -- audit logs starts here
         -- declare @old nvarchar(max) = (SELECT * from @exists FOR JSON PATH, INCLUDE_NULL_VALUES, WITHOUT_ARRAY_WRAPPER)
         -- declare @new nvarchar(max) = (SELECT * from @temp FOR JSON PATH, INCLUDE_NULL_VALUES, WITHOUT_ARRAY_WRAPPER)
-        -- exec ebsextension..js_writechangesonly_to_userlog @userid, 'table', 'table updated', @old, @new;
+        -- declare @msg nvarchar(max) = ''
         -- if isnull(@old, '') = ''
-        --         exec ebsextension..js_writechangesonly_to_userlog @userid, 'table', 'data created', @old, @new;
-        --     else
-        --         exec ebsextension..js_writechangesonly_to_userlog @userid, 'table', 'data updated', @old, @new;
+        --  set @msg = concat(@UID, ' was created');
+        -- else
+        --  set @msg = concat(@UID, ' was updated');
+        --
+        -- exec ebsextension..js_writechangesonly_to_userlog @userid, 'table', @msg, @old, @new;
 
         -- commit tran
         -- rollback tran
