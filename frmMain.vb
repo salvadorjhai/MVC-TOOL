@@ -6784,18 +6784,20 @@ END CATCH
         Dim isNullable As Boolean = CBool(row("IS_NULLABLE"))
         Dim maxLength As Integer = If(row("CHARACTER_MAXIMUM_LENGTH") Is DBNull.Value, 0, Convert.ToInt32(row("CHARACTER_MAXIMUM_LENGTH")))
 
-        Dim csType As String = GetCsNetType(dataType)
+        Dim csType As String = GetCsNetType(dataType).Replace("?", "")
         Select Case csType
             Case "int"
                 Return $"@{columnName} int = NULL".Trim
             Case "long"
                 Return $"@{columnName} bigint = NULL".Trim
-            Case "decimal"
+            Case "decimal", "double", "float"
                 Return $"@{columnName} decimal(19,4) = NULL".Trim
             Case "bool"
                 Return $"@{columnName} bit = NULL".Trim
-            Case "DateTime?"
+            Case "DateTime", "DateOnly", "TimeOnly"
                 Return $"@{columnName} datetime2 = NULL".Trim
+            Case "byte[]"
+                Return $"@{columnName} varbinary(max) = NULL".Trim
             Case Else
                 Return $"@{columnName} nvarchar({maxLength}) = NULL".Trim
         End Select
@@ -6808,18 +6810,20 @@ END CATCH
         Dim maxLength As Integer = CInt(row("ColumnSize"))
 
         ' Map OleDbType to C# data type
-        Dim csType As String = GetCsNetTypeFromSchema(dataType)
+        Dim csType As String = GetCsNetTypeFromSchema(dataType).Replace("?", "")
         Select Case csType
             Case "int"
                 Return $"@{columnName} int = NULL".Trim
             Case "long"
                 Return $"@{columnName} bigint = NULL".Trim
-            Case "decimal"
+            Case "decimal", "double", "float"
                 Return $"@{columnName} decimal(19,4) = NULL".Trim
             Case "bool"
                 Return $"@{columnName} bit = NULL".Trim
-            Case "DateTime?"
+            Case "DateTime", "DateOnly", "TimeOnly"
                 Return $"@{columnName} datetime2 = NULL".Trim
+            Case "byte[]"
+                Return $"@{columnName} varbinary(max) = NULL".Trim
             Case Else
                 Return $"@{columnName} nvarchar({maxLength}) = NULL".Trim
         End Select
