@@ -6919,7 +6919,7 @@ END CATCH
         End If
 
         ' Add [MaxLength] annotation if the column has a maximum length
-        If maxLength > 0 Then
+        If maxLength > 0 And maxLength < 4000 Then
             annotations &= $"   [MaxLength({maxLength})]" & vbCrLf
         End If
 
@@ -7049,6 +7049,7 @@ END CATCH
 
         Next
 
+        l1.Add("statusid".PadRight(20) & "nvarchar(3)")
         l1.Add("statuslvl_text".PadRight(20) & "nvarchar(50)")
         l1.Add("statuslvl".PadRight(20) & "int")
         l1.Add("madebyid".PadRight(20) & "int")
