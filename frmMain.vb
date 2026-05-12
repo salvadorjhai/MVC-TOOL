@@ -6779,7 +6779,7 @@ END CATCH
 
     Function DbTypeToDeclaredString(row As DataRow) As String
         ' Extract column information from the DataRow
-        Dim columnName As String = Regex.Replace(row("COLUMN_NAME").ToString().ToLower, "[^a-z0-9_]", "", RegexOptions.IgnoreCase)
+        Dim columnName As String = enclose_column(Regex.Replace(row("COLUMN_NAME").ToString().ToLower, "[^a-z0-9_]", "", RegexOptions.IgnoreCase))
         Dim dataType As Integer = Convert.ToInt32(row("DATA_TYPE"))
         Dim isNullable As Boolean = CBool(row("IS_NULLABLE"))
         Dim maxLength As Integer = If(row("CHARACTER_MAXIMUM_LENGTH") Is DBNull.Value, 0, Convert.ToInt32(row("CHARACTER_MAXIMUM_LENGTH")))
@@ -6804,7 +6804,7 @@ END CATCH
     End Function
 
     Function DbTypeToDeclaredStringOle(row As DataRow) As String
-        Dim columnName As String = row("ColumnName").ToString()
+        Dim columnName As String = enclose_column(row("ColumnName").ToString())
         Dim dataType As Type = CType(row("DataType"), Type)
         Dim isNullable As Boolean = CBool(row("AllowDBNull"))
         Dim maxLength As Integer = CInt(row("ColumnSize"))
@@ -9367,27 +9367,26 @@ public class PositionModel
 
         End Using
 
-        Dim cs = String.Join(", ", l4.Keys)
-        Dim vs = String.Join(vbCrLf & "                    , ", l4.Keys.Select(Function(x) IIf(lstRequired.Contains(x), $"ISNULL(src.{x}, '')", $"src.{x}")))
-        Dim xs = String.Join(vbCrLf & "                    , ", l4.Keys.Select(Function(x) IIf(lstRequired.Contains(x), $"dest.{x} = ISNULL(src.{x}, '')", $"dest.{x} = src.{x}")))
+        Dim cs = String.Join(", ", l4.Keys.Select(Function(x) enclose_column(x)))
+        Dim vs = String.Join(vbCrLf & "                    , ", l4.Keys.Select(Function(x) IIf(lstRequired.Contains(x), $"ISNULL(src.{enclose_column(x)}, '')", $"src.{enclose_column(x)}")))
+        Dim xs = String.Join(vbCrLf & "                    , ", l4.Keys.Select(Function(x) IIf(lstRequired.Contains(x), $"dest.{enclose_column(x)} = ISNULL(src.{enclose_column(x)}, '')", $"dest.{enclose_column(x)} = src.{enclose_column(x)}")))
         Dim lx = String.Join(", ", params.Select(Function(x) x.Substring(1).Split("=")(0).Trim).ToList)
         Dim lx2 = String.Join(", ", l4.Keys.Select(Function(x) $"JSON_VALUE(@data, '$.{x}')").ToList) ' single value from json wrap in {}
         Dim lx3 = String.Join(", ", l4.Keys.Select(Function(x) $"JSON_VALUE(value, '$.{x}')").ToList) ' multi value from json wrapped in []
-        Dim ins = String.Join(", ", l4.Keys.Select(Function(x) $"inserted.{x}").ToList)
+        Dim ins = String.Join(", ", l4.Keys.Select(Function(x) $"inserted.{enclose_column(x)}").ToList)
 
         Dim sql = <![CDATA[
-        begin tran
             -- column names: _CS_
             declare @src table ({lx})
             declare @temp table ({lx})
             declare @exists table ({lx})
 
-            -- use this as a source (by property name), multi row wrapped in []
+            -- use this as a source (by property name), multi row data wrapped in []
             insert into @src
             select {lx3} 
             from openjson(@data)
 
-            -- use this as a source (by property name), single row wrapped in {}
+            -- use this as a source (by property name), single row data wrapped in {}
             insert into @src
             select {lx2}
 
@@ -9400,7 +9399,9 @@ public class PositionModel
             -- get unique identifier for audit log (assuming there's a column named UID, adjust as necessary)
             declare @UID nvarchar(max) = (SELECT UID from @temp)
 
-            /* using insert/update separately
+            BEGIN TRAN  -- ====================== START OF TRANSACTION
+
+            /* using insert/update separately 
             if not exists (select 1 from @exists)
             begin
                 INSERT INTO dbo.arstrxdtl (_CS_)
@@ -9419,7 +9420,7 @@ public class PositionModel
             end
             */
 
-            -- merge template
+            /* merge template
             MERGE DB_Target..arstrxdtl AS dest
             USING @src AS src
                 -- condition key
@@ -9433,24 +9434,28 @@ public class PositionModel
                 VALUES (
                     _VS_
                 ) 
-            -- OUTPUT $action, inserted.*
-            -- OUTPUT inserted.* INTO @temp
+            OUTPUT $action, inserted.*
+            -- or
+            OUTPUT inserted.* INTO @temp
             ;
-            -- select * from @temp
+            */
 
-        -- audit logs starts here
-        -- declare @old nvarchar(max) = (SELECT * from @exists FOR JSON PATH, INCLUDE_NULL_VALUES, WITHOUT_ARRAY_WRAPPER)
-        -- declare @new nvarchar(max) = (SELECT * from @temp FOR JSON PATH, INCLUDE_NULL_VALUES, WITHOUT_ARRAY_WRAPPER)
-        -- declare @msg nvarchar(max) = ''
-        -- if isnull(@old, '') = ''
-        --  set @msg = concat(@UID, ' was created');
-        -- else
-        --  set @msg = concat(@UID, ' was updated');
-        --
-        -- exec ebsextension..js_writechangesonly_to_userlog @userid, 'table', @msg, @old, @new;
+            COMMIT TRAN -- ====================== END OF TRANSACTION
 
-        -- commit tran
-        -- rollback tran
+            -- output result to screen ======================
+            select * from @temp
+
+            -- audit logs starts here ======================
+            -- declare @old nvarchar(max) = (SELECT * from @exists FOR JSON PATH, INCLUDE_NULL_VALUES, WITHOUT_ARRAY_WRAPPER)
+            -- declare @new nvarchar(max) = (SELECT * from @temp FOR JSON PATH, INCLUDE_NULL_VALUES, WITHOUT_ARRAY_WRAPPER)
+            -- declare @msg nvarchar(max) = ''
+            -- if trim(isnull(@old, '')) = ''
+            --  set @msg = concat(@UID, ' was created');
+            -- else
+            --  set @msg = concat(@UID, ' was updated, reason: ', @reason);
+            --
+            -- exec ebsextension..js_writechangesonly_to_userlog @userid, 'table', @msg, @old, @new;
+
 
         ]]>.Value.Replace("arstrxdtl", tblName).Replace("_CS_", cs).Replace("_VS_", vs).Replace("_XS_", xs).Replace("{lx}", lx).Replace("{lx2}", lx2).Replace("{lx3}", lx3).Replace("inserted.*", ins)
 
@@ -9883,7 +9888,8 @@ public class PositionModel
 CREATE OR ALTER PROCEDURE js_{tblName.ToLower}_crud
     @data NVARCHAR(MAX) = '',   -- for insert/update
     @id int = 0,                -- for selecting specific record
-    @userid nvarchar(4) = ''    -- processed by user
+    @userid nvarchar(4) = '',   -- processed by user
+    @reason nvarchar(max) = ''  -- reason
 AS
 BEGIN
     SET NOCOUNT ON
@@ -9892,24 +9898,25 @@ BEGIN
     BEGIN TRY
 
         -- NEW/UPDATE
-        IF isnull(@data,'') <> ''
+        IF trim(isnull(@data,'')) <> ''
         BEGIN
+            -- select goes here
             BEGIN TRAN
-            -- merge code goes here
+            -- merge/update code goes here
             -- do audit
             COMMIT TRAN
             RETURN;
         END
 
         -- LIST ALL
-        IF @id = 0 and isnull(@data,'') = ''
+        IF @id = 0 and trim(isnull(@data,'')) = ''
         BEGIN
             select * from [{tblName.ToLower}]
             RETURN;
         END
 
         -- SINGLE
-        IF @id > 0 and isnull(@data,'') = ''
+        IF @id > 0 and trim(isnull(@data,'')) = ''
         BEGIN
             select * from [{tblName.ToLower}] where id = @id
             RETURN;
@@ -10056,4 +10063,14 @@ END
         "
 
     End Sub
+
+    Function enclose_column(k As String) As String
+        Dim reserved = {"desc", "order", "group", "level"}
+        If reserved.Contains(k.ToLower) Then
+            Return $"[{k}]"
+        End If
+        Return k
+    End Function
+
+
 End Class
