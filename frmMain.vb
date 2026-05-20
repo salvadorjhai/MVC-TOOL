@@ -9454,7 +9454,7 @@ public class PositionModel
             -- else
             --  set @msg = concat(@UID, ' was updated, reason: ', @reason);
             --
-            -- exec ebsextension..js_writechangesonly_to_userlog @userid, 'table', @msg, @old, @new;
+            -- exec ebsextension..js_writechangesonly_to_userlog @userid, 'table', @msg, @old, @new, @reason, 'TABLE_NAME', @UID;
 
 
         ]]>.Value.Replace("arstrxdtl", tblName).Replace("_CS_", cs).Replace("_VS_", vs).Replace("_XS_", xs).Replace("{lx}", lx).Replace("{lx2}", lx2).Replace("{lx3}", lx3).Replace("inserted.*", ins)
