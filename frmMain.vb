@@ -7598,19 +7598,18 @@ $('[data-mask]').on('focus', function () {
 
         If haveSelect2 Then
             scriptGen.Add(<![CDATA[
-// focus when opened
 $(document).on('select2:open', function (e) {
     document.querySelector('.select2-search__field').focus();
 });
-// initialize select2
-$(`select.select2`).select2({
-    placeholder: {
-        id: '',
-        text: 'Select option'
-    },
-    allowClear: true,
-    // tags: true,              // for custom input
-    parent: $(targetModal)
+$('select.select2').each((i, e) => {
+    $(e).select2({
+        placeholder: {
+            id: '',
+            text: ($(e).attr('placeholder') || '').length ? $(e).attr('placeholder') : 'Select option'
+        },
+        allowClear: true,
+        dropdownParent: $(e).closest(`.modal`).length ? $(e).closest(`.modal`) : $(document.body),
+    })
 })
                         ]]>.Value.Replace("formId", formId))
         End If
@@ -7669,8 +7668,9 @@ function pagescript() {
     let otable = {}
     let otableData = []
     let seldata = {}
-    let targetForm = $(`#formId`)
-    let targetModal = $(`#formId .modal`)[0]
+    let targetFormId = `#formId`
+    let targetForm = $(targetFormId)
+    let targetModal = $(`${targetFormId} .modal`)[0]
     let oNatureOfWork = []
     let oAreaOffices = []
 
@@ -7704,13 +7704,38 @@ function pagescript() {
 
         })
 
-        // modal
+        $(document).off('keydown.trx_table').on('keydown.trx_table', function (e) {
+            if (e.key == 'F2') {
+                e.preventDefault()
+                if ($('.modal.show').length > 0 || $('.swal2-shown').length > 0) {
+                    return;
+                }
+                $(`[data-action=edit]`)[0].click()
+            }
+        })
+
         $(targetModal).on('shown.bs.modal', function (e) {
-            $(this).find(`input:visible`)[0].focus()
+            $(this).find(`input:visible:not(:disabled)`)[0]?.focus()
+        });
+
+        let forceHide = false;
+        $(targetModal).on('hide.bs.modal', function (e) {
+            if (forceHide) {
+                forceHide = false;
+                return;
+            }
+            if (isDirty()) {
+                e.preventDefault();
+                msgbox(`Ignore changes?`, `Are you sure you want to ignore unsaved changes?`, 'warning', true, () => {
+                    forceHide = true;
+                    $(targetModal).modal('hide');
+                })
+            }
         });
 
         $(targetModal).on('hidden.bs.modal', function (e) {
-            //onResetClick()
+            //formReset()
+            //$(targetForm).data('isDirty', false)
         });
 
         __ADDITIONAL_SELECT_SCRIPT__
@@ -7755,71 +7780,79 @@ function pagescript() {
     }
 
     function onSaveClick() {
-        if (!isValid($(targetForm))) { return; }
+        if (!isValid()) { return; }
 
-        if (!isDirty($(targetForm))) {
-            hideDialog($(targetModal))
+        if (!isDirty()) {
+            hideDialog()
             return;
         }
 
-        msgbox(`Save Changes?`, `Are you sure you want to save changes?`, 'warning', true, () => {
+        var title = 'Save Changes?'
+        var msg = "Are you sure you want to save changes?"
+   
+        msgbox(title, msg, 'warning', true, () => {
             var model = Object.assign({}, seldata, getFormData($(targetForm)))
-
-            ShowSwalLoader()
-
-            return $.ajax({
-                url: `/{controller}/{action}`,
-                type: "POST",
-                data: JSON.stringify(model),
-                contentType: "application/json;charset=UTF-8",
-                dataType: "json",
-                complete: function (jqXHR, textStatus) { },
-                success: function (response, textStatus, jqXHR) {
-
-                    getTableData()
-                    onTableItemSelected(null)
-
-                    setTimeout(() => {
-                        CloseSwalLoader()
-                        success('Changes was saved successfuly', 'Success')
-
-                        seldata = response.data
-                        fillData(seldata)
-
-                    }, 800);
-
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    setTimeout(() => {
-                        CloseSwalLoader()
-                        var msg = jqXHR?.responseJSON?.message || `Opps ! Something went wrong ... `
-                        error(msg)
-                    }, 800);
-                }
-            });
-
+            if (model.id <= 0) {
+                Saving(model, 'New record')
+            } else {
+                ShowUpdateReasonDialog((reason) => Saving(model, reason))
+            }
         })
 
     }
 
+    function Saving(model, updateReason) {
+        ShowSwalLoader()
+
+        return $.ajax({
+            url: `/{controller}/{action}`,
+            type: "POST",
+            data: JSON.stringify({ data: model, updateReason }),
+            contentType: "application/json;charset=UTF-8",
+            dataType: "json",
+            complete: function (jqXHR, textStatus) { },
+            success: function (response, textStatus, jqXHR) {
+                getTableData()
+                onTableItemSelected(null)
+                seldata = response.data
+                fillData(seldata)
+
+                setTimeout(() => {
+                    CloseSwalLoader()
+                    success('Changes was saved successfuly', 'Success')
+                }, 800);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                setTimeout(() => {
+                    CloseSwalLoader()
+                    var msg = jqXHR?.responseJSON?.message || `Opps ! Something went wrong ... `
+                    error(msg)
+                }, 800);
+            }
+        });
+    }
+
     function onResetClick() {
         resetForm($(targetForm))
+        $(targetForm).data('isDirty', false)
     }
 
     function showDialog(targetModal) {
         $(targetModal).modal('show')
+        $(targetForm).data('isDirty', false)
     }
 
-    function hideDialog(targetModal) {
+    function hideDialog() {
         $(targetModal).modal('hide')
     }
 
     function fillData(data) {
         setFormData($(targetForm), data)
         $(targetModal).find(`.modal-title`).html(`<i class="fas fa-file-signature"></i> Edit Job Order : <strong>${data.series_fmt}</strong>`)
+        $(targetForm).data('isDirty', false)
     }
 
-    function isDirty(targetForm, isclosing = 0) {
+    function isDirty2(targetForm, isclosing = 0) {
         if (isclosing == 0 && !seldata) return true;
 
         // check if modified first; list and form key-value must be the same
@@ -7836,7 +7869,11 @@ function pagescript() {
         return $(targetForm).data('isDirty')
     }
 
-    function isValid(targetForm) {
+    function isDirty() {
+        return $(targetForm).data('isDirty')
+    }
+
+    function isValid() {
         return $(targetForm).valid()
     }
 
@@ -7879,6 +7916,27 @@ function pagescript() {
             //},
             //{ data: "id", title: "", autoWidth: true, width: "15px", searchable: true, orderable: true, },
             __DATATABLECOLUMN__
+            //{
+            //    data: "entrybyname", title: "Entry By", autoWidth: true, width: "180px", searchable: true, orderable: true, render: (data, type, full, meta) => {
+            //        const name = data || '';
+            //        const date = full.updatedate ? ToDateTime(full.updatedate) : '';
+            //        if (type === 'sort') {
+            //            return full.updatedate || '';
+            //        }
+            //        return name + (name && date ? '<br>' : '') + date;
+            //    }
+            //},
+            //{
+            //    data: "updatebyname", title: "Last Update", autoWidth: true, width: "180px", searchable: true, orderable: true, render: (data, type, full, meta) => {
+            //        const name = data || '';
+            //        const date = full.updatedate ? ToDateTime(full.updatedate) : '';
+            //        if (type === 'sort') {
+            //            return full.updatedate || '';
+            //        }
+            //        return name + (name && date ? '<br>' : '') + date;
+            //    }
+            //},
+
         ], 5, null, { order: [[2, "desc"]] }, true, '#trx_button_wrapper')
 
         initSingleRowSelect(otable.datatable, onTableItemSelected)
@@ -7909,7 +7967,8 @@ function pagescript() {
     function getTableData(q) {
         return $.ajax({
             url: "/{controller}/{action}/",
-            type: "GET",
+            type: "POST",
+            data: JSON.stringify(currentFilter),
             contentType: "application/json;charset=UTF-8",
             dataType: "json",
             complete: function (jqXHR, textStatus) {
@@ -7986,8 +8045,8 @@ function pagescript() {
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                swal("Error!", "Something went wrong with the request...", "error");
-                return;
+                var msg = jqXHR?.responseJSON?.message || `Error loading area offices`
+                error(msg)
             }
         });
     }
@@ -8018,24 +8077,30 @@ function pagescript() {
         // }
     }
 
+    let is_loadsub = false
+    function loadsub() {
+        if (is_loadsub) return;
+        $.when(
+            ListNatureOfWork(),
+            ListAreaOffices(),
+        ).done(() => {
+            is_loadsub = true
+        })
+    }
+
     init()
     initTable()
     validator()
 
-    // ajax initial loader
+    // grid loader
     $.when(
         ShowSwalLoader(),
-        // table
         getTableData(),
-        // sample dropdown
-        //ListNatureOfWork(),
-        //ListAreaOffices(),
     ).done(() => {
         setTimeout(() => {
             CloseSwalLoader();
         }, 800);
     })
-
 }
 
 $(function () {
