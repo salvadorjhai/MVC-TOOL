@@ -7621,12 +7621,17 @@ $('select.select2').each((i, e) => {
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">
+                    <h6 class="modal-title">
                         <i class="fas fa-file-signature"></i> Add or Edit Form
-                    </h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
+                    </h6>
+                    <div>
+                        <button type="button" class="close" data-dismiss="modal" title="Close" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                        <button type="button" class="close" title="Audit Logs" aria-label="Audit Logs" id="btnShowAuditLogs" hidden>
+                            <span aria-hidden="true">≡</span>
+                        </button>
+                    </div>
                 </div>
                 <div class="modal-body">
                     // content
@@ -7668,11 +7673,10 @@ function pagescript() {
     let otable = {}
     let otableData = []
     let seldata = {}
+    let currentFilter = {}
     let targetFormId = `#formId`
     let targetForm = $(targetFormId)
     let targetModal = $(`${targetFormId} .modal`)[0]
-    let oNatureOfWork = []
-    let oAreaOffices = []
 
     function init() {
         // listiner , initializer
@@ -7689,11 +7693,12 @@ function pagescript() {
 
         // dialog
         $(targetForm).on("click", "[data-action=close]", function (e) {
-            if (isDirty($(this), 1)) {
-                msgbox(`Ingore changes?`, `Are you sure you want to ignore unsave changes?`, 'warning', true, ()=>hideDialog($(targetModal)))
-            } else {
-                hideDialog($(targetModal))
-            }
+            //if (isDirty($(this), 1)) {
+            //    msgbox(`Ingore changes?`, `Are you sure you want to ignore unsave changes?`, 'warning', true, ()=>hideDialog($(targetModal)))
+            //} else {
+            //    hideDialog($(targetModal))
+            //}
+            hideDialog()
         })
 
         $(targetForm).on("click", "[data-action=save]", function (e) {
@@ -7711,6 +7716,13 @@ function pagescript() {
                     return;
                 }
                 $(`[data-action=edit]`)[0].click()
+            }
+            if (e.key == 'F5') {
+                e.preventDefault()
+                if ($('.modal.show').length > 0 || $('.swal2-shown').length > 0) {
+                    return;
+                }
+                refreshTable()
             }
         })
 
@@ -7770,9 +7782,20 @@ function pagescript() {
 
     function onEditClick(id) {
         onResetClick()
-        fillData(seldata)
-        $(targetModal).find(`.modal-title`).html(`<i class="fas fa-file-signature"></i> Edit Details`)
-        showDialog($(targetModal))
+
+        $.when(
+            loadsub(),
+            // load sub details, etc
+        ).done(() => {
+            fillData(seldata)
+            $(targetModal).find(`.modal-title`).html(`<i class="fas fa-file-signature"></i> Edit Details`)
+            setTimeout(() => {
+                CloseSwalLoader()
+                showDialog($(targetModal))
+            }, 800)
+        }).fail(() => {
+            swal("Error!", "Something went wrong with the request...", "error");
+        })
     }
 
     function onDeleteClick(id) {
@@ -7964,7 +7987,18 @@ function pagescript() {
         if (data?.length > 0 || 0) { onItemClick(data) }
     }
 
-    function getTableData(q) {
+    function refreshTable() {
+        $.when(
+            ShowSwalLoader(),
+            getTableData(),
+        ).done(() => {
+            setTimeout(() => {
+                CloseSwalLoader();
+            }, 800);
+        })
+    }
+
+    function getTableData() {
         return $.ajax({
             url: "/{controller}/{action}/",
             type: "POST",
@@ -8080,7 +8114,7 @@ function pagescript() {
     let is_loadsub = false
     function loadsub() {
         if (is_loadsub) return;
-        $.when(
+        return $.when(
             ListNatureOfWork(),
             ListAreaOffices(),
         ).done(() => {
@@ -8091,16 +8125,7 @@ function pagescript() {
     init()
     initTable()
     validator()
-
-    // grid loader
-    $.when(
-        ShowSwalLoader(),
-        getTableData(),
-    ).done(() => {
-        setTimeout(() => {
-            CloseSwalLoader();
-        }, 800);
-    })
+    refreshTable()
 }
 
 $(function () {
@@ -9076,8 +9101,11 @@ app.init()
         '    End Using
         'End Using
 
+        Dim dbname = ""
+        Dim lstScriptView = New List(Of String)
         Using conn = New OleDbConnection(txtSQLConnectionString.Text)
             conn.Open()
+            dbname = conn.Database.ToLower
 
             If cboTable.Text.Trim.ToLower.Contains("select ") Or cboTable.Text.Trim.ToLower.StartsWith("exec ") Then
                 Using cmd As New OleDbCommand(cboTable.Text, conn)
@@ -9170,23 +9198,77 @@ public class PositionModel
 
                 Next
 
+                Dim clsName = Regex.Replace(StrConv(tblName, VbStrConv.ProperCase), "[^a-z0-9_]", "", RegexOptions.IgnoreCase)
                 dtoList.Add(<![CDATA[
 public class PositionModel
 {
 // replace
 }
-]]>.Value.Replace("// replace", String.Join(vbCrLf, l2)).Replace("PositionModel", Regex.Replace(StrConv(tblName, VbStrConv.ProperCase), "[^a-z0-9_]", "", RegexOptions.IgnoreCase)))
+]]>.Value.Replace("// replace", String.Join(vbCrLf, l2)).Replace("PositionModel", clsName))
 
                 l3.Add("")
+                If IsNothing(l2.FirstOrDefault(Function(x) x.ToLower.Contains("entrydate"))) = False Then
+                    lstScriptView.Add(<![CDATA[
+public class PositionModelExt : PositionModel
+{
+    public string entrybyinitials { get; set; }
+    public string entrybyname { get; set; }
+    public string updatebyinitials { get; set; }
+    public string updatebyname { get; set; }
+}
+
+public static class  PositionModelData
+{
+    // 1 concurrent update/insert operation at a time (for sequence integrity)
+    private static readonly SemaphoreSlim _sequenceLock = new SemaphoreSlim(1, 1); 
+    public static async Task<List<PositionModelExt>> List()
+    {
+        try
+        {
+            using (var DB = new OleDbConnection(AppConfig.EBS))
+            {
+                var res = await DB.QueryAsync<PositionModelExt>($"SELECT * FROM EBSAcct..[QRY_EBSACCT_BANK]");
+                return res?.ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+    public static async Task<PositionModelExt> Upsert(PositionModel data, string updateReason)
+    {
+        await _sequenceLock.WaitAsync();
+        try
+        {
+            using (var DB = new OleDbConnection(AppConfig.EBS))
+            {
+                var js = JsonConvert.SerializeObject(data);
+                var res = await DB.QueryFirstOrDefaultAsync<PositionModelExt>($"exec EBSAcct..[JS_EBSACCT_BANK_CRUD] ?, 0, ?, ?", new { js, data.updateuser, updateReason });
+                return res;
+            }
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        } finally
+        {
+            _sequenceLock.Release();
+        }
+    }
+}
+]]>.Value.Replace("PositionModel", clsName).Replace("EBSAcct", dbname))
+                End If
                 l3.Add(<![CDATA[var res = DB.InsertParam("_", dic, true);]]>.Value.Replace("_", cboTable.Text))
 
-            End If
+                End If
 
         End Using
 
         l3.Add("if (DB.LastError != null) { throw DB.LastError; }")
 
         txtSource.Text = String.Join(vbCrLf, dtoList)
+        txtDest2.Text = String.Join(vbCrLf, lstScriptView)
 
         l3.Add("")
         l3.Add("---------------------------- or ---------------------------- ")
@@ -9462,7 +9544,7 @@ public class PositionModel
             WHERE userid = (select top 1 userid from @src)
 
             -- get unique identifier for audit log (assuming there's a column named UID, adjust as necessary)
-            declare @UID nvarchar(max) = (SELECT UID from @temp)
+            declare @UID nvarchar(max) = (SELECT UID from @src)
 
             BEGIN TRAN  -- ====================== START OF TRANSACTION
 
@@ -9820,10 +9902,10 @@ public class PositionModel
         '        End Using
         '    End Using
         'End Using
-
+        Dim dbname = ""
         Using conn = New OleDbConnection(txtSQLConnectionString.Text)
             conn.Open()
-
+            dbname = conn.Database.ToLower
             If cboTable.Text.Trim.ToLower.Contains("select ") Or cboTable.Text.Trim.ToLower.StartsWith("exec ") Then
                 Using cmd As New OleDbCommand(cboTable.Text, conn)
                     cmd.CommandTimeout = Integer.Parse(optCommandTimeout.Text)
@@ -9948,9 +10030,11 @@ public class PositionModel
 -- =============================================
 -- Created by: jhai
 -- Created date: {DateTime.Now}
--- Description: crud operation
+-- Description: crud operation for {tblName.ToLower}
 -- =============================================
-CREATE OR ALTER PROCEDURE js_{tblName.ToLower}_crud
+USE {dbname}
+GO
+CREATE OR ALTER PROCEDURE js_{dbname}_{tblName.ToLower}_crud
     @data NVARCHAR(MAX) = '',   -- for insert/update
     @id int = 0,                -- for selecting specific record
     @userid nvarchar(4) = '',   -- processed by user
@@ -9976,14 +10060,14 @@ BEGIN
         -- LIST ALL
         IF @id = 0 and trim(isnull(@data,'')) = ''
         BEGIN
-            select * from [{tblName.ToLower}]
+            select * from {dbname}..qry_{dbname}_{tblName.ToLower}
             RETURN;
         END
 
         -- SINGLE
         IF @id > 0 and trim(isnull(@data,'')) = ''
         BEGIN
-            select * from [{tblName.ToLower}] where id = @id
+            select * from {dbname}..qry_{dbname}_{tblName.ToLower} where id = @id
             RETURN;
         END        
 
@@ -9996,6 +10080,24 @@ BEGIN
     END CATCH
 
 END
+GO
+
+-- =============================================
+USE {dbname}
+GO
+create or alter view qry_{dbname}_{tblName.ToLower}
+as
+    select 
+        a.* 
+        -- user audit
+        ,e.initials entrybyinitials, e.name entrybyname
+        ,u.initials updatebyinitials, u.name updatebyname
+    from {dbname}..[{tblName.ToLower}] a
+        -- user audit
+        left join ebs..secuser e on a.entryuser = e.userid
+        left join ebs..secuser u on a.updateuser = u.userid
+go
+
 "
         l3.Add(qq)
 
