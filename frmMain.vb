@@ -7942,9 +7942,9 @@ function pagescript() {
             //{
             //    data: "entrybyname", title: "Entry By", autoWidth: true, width: "180px", searchable: true, orderable: true, render: (data, type, full, meta) => {
             //        const name = data || '';
-            //        const date = full.updatedate ? ToDateTime(full.updatedate) : '';
+            //        const date = full.entrydate ? ToDateTime(full.entrydate) : '';
             //        if (type === 'sort') {
-            //            return full.updatedate || '';
+            //            return full.entrydate || '';
             //        }
             //        return name + (name && date ? '<br>' : '') + date;
             //    }
