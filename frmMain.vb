@@ -9207,8 +9207,8 @@ public class PositionModel
 ]]>.Value.Replace("// replace", String.Join(vbCrLf, l2)).Replace("PositionModel", clsName))
 
                 l3.Add("")
-                If IsNothing(l2.FirstOrDefault(Function(x) x.ToLower.Contains("entrydate"))) = False Then
-                    lstScriptView.Add(<![CDATA[
+
+                lstScriptView.Add(<![CDATA[
 public class PositionModelExt : PositionModel
 {
     public string entrybyinitials { get; set; }
@@ -9258,7 +9258,7 @@ public static class  PositionModelData
     }
 }
 ]]>.Value.Replace("PositionModel", clsName).Replace("EBSAcct", dbname))
-                End If
+
                 l3.Add(<![CDATA[var res = DB.InsertParam("_", dic, true);]]>.Value.Replace("_", cboTable.Text))
 
                 End If
