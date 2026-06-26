@@ -7987,17 +7987,6 @@ function pagescript() {
         if (data?.length > 0 || 0) { onItemClick(data) }
     }
 
-    function refreshTable() {
-        $.when(
-            ShowSwalLoader(),
-            getTableData(),
-        ).done(() => {
-            setTimeout(() => {
-                CloseSwalLoader();
-            }, 800);
-        })
-    }
-
     function getTableData() {
         return $.ajax({
             url: "/{controller}/{action}/",
@@ -8119,6 +8108,17 @@ function pagescript() {
             ListAreaOffices(),
         ).done(() => {
             is_loadsub = true
+        })
+    }
+
+    function refreshTable() {
+        $.when(
+            ShowSwalLoader(),
+            getTableData(),
+        ).done(() => {
+            setTimeout(() => {
+                CloseSwalLoader();
+            }, 800);
         })
     }
 
@@ -9567,7 +9567,12 @@ public class PositionModel
             end
             */
 
-            /* merge template
+            /* merge template 
+            -- delete items that are no longer exists
+            delete from arstrxdtl 
+            --select * from arstrxdtl
+            WHERE id not in (select id from @src) and hdrid=@hdrid
+
             MERGE DB_Target..arstrxdtl AS dest
             USING @src AS src
                 -- condition key
