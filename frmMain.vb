@@ -7946,7 +7946,7 @@ function pagescript() {
             //        if (type === 'sort') {
             //            return full.entrydate || '';
             //        }
-            //        return name + (name && date ? '<br>' : '') + date;
+            //        return name + (name && date ? '<br>' : '') + `<small>${date}</small>`;
             //    }
             //},
             //{
@@ -7956,7 +7956,7 @@ function pagescript() {
             //        if (type === 'sort') {
             //            return full.updatedate || '';
             //        }
-            //        return name + (name && date ? '<br>' : '') + date;
+            //        return name + (name && date ? '<br>' : '') + `<small>${date}</small>`;
             //    }
             //},
 
@@ -9261,7 +9261,7 @@ public static class  PositionModelData
 
                 l3.Add(<![CDATA[var res = DB.InsertParam("_", dic, true);]]>.Value.Replace("_", cboTable.Text))
 
-                End If
+            End If
 
         End Using
 
