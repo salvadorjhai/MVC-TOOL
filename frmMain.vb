@@ -7233,6 +7233,7 @@ var table = {
         Dim formGen3 As New List(Of String) ' hr
         Dim scriptGen As New List(Of String)
         Dim scriptFillData As New List(Of String)
+        Dim dtOnAddClick As New List(Of String)
 
         formGen.Add(<![CDATA[]]>.Value)
 
@@ -7526,12 +7527,14 @@ var table = {
 
                     scriptGen.Add(<![CDATA[
                         $('#dtconsumerid').datetimepicker({
-                            defaultDate: moment(DateNow()).format('MM-DD-yyyy'),
+                            defaultDate: moment(DateNow()).format('MM/DD/yyyy'),
                             format: 'MM/DD/YYYY',
                             maxDate: new Date(), // Disable future dates
                             //maxDate: moment().endOf('day'), // End of today (11:59:59 PM)
                         });
                         ]]>.Value.Replace("consumerid", fieldname))
+
+                    dtOnAddClick.Add(<![CDATA[$('#dtconsumerid input').val(moment(DateNow()).format('MM/DD/YYYY'));]]>.Value.Replace("consumerid", fieldname))
 
                 Case type.StartsWith("byte[]")
 
@@ -7562,6 +7565,9 @@ var table = {
             End If
 
             If type.StartsWith("byte[]") Then Continue For
+
+            '
+            If {"entryuser", "entrydate", "updateuser", "updatedate", "entrybyname", "updatebyname", "entrybyinitials", "updatebyinitials"}.Contains(fieldname.Trim.ToLower) Then Continue For
 
             If fieldname.Trim.ToLower = "id" Then
                 datatableColumn.Add(<![CDATA[
@@ -7693,11 +7699,6 @@ function pagescript() {
 
         // dialog
         $(targetForm).on("click", "[data-action=close]", function (e) {
-            //if (isDirty($(this), 1)) {
-            //    msgbox(`Ingore changes?`, `Are you sure you want to ignore unsave changes?`, 'warning', true, ()=>hideDialog($(targetModal)))
-            //} else {
-            //    hideDialog($(targetModal))
-            //}
             hideDialog()
         })
 
@@ -7768,7 +7769,7 @@ function pagescript() {
     }
 
     function onItemClick(data) {
-        seldata = Object.assign({}, data[0], getFormData($(targetForm)))
+        seldata = data[0]
     }
 
     function onAddClick() {
@@ -7784,7 +7785,8 @@ function pagescript() {
         onResetClick()
 
         $.when(
-            loadsub(),
+            ShowSwalLoader(),
+            // loadsub(),
             // load sub details, etc
         ).done(() => {
             fillData(seldata)
@@ -7871,7 +7873,6 @@ function pagescript() {
 
     function fillData(data) {
         setFormData($(targetForm), data)
-        $(targetModal).find(`.modal-title`).html(`<i class="fas fa-file-signature"></i> Edit Job Order : <strong>${data.series_fmt}</strong>`)
         $(targetForm).data('isDirty', false)
     }
 
@@ -7937,8 +7938,12 @@ function pagescript() {
             //        //return `<button type="button" class="btn btn-default btn-xs btnEdit" data-id=${data}>edit</button>`
             //    }
             //},
-            //{ data: "id", title: "", autoWidth: true, width: "15px", searchable: true, orderable: true, },
+            //{ data: "id", title: "", autoWidth: true, width: "25px", searchable: true, orderable: true, },
             __DATATABLECOLUMN__
+            //{ data: "entryuser", title: "Entry By", autoWidth: true, searchable: true, orderable: true, visible: false, },
+            //{ data: "entrydate", title: "Entry Date", autoWidth: true, width: "78px", searchable: true, orderable: true, visible: false, render: (data, type, full, meta) => data ? ToDateTime(data) : '' },
+            //{ data: "updateuser", title: "Update By", autoWidth: true, searchable: true, orderable: true, visible: false, },
+            //{ data: "updatedate", title: "Date Updated", autoWidth: true, width: "78px", searchable: true, orderable: true, visible: false, render: (data, type, full, meta) => data ? ToDateTime(data) : '' },
             //{
             //    data: "entrybyname", title: "Entry By", autoWidth: true, width: "180px", searchable: true, orderable: true, render: (data, type, full, meta) => {
             //        const name = data || '';
@@ -7960,7 +7965,7 @@ function pagescript() {
             //    }
             //},
 
-        ], 5, null, { order: [[2, "desc"]] }, true, '#trx_button_wrapper')
+        ], 5, null, { order: [[0, "desc"]] }, true, '#trx_button_wrapper')
 
         initSingleRowSelect(otable.datatable, onTableItemSelected)
 
@@ -9515,8 +9520,8 @@ public class PositionModel
         End Using
 
         Dim cs = String.Join(", ", l4.Keys.Select(Function(x) enclose_column(x)))
-        Dim vs = String.Join(vbCrLf & "                    , ", l4.Keys.Select(Function(x) IIf(lstRequired.Contains(x), $"ISNULL(src.{enclose_column(x)}, '')", $"src.{enclose_column(x)}")))
-        Dim xs = String.Join(vbCrLf & "                    , ", l4.Keys.Select(Function(x) IIf(lstRequired.Contains(x), $"dest.{enclose_column(x)} = ISNULL(src.{enclose_column(x)}, '')", $"dest.{enclose_column(x)} = src.{enclose_column(x)}")))
+        Dim vs = String.Join(", " & vbCrLf, l4.Keys.Select(Function(x) IIf(lstRequired.Contains(x), $"ISNULL(src.{enclose_column(x)}, '')", $"src.{enclose_column(x)}")))
+        Dim xs = String.Join(", " & vbCrLf, l4.Keys.Select(Function(x) IIf(lstRequired.Contains(x), $"dest.{enclose_column(x)} = ISNULL(src.{enclose_column(x)}, '')", $"dest.{enclose_column(x)} = src.{enclose_column(x)}")))
         Dim lx = String.Join(", ", params.Select(Function(x) x.Substring(1).Split("=")(0).Trim).ToList)
         Dim lx2 = String.Join(", ", l4.Keys.Select(Function(x) $"JSON_VALUE(@data, '$.{x}')").ToList) ' single value from json wrap in {}
         Dim lx3 = String.Join(", ", l4.Keys.Select(Function(x) $"JSON_VALUE(value, '$.{x}')").ToList) ' multi value from json wrapped in []
