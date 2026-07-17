@@ -6771,7 +6771,7 @@ END CATCH
         If String.IsNullOrWhiteSpace(declaredSqlType) Then
             csType = GetCsNetType(dataType)
         Else
-            csType = GetCsNetTypeFromSqlType(declaredSqlType, isNullable)
+            csType = GetCsNetTypeFromSqlType(declaredSqlType)
         End If
         Dim annotations As String = ""
         If csType = "string" And optAnnotation.Checked Then
@@ -6783,7 +6783,7 @@ END CATCH
         Return propertyString
     End Function
 
-    Function GetCsNetTypeFromSqlType(declaredSqlType As String, isNullable As Boolean) As String
+    Function GetCsNetTypeFromSqlType(declaredSqlType As String) As String
         Dim sqlType = Regex.Match(declaredSqlType, "^[a-z0-9_]+", RegexOptions.IgnoreCase).Value.ToLowerInvariant()
         Dim csType As String
 
@@ -6799,16 +6799,16 @@ END CATCH
             Case "bit"
                 csType = "bool"
             Case "date", "datetime", "datetime2", "smalldatetime", "datetimeoffset", "time"
-                csType = "DateTime"
+                Return "DateTime?"
             Case "binary", "varbinary", "image", "timestamp", "rowversion"
                 Return "byte[]"
             Case "uniqueidentifier"
                 csType = "Guid"
             Case Else
-                Return "object?"
+                Return "object"
         End Select
 
-        Return csType & If(isNullable, "?", "")
+        Return csType
     End Function
 
     Function DbTypeToDeclaredString(row As DataRow, Optional declaredSqlType As String = Nothing) As String
