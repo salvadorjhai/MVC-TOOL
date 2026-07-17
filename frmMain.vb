@@ -6758,15 +6758,21 @@ END CATCH
         Return String.Join(vbCrLf, query)
     End Function
 
-    Function DbTypeToString(row As DataRow) As String
+    Function DbTypeToString(row As DataRow, Optional declaredSqlType As String = Nothing) As String
         ' Extract column information from the DataRow
         Dim columnName As String = Regex.Replace(row("COLUMN_NAME").ToString().ToLower, "[^a-z0-9_]", "", RegexOptions.IgnoreCase)
         Dim dataType As Integer = Convert.ToInt32(row("DATA_TYPE"))
         Dim isNullable As Boolean = CBool(row("IS_NULLABLE"))
         Dim maxLength As Integer = If(row("CHARACTER_MAXIMUM_LENGTH") Is DBNull.Value, 0, Convert.ToInt32(row("CHARACTER_MAXIMUM_LENGTH")))
 
-        ' Map OleDbType to C# data type
-        Dim csType As String = GetCsNetType(dataType)
+        ' OleDb may report newer SQL Server types (including date) as DBTYPE_WSTR.
+        ' Use the native SQL type from sys.columns when available.
+        Dim csType As String
+        If String.IsNullOrWhiteSpace(declaredSqlType) Then
+            csType = GetCsNetType(dataType)
+        Else
+            csType = GetCsNetTypeFromSqlType(declaredSqlType, isNullable)
+        End If
         Dim annotations As String = ""
         If csType = "string" And optAnnotation.Checked Then
             annotations = GetAnnotations(isNullable, maxLength)
@@ -6777,9 +6783,48 @@ END CATCH
         Return propertyString
     End Function
 
-    Function DbTypeToDeclaredString(row As DataRow) As String
+    Function GetCsNetTypeFromSqlType(declaredSqlType As String, isNullable As Boolean) As String
+        Dim sqlType = Regex.Match(declaredSqlType, "^[a-z0-9_]+", RegexOptions.IgnoreCase).Value.ToLowerInvariant()
+        Dim csType As String
+
+        Select Case sqlType
+            Case "char", "nchar", "varchar", "nvarchar", "text", "ntext", "xml"
+                Return "string"
+            Case "tinyint", "smallint", "int"
+                csType = "int"
+            Case "bigint"
+                csType = "long"
+            Case "decimal", "numeric", "money", "smallmoney", "float", "real"
+                csType = "decimal"
+            Case "bit"
+                csType = "bool"
+            Case "date", "datetime", "datetime2", "smalldatetime", "datetimeoffset", "time"
+                csType = "DateTime"
+            Case "binary", "varbinary", "image", "timestamp", "rowversion"
+                Return "byte[]"
+            Case "uniqueidentifier"
+                csType = "Guid"
+            Case Else
+                Return "object?"
+        End Select
+
+        Return csType & If(isNullable, "?", "")
+    End Function
+
+    Function DbTypeToDeclaredString(row As DataRow, Optional declaredSqlType As String = Nothing) As String
         ' Extract column information from the DataRow
         Dim columnName As String = enclose_column(Regex.Replace(row("COLUMN_NAME").ToString().ToLower, "[^a-z0-9_]", "", RegexOptions.IgnoreCase))
+
+        ' OleDb can expose newer SQL Server types as DBTYPE_WSTR (OleDbType.WChar).
+        ' Prefer the native type read from sys.columns when it is available.
+        If Not String.IsNullOrWhiteSpace(declaredSqlType) Then
+            Dim baseType = Regex.Match(declaredSqlType, "^[a-z0-9_]+", RegexOptions.IgnoreCase).Value.ToLowerInvariant()
+            If {"date", "datetime", "datetime2", "smalldatetime", "datetimeoffset", "time"}.Contains(baseType) Then
+                declaredSqlType = "datetime2"
+            End If
+            Return $"@{columnName} {declaredSqlType} = NULL".Trim
+        End If
+
         Dim dataType As Integer = Convert.ToInt32(row("DATA_TYPE"))
         Dim isNullable As Boolean = CBool(row("IS_NULLABLE"))
         Dim maxLength As Integer = If(row("CHARACTER_MAXIMUM_LENGTH") Is DBNull.Value, 0, Convert.ToInt32(row("CHARACTER_MAXIMUM_LENGTH")))
@@ -6801,6 +6846,41 @@ END CATCH
             Case Else
                 Return $"@{columnName} nvarchar({maxLength}) = NULL".Trim
         End Select
+    End Function
+
+    Function GetDeclaredSqlTypes(conn As OleDbConnection, tableName As String) As Dictionary(Of String, String)
+        Dim result = New Dictionary(Of String, String)(StringComparer.OrdinalIgnoreCase)
+        Const sql = "
+SELECT
+    c.name,
+    CASE
+        WHEN TYPE_NAME(c.system_type_id) IN ('varchar', 'char', 'varbinary', 'binary') THEN
+            TYPE_NAME(c.system_type_id) + '(' +
+            CASE WHEN c.max_length = -1 THEN 'max' ELSE CONVERT(varchar(10), c.max_length) END + ')'
+        WHEN TYPE_NAME(c.system_type_id) IN ('nvarchar', 'nchar') THEN
+            TYPE_NAME(c.system_type_id) + '(' +
+            CASE WHEN c.max_length = -1 THEN 'max' ELSE CONVERT(varchar(10), c.max_length / 2) END + ')'
+        WHEN TYPE_NAME(c.system_type_id) IN ('decimal', 'numeric') THEN
+            TYPE_NAME(c.system_type_id) + '(' + CONVERT(varchar(10), c.precision) + ',' + CONVERT(varchar(10), c.scale) + ')'
+        WHEN TYPE_NAME(c.system_type_id) IN ('datetime2', 'datetimeoffset', 'time') THEN
+            TYPE_NAME(c.system_type_id) + '(' + CONVERT(varchar(10), c.scale) + ')'
+        WHEN TYPE_NAME(c.system_type_id) = 'timestamp' THEN 'varbinary(8)'
+        ELSE TYPE_NAME(c.system_type_id)
+    END AS declared_type
+FROM sys.columns c
+WHERE c.object_id = OBJECT_ID(?)
+ORDER BY c.column_id;"
+
+        Using cmd As New OleDbCommand(sql, conn)
+            cmd.Parameters.AddWithValue("@tableName", tableName)
+            Using reader = cmd.ExecuteReader()
+                While reader.Read()
+                    result(reader.GetString(0)) = reader.GetString(1)
+                End While
+            End Using
+        End Using
+
+        Return result
     End Function
 
     Function DbTypeToDeclaredStringOle(row As DataRow) As String
@@ -6848,7 +6928,10 @@ END CATCH
             '    Return "float"
             Case CInt(OleDbType.Boolean)
                 Return "bool"
-            Case CInt(OleDbType.Date), CInt(OleDbType.DBDate), CInt(OleDbType.DBTimeStamp)
+            Case CInt(OleDbType.Date),
+     CInt(OleDbType.DBDate),
+     CInt(OleDbType.DBTime),
+     CInt(OleDbType.DBTimeStamp)
                 Return "DateTime?"
             Case CInt(OleDbType.Binary), CInt(OleDbType.LongVarBinary) ' Handle binary data (e.g., image type)
                 Return "byte[]?"
@@ -6901,7 +6984,7 @@ END CATCH
                 Return "decimal"
             Case GetType(Boolean)
                 Return "bool"
-            Case GetType(DateTime)
+            Case GetType(DateTime), GetType(TimeSpan)
                 Return "DateTime?"
             Case GetType(Byte())
                 Return "byte[]"
@@ -9174,12 +9257,19 @@ public class PositionModel
             Else
 
                 Dim dt = conn.GetOleDbSchemaTable(OleDbSchemaGuid.Columns, {Nothing, Nothing, cboTable.Text, Nothing})
+                Dim declaredSqlTypes = GetDeclaredSqlTypes(conn, cboTable.Text)
                 params.Clear()
                 For i = 0 To dt.Rows.Count - 1
-                    params.Add(DbTypeToDeclaredString(dt.Rows(i)))
+                    Dim columnName = dt.Rows(i)("COLUMN_NAME").ToString()
+                    Dim declaredSqlType As String = Nothing
+                    declaredSqlTypes.TryGetValue(columnName, declaredSqlType)
+                    params.Add(DbTypeToDeclaredString(dt.Rows(i), declaredSqlType))
                 Next
                 For i = 0 To dt.Rows.Count - 1
-                    Dim propertyString As String = DbTypeToString(dt.Rows(i))
+                    Dim columnName = dt.Rows(i)("COLUMN_NAME").ToString()
+                    Dim declaredSqlType As String = Nothing
+                    declaredSqlTypes.TryGetValue(columnName, declaredSqlType)
+                    Dim propertyString As String = DbTypeToString(dt.Rows(i), declaredSqlType)
                     l2.Add(propertyString)
 
                     If propertyString.Contains("[Required]") Then
@@ -9470,12 +9560,19 @@ public class PositionModel
             Else
 
                 Dim dt = conn.GetOleDbSchemaTable(OleDbSchemaGuid.Columns, {Nothing, Nothing, cboTable.Text, Nothing})
+                Dim declaredSqlTypes = GetDeclaredSqlTypes(conn, cboTable.Text)
                 params.Clear()
                 For i = 0 To dt.Rows.Count - 1
-                    params.Add(DbTypeToDeclaredString(dt.Rows(i)))
+                    Dim columnName = dt.Rows(i)("COLUMN_NAME").ToString()
+                    Dim declaredSqlType As String = Nothing
+                    declaredSqlTypes.TryGetValue(columnName, declaredSqlType)
+                    params.Add(DbTypeToDeclaredString(dt.Rows(i), declaredSqlType))
                 Next
                 For i = 0 To dt.Rows.Count - 1
-                    Dim propertyString As String = DbTypeToString(dt.Rows(i))
+                    Dim columnName = dt.Rows(i)("COLUMN_NAME").ToString()
+                    Dim declaredSqlType As String = Nothing
+                    declaredSqlTypes.TryGetValue(columnName, declaredSqlType)
+                    Dim propertyString As String = DbTypeToString(dt.Rows(i), declaredSqlType)
                     l2.Add(propertyString)
 
                     Dim required As Boolean = propertyString.Contains("[Required]")
