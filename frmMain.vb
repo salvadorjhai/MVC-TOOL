@@ -7857,11 +7857,26 @@ function pagescript() {
 
     function onAddClick() {
         seldata = {}
-        onResetClick()
-        onTableItemSelected(null)
-        $('#dttrxdate input').val(moment().format('MM/DD/YYYY'));
-        $(targetModal).find(`.modal-title`).html(`<i class="fas fa-file-signature"></i> Add New`)
-        showDialog($(targetModal))
+
+        $.when(
+            ShowSwalLoader(),
+            // loadsub(),
+            // load sub details, etc
+        ).done(() => {
+            onResetClick()
+            onTableItemSelected(null)
+
+            // $('#dttrxdate input').val(moment().format('MM/DD/YYYY'));
+
+            $(targetModal).find(`.modal-title`).html(`<i class="fas fa-file-signature"></i> Add New`)
+
+            setTimeout(() => {
+                CloseSwalLoader()
+                showDialog($(targetModal))
+            }, 800)
+        }).fail(() => {
+            swal("Error!", "Something went wrong with the request...", "error");
+        })
     }
 
     function onEditClick(id) {
@@ -8097,47 +8112,6 @@ function pagescript() {
         });
     }
 
-    function ListNatureOfWork() {
-        return $.ajax({
-            url: "/{controller}/{action}/",
-            type: "GET",
-            data: {
-                type: 'JO'
-            },
-            contentType: "application/json;charset=UTF-8",
-            dataType: "json",
-            complete: function (jqXHR, textStatus) {
-
-            },
-            success: function (response, textStatus, jqXHR) {
-                if (response?.data) {
-                    oNatureOfWork = response.data;
-
-                    // Get the datalist element
-                    const natureDatalist = $(`#nature`);
-                    natureDatalist.empty();
-
-                    // Create options for each item in the response
-                    oNatureOfWork.forEach((item) => {
-                        // Create option element with value (code) and text (label)
-                        const option = $('<option>')
-                            .val(item.nature)  // Show text in input
-                            .attr('data-code', item.code)  // Store code separately
-                            .attr('data-text', item.nature); // Store text for reference
-
-                        // Append option to datalist
-                        natureDatalist.append(option);
-                    });
-
-                }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                swal("Error!", "Something went wrong with the request...", "error");
-                return;
-            }
-        });
-    }
-
     function ListAreaOffices() {
         return $.ajax({
             url: "/{controller}/{action}/",
@@ -8192,7 +8166,6 @@ function pagescript() {
     function loadsub() {
         if (is_loadsub) return;
         return $.when(
-            ListNatureOfWork(),
             ListAreaOffices(),
         ).done(() => {
             is_loadsub = true
